@@ -1,6 +1,5 @@
 import React from "react";
 import ProfessionalCleanersSlider from "./ProfessionalCleanersSlider";
-
 export default function ProfessionalCleaners() {
   return (
     <div className="px-20 bg-[#F5FCFF] py-4 w-full mt-10">
@@ -13,7 +12,7 @@ export default function ProfessionalCleaners() {
           service.
         </p>
       </div>
-      <ProfessionalCleanersSlider/>
+      <ProfessionalCleanersSlider />
     </div>
   );
 }
