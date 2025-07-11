@@ -17,11 +17,7 @@ const DashboardLayout = () => {
   }, []);
   return (
     <div className="w-full h-screen flex flex-col justify-start items-start">
-      <div
-        className="relative w-full h-screen bg-no-repeat bg-cover  bg-center"
-      >
-      </div>
-
+      
       <img src={NoInternetImage} alt="" className="hidden" />
       <div className="w-full h-screen flex justify-start items-start">
         <div className=" h-[calc(100%-2.5rem)] w-full">
