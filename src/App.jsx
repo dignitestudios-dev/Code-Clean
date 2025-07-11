@@ -11,13 +11,13 @@ import PasswordUpdate from "./pages/authentication/PasswordUpdated";
 import SignUp from "./pages/onboarding/SignUp";
 import LandingPage from "./pages/app/LandingPage/LandingPage";
 import { Navigate } from "react-router";
-import RoleSelection from "./pages/onboarding/RoleSelection";
 import Badge from "./pages/app/Badges/Badge";
+import RoleSelection from "./pages/onboarding/RoleSelection";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to={"/app/landing"} />} />
+        <Route path="/" element={<Navigate to={"/app/landing"} />} />
 
       <Route path="app" element={<DashboardLayout />}>
         <Route path="landing" element={<LandingPage />} />
