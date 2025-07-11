@@ -44,6 +44,9 @@ import FourthYear from "./4year.png";
 import FifthYear from "./5year.png";
 import TickIcon from "./tick.png";
 import LockDarkIcon from "./LockDark.png";
+import user from "./user.png"
+import usertwo from "./usertwo.png"
+import stripe from "./stripe.png"
 
 // export {
 //     FILENAME(PASCALCASE)
@@ -91,4 +94,7 @@ export {
   SuccessIcon,
   UploadImg,
   PhoneNumberImage,
+  user,
+  usertwo,
+  stripe,
 };
