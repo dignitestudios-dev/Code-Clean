@@ -1,0 +1,94 @@
+import React from "react";
+import { FaUser, FaStore, FaLongArrowAltRight } from "react-icons/fa";
+import {
+  MarketPlace,
+  RightArrow,
+  serviceMarket,
+  userMarket,
+} from "../../../assets/export";
+
+const ServiceMarketplace = () => {
+  return (
+    <section
+      style={{
+        backgroundImage: `linear-gradient(234.85deg, rgb(39, 168, 226, 1) -20.45%, rgb(0, 3, 74, 0.8) 124.53%), url(${MarketPlace})`,
+      }}
+      className={`w-full bg-no-repeat bg-cover  bg-center text-white py-16 px-6`}
+    >
+      <div className="max-w-7xl mx-auto text-center">
+        <p className="uppercase tracking-wide text-sm mb-2">Our Services</p>
+        <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          Your All-in-One Service Marketplace
+        </h2>
+        <p className="text-white/80 mb-10 max-w-3xl mx-auto">
+          Easily connect with trusted professionals for seamless bookings and
+          hassle-free experiences.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 m-10 gap-6 md:px-20 mt-8">
+          {/* For Users */}
+          <div className="bg-white text-gray-800 rounded-[30px] shadow-lg px-4 text-center">
+            <div className="flex items-center relative -top-8  flex-col ">
+              <div className="bg-white  text-[#00034A] rounded-full">
+                <img src={userMarket} className="w-[80px]" alt="userMarket" />
+              </div>
+              <h3 className="text-[32px] bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent font-semibold">
+                For Users
+              </h3>
+              <span className="mb-3 mt-3 text-[#181818] font-[400] text-[16px] ">
+                {" "}
+                Grow Your Business!
+              </span>
+              <p className="mb-6 text-[#999999] font-[400] text-[16px] ">
+                List your services, manage bookings effortlessly, and get paid
+                securely. Connect with local clients using real-time geolocation
+                and expand your reach with ease.
+              </p>
+              <a
+                href="#"
+                className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent flex items-center gap-2 font-medium hover:underline"
+              >
+                <img src={RightArrow} className="w-[20px]" alt="" /> Let's Join
+                Now
+              </a>
+            </div>
+          </div>
+
+          {/* For Service Providers */}
+          <div className="bg-white text-gray-800 rounded-[30px] shadow-lg px-4 text-center">
+            <div className="flex items-center flex-col relative -top-8 ">
+              <div className="bg-white text-[#00034A] rounded-full">
+                <img
+                  src={serviceMarket}
+                  className="w-[80px]"
+                  alt="serviceMarket"
+                />
+              </div>
+              <h3 className="text-[32px] bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent font-semibold ">
+                For Service Providers
+              </h3>
+              <span className="mb-3 mt-3 text-[#181818] font-[400] text-[16px]">
+                {" "}
+                Grow Your Business!
+              </span>
+              <p className="mb-6 text-[#999999] font-[400] text-[16px] ">
+                List your services, manage bookings effortlessly, and get paid
+                securely. Connect with local clients using real-time geolocation
+                and expand your reach with ease.
+              </p>
+              <a
+                href="#"
+                className=" bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent flex items-center gap-2 font-medium hover:underline"
+              >
+                <img src={RightArrow} className="w-[20px]" alt="" /> Let's Join
+                Now
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ServiceMarketplace;
