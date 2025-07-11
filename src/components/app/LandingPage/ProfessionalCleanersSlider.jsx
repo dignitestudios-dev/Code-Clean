@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { FaMapMarkerAlt, FaBriefcase, FaStar } from "react-icons/fa";
+import {FaStar } from "react-icons/fa";
 import { HiOutlineHeart } from "react-icons/hi";
 import {
   MdKeyboardArrowRight,

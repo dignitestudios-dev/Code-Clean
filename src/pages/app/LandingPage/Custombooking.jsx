@@ -4,13 +4,12 @@ import { FaArrowLeft, FaMapMarkerAlt, FaFacebookF, FaTwitter, FaLinkedinIn, FaEn
 import Navbar from '../../../components/layout/Navbar';
 import { HeroBg } from "../../../assets/export";
 import { user } from "../../../assets/export";
+import { imageone, imagetwo, imagethree } from "../../../assets/export"
 
-const Bookingdetails = () => {
+const Custombooking = () => {
     const navigate = useNavigate();
-
     return (
         <div className="min-h-screen bg-gray-50">
-
             <Navbar />
             <div
                 className="flex items-center bg-cover bg-center -mt-[6em] pt-[10em] pb-[18em]"
@@ -23,7 +22,7 @@ const Bookingdetails = () => {
                         <FaArrowLeft color='white' size={20} />
                     </button>
                     <h2 className="text-white text-[30px] mt-0 font-bold leading-[48px] capitalize">
-                        Booking details
+                        Custom Booking details
                     </h2>
                 </div>
 
@@ -36,54 +35,38 @@ const Bookingdetails = () => {
                         {/* Left Column - Booking Details */}
                         <div className="lg:col-span-2">
                             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                                <h3 className="text-xl font-bold mb-4">Booking Description</h3>
-                                <p className="text-gray-600 mb-6">
-                                    The standard Lorem Ipsum passage, m ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. The standard Lorem Ipsum passage.
+                                <h3 className="text-xl font-bold mb-4">Deep Cleaning for a 2-Bedroom Apartment</h3>
+                                <div className="flex items-center space-x-2">
+                                    <FaMapMarkerAlt className="text-[#353adf]" />
+                                    <p className="font-medium">936 Kiehn Route West Ned Tennessee</p>
+                                </div>
+
+                                <div className='flex gap-4 pl-0 pt-3'>
+                                    <img src={imageone} className='w-auto h-[10em]' alt="" />
+                                    <img src={imagetwo} className='w-auto h-[10em]' alt="" />
+                                    <img src={imagethree} className='w-auto h-[10em]' alt="" />
+                                </div>
+                                <p className='pt-3 text-gray-700'>
+                                    The standard Lorem Ipsum passage, m ipsum dolor sit amet, cectetur adipiscing elit, sed do eiusmThe standard Lorem Ipsum passage, used since the, sed do eiusmThe standard Lorem Ipsum passage.The standard Lorem Ipsum passage, m ipsum dolor sit amet, cectetur adipiscing elit,
                                 </p>
 
+
                                 {/* Date and Time */}
-                                <div className="flex items-center gap-8 mb-6 border-t-[1px] pt-6">
+                                <div className="flex items-center gap-8 mb-6  pt-6">
                                     <div>
-                                        <p className="text-sm text-gray-500 mb-1">Date</p>
-                                        <p className="font-medium">26 Dec, 2024</p>
+                                        <p className="text-sm text-gray-500 mb-1">Proposed Price</p>
+                                        <p className="font-medium">$300</p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500 mb-1">Time</p>
-                                        <p className="font-medium">08:00pm</p>
+                                        <p className="text-sm text-gray-500 mb-1">Preferred Date & Time</p>
+                                        <p className="font-medium">Saturday, 10 AM</p>
                                     </div>
                                 </div>
 
-                                {/* Location */}
-                                <div className="mb-6 border-t-[1px] pt-6">
-                                    <p className="text-sm text-gray-500 mb-1">Location</p>
-                                    <div className="flex items-center space-x-2">
-                                        <FaMapMarkerAlt className="text-[#353adf]" />
-                                        <p className="font-medium">Downtown, Los Angeles</p>
-                                    </div>
-                                </div>
-
-                                {/* Cleaning Services */}
-                                <div className="mb-6 border-t-[1px] pt-6">
-                                    <h4 className="text-lg font-semibold mb-4">Cleaning Services</h4>
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <div className="text-left border-r-2">
-                                            <p className="text-1xl text-gray-500">Bathroom Cleaning</p>
-                                            <p className="text-sm font-bold">02</p>
-                                        </div>
-                                        <div className="text-left border-r-2">
-                                            <p className="text-1xl text-gray-500">Bedroom Cleaning</p>
-                                            <p className="text-sm font-bold">04</p>
-                                        </div>
-                                        <div className="text-left">
-                                            <p className="text-1xl text-gray-500">Kitchen Cleaning</p>
-                                            <p className="text-sm font-bold">01</p>
-                                        </div>
-                                    </div>
-                                </div>
 
                                 {/* Service Provider Details */}
-                                <div className='pb-10'>
-                                    <h4 className="text-lg font-semibold mb-4">Service Provider Details</h4>
+                                <div className='pb-10 pt-6'>
+                                    <h4 className="text-[22px] font-semibold mb-4">Service Provider Details</h4>
                                     <div className="flex items-center justify-between border-t-[1px] pt-6">
                                         <div className="flex items-center space-x-3">
                                             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
@@ -95,9 +78,9 @@ const Bookingdetails = () => {
                                             </div>
                                         </div>
                                         <button onClick={() => {
-                                            navigate("/service-provider",{state:{fromViewProfile:true}});
+                                            navigate("/service-provider", { state: { fromViewProfile: true } });
                                         }} className="text-blue-600 text-sm underline hover:text-blue-800 font-medium">
-                                            View Profile    
+                                            View Profile
                                         </button>
                                     </div>
                                 </div>
@@ -181,4 +164,4 @@ const Bookingdetails = () => {
     );
 }
 
-export default Bookingdetails;
+export default Custombooking;

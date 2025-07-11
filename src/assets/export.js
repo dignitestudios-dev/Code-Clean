@@ -47,7 +47,9 @@ import LockDarkIcon from "./LockDark.png";
 import user from "./user.png"
 import usertwo from "./usertwo.png"
 import stripe from "./stripe.png"
-
+import imageone from "./imageone.png"
+import imagetwo from "./imagetwo.png"
+import imagethree from "./imagethree.png"
 // export {
 //     FILENAME(PASCALCASE)
 // }
@@ -97,4 +99,7 @@ export {
   user,
   usertwo,
   stripe,
+  imagethree,
+  imagetwo,
+  imageone,
 };
