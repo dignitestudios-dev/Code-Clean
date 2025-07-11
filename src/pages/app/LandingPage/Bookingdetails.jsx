@@ -110,8 +110,9 @@ const Bookingdetails = () => {
                                     <div className="inline-block bg-orange-100 text-orange-600 px-10 py-4 rounded text-sm font-medium mb-2 w-full text-center">
                                         Waiting
                                     </div>
-                                    <div className="text-2xl font-bold text-gray-800 border-2 rounded px-6 py-3 w-full">
-                                        00:00:00
+                                    <div className="inline-block text-black border-2 px-10 py-4 rounded text-sm font-medium mb-2 w-full text-center">
+
+                                        <h1>jfd</h1>
                                     </div>
                                 </div>
 
