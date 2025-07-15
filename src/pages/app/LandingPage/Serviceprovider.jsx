@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { FaArrowLeft, FaCheck, FaRegHeart, FaStar } from 'react-icons/fa';
+import { FaArrowLeft, FaCalendarAlt, FaCheck, FaMapMarkerAlt, FaRegCalendarAlt, FaRegHeart, FaStar } from 'react-icons/fa';
+import { SlTarget } from "react-icons/sl";
+import { LuPen, LuPenLine } from "react-icons/lu"
+import { AiOutlineClockCircle } from "react-icons/ai";
 import Navbar from '../../../components/layout/Navbar';
-import { HeroBg } from "../../../assets/export"
+import { HeroBg, stripe, imageone, imagetwo, imagethree } from "../../../assets/export"
 import { usertwo } from "../../../assets/export"
-import { GoHeart } from 'react-icons/go';
+import { GoHeart, GoTrash } from 'react-icons/go';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { IoLocationOutline } from "react-icons/io5";
 import { RiEditLine } from "react-icons/ri";
 import { MdDelete } from 'react-icons/md';
-import { stripe } from "../../../assets/export";
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
+import { RxCross2 } from "react-icons/rx";
 
 
 
@@ -26,6 +29,29 @@ const Serviceprovider = () => {
     const [dateRange, setDateRange] = useState([new Date(), new Date()]);
     const [bookrequestsend, setBookrequestsend] = useState(false);
     const navigate = useNavigate("");
+    const location = useLocation();
+    const fromViewProfile = location.state?.fromViewProfile || false;
+    const [showrating, setShowrating] = useState(false);
+    const [custombooking, setCustombooking] = useState(false);
+    const [formData, setFormData] = useState({
+        description: "",
+        date: "",
+        time: "",
+        location: "",
+        price: "",
+        file: null,
+    });
+    const [custombookingtwo, setCustombookingtwo] = useState(false);
+    const [custombookingthree, setCustombookingthree] = useState(false);
+
+    const handleInputChange = (e) => {
+        const { name, value, files } = e.target;
+        if (name === "file") {
+            setFormData({ ...formData, file: files[0] });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
+    };
 
     const today = new Date();
     const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -34,7 +60,7 @@ const Serviceprovider = () => {
         setServicetype(!servicetype);
     };
 
-    const [location, setLocation] = useState('');
+    const [locations, setLocations] = useState('');
     const [description, setDescription] = useState('');
     const [file, setFile] = useState(null);
 
@@ -59,12 +85,18 @@ const Serviceprovider = () => {
         setServices((prev) => ({ ...prev, [service]: prev[service] - 1 }));
     };
 
+    const reviews = new Array(5).fill({
+        name: "Mike Smith",
+        rating: 4.5,
+        text: "The standard Lorem Ipsum passage, used since the Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+    });
+
     const [user, setUser] = useState({
         name: 'John Doe',
         rating: 4.9,
         date: '26 Dec, 2024',
         time: '08:00pm',
-        location: '936 Kiehn Route West Ned Tennessee',
+        locations: '936 Kiehn Route West Ned Tennessee',
         description:
             'The standard Lorem Ipsum passage, m ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod The standard Lorem Ipsum passage, used since the, sed do eiusmod The standard Lorem Ipsum passage.',
         services: {
@@ -150,9 +182,11 @@ const Serviceprovider = () => {
                             </div>
                             <div className='space-y-4 text-right'>
                                 <FaRegHeart size={20} className="ml-auto" /> {/* This will push the heart icon to the right */}
-                                <button onClick={() => { setServicetype(true); }} className="bg-gradient-to-r mt-1 from-[#00034A] to-[#27A8E2] text-white px-14 py-2 rounded-md ml-auto">
-                                    Hire Now
-                                </button>
+                                {!fromViewProfile && (
+                                    <button onClick={() => { setServicetype(true); }} className="bg-gradient-to-r mt-1 from-[#00034A] to-[#27A8E2] text-white px-14 py-2 rounded-md ml-auto">
+                                        Hire Now
+                                    </button>
+                                )}
                             </div>
 
 
@@ -208,7 +242,9 @@ const Serviceprovider = () => {
                         <div className="mt-4 border-t-2 pt-3">
                             <div className='flex justify-between items-center'>
                                 <h3 className="font-semibold text-lg mb-2">Rating & Reviews</h3>
-                                <span className='text-blue-600 underline text-[13px]'>View More</span>
+                                <span className='text-blue-600 underline text-[13px] cursor-pointer' onClick={() => {
+                                    setShowrating(true);
+                                }}>View More</span>
                             </div>
                             <div className="bg-gray-50 p-4 rounded-md border">
                                 <p className="font-medium">Mike Smith</p>
@@ -254,8 +290,12 @@ const Serviceprovider = () => {
                                     <li>Confirm and proceed to booking</li>
                                 </ul>
                             </div>
-                            <div className="bg-gray-100 p-4 rounded-lg">
-                                <h3 className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#00034A] to-[#27A8E2] mb-2">
+                            <div className="bg-gray-100 p-4 rounded-lg cursor-pointer" onClick={() => {
+                                setServicetype(false);
+                                setCustombooking(true);
+
+                            }}>
+                                <h3 className="font-semibold cursor-pointer text-transparent bg-clip-text bg-gradient-to-r from-[#00034A] to-[#27A8E2] mb-2">
                                     Request Custom Service</h3>
                                 <ul className="list-disc pl-5 text-sm text-gray-600">
                                     <li>Describe specific service needs</li>
@@ -271,7 +311,7 @@ const Serviceprovider = () => {
 
             {requestservice && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white rounded-xl p-6 md:w-[35em] shadow-2xl">
+                    <div className="bg-white rounded-xl p-6 md:w-[35em] h-[46em] overflow-auto shadow-2xl flex flex-col">
                         {/* Header */}
                         <div className="flex justify-between items-center border-b pb-4 mb-4">
                             <h2 className="text-2xl font-bold text-gray-800">Request Service</h2>
@@ -374,8 +414,8 @@ const Serviceprovider = () => {
                                 <div className="relative mt-1">
                                     <input
                                         type="text"
-                                        value={location}
-                                        onChange={(e) => setLocation(e.target.value)}
+                                        value={locations}
+                                        onChange={(e) => setLocations(e.target.value)}
                                         placeholder="Abc, suite CN"
                                         className="w-full border rounded-lg px-4 py-2 pr-10"
                                     />
@@ -572,13 +612,13 @@ const Serviceprovider = () => {
                                         {editMode ? (
                                             <input
                                                 type="text"
-                                                value={user.location}
-                                                onChange={(e) => setUser({ ...user, location: e.target.value })}
+                                                value={user.locations}
+                                                onChange={(e) => setUser({ ...user, locations: e.target.value })}
                                                 className="text-gray-600"
                                             />
                                         ) : (
                                             <div className="text-gray-600 flex items-center">
-                                                {user.location}
+                                                {user.locations}
                                             </div>
                                         )}
                                     </div>
@@ -739,8 +779,8 @@ const Serviceprovider = () => {
                                             setBookingconfirm(true);
                                             setBookrequestsend(false);
                                             setInterval(() => {
-                                            navigate("/booking-details"); // Navigate after interval
-                                                
+                                                navigate("/booking-details"); // Navigate after interval
+
                                             }, 2000);
                                         }, 3000);
                                     }}
@@ -809,6 +849,402 @@ const Serviceprovider = () => {
                 </div>
             )}
 
+            {showrating && (
+                <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
+                    <div className="bg-white w-full max-w-[40rem] max-h-[60em] rounded-lg overflow-hidden shadow-lg relative">
+                        {/* Header */}
+                        <div className="flex justify-between items-center p-4 border-b">
+                            <h2 className="text-xl font-semibold">Rating & Reviews</h2>
+                            <button
+                                onClick={() => setShowrating(false)}
+                                className="text-gray-600 hover:text-black"
+                            >
+                                <RxCross2 />
+
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="overflow-y-auto px-4 py-2 space-y-6 h-[60vh]">
+                            {reviews.map((review, index) => (
+                                <div key={index} className="border-b pb-4">
+                                    <p className="font-semibold">{review.name}</p>
+                                    <div className="flex items-center space-x-1 mt-1">
+                                        {Array.from({ length: 5 }).map((_, i) => (
+                                            <FaStar
+                                                key={i}
+                                                className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
+                                                    }`}
+                                            />
+                                        ))}
+                                        <span className="ml-1 font-medium text-sm">{review.rating}</span>
+                                    </div>
+                                    <p className="text-sm text-gray-600 mt-2">{review.text}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {custombooking && (
+                <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
+                    <div className="bg-white w-full max-w-[36em] rounded-lg shadow-lg p-0 pt-6 pb-6 relative max-h-[43rem] overflow-y-auto">
+                        {/* Header */}
+                        <div className="flex justify-between items-center mb-4 border-b-[1px] pb-3 pl-6 pr-6">
+                            <h2 className="text-[24px] font-semibold">Request Custom Service</h2>
+                            <button onClick={() => setCustombooking(false)}>
+                                <RxCross2 size={26} />
+                            </button>
+                        </div>
+
+                        {/* Form */}
+                        <div className="space-y-4 pl-6 pr-6">
+                            {/* Description */}
+                            <div>
+                                <label className="block mb-1 font-medium">Service Description</label>
+                                <textarea
+                                    name="description"
+                                    rows="3"
+                                    placeholder="Briefly explain the service required"
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                    className="w-full border rounded p-2 focus:outline-none"
+                                />
+                            </div>
+
+                            {/* Upload */}
+                            <div>
+                                <label className="block mb-1 font-medium">
+                                    Upload Images <span className="text-gray-500">(Optional)</span>
+                                </label>
+
+                                <label
+                                    htmlFor="file-upload"
+                                    className="cursor-pointer border border-dashed rounded p-6 text-center w-full block hover:bg-gray-50 transition"
+                                >
+                                    <div className="text-gray-700 font-medium">Upload “document name”</div>
+                                    <p className="text-sm text-gray-500 mt-1">Upto 20mbps JPG, PNG</p>
+                                    <input
+                                        id="file-upload"
+                                        type="file"
+                                        name="file"
+                                        accept="image/*"
+                                        onChange={handleInputChange}
+                                        className="hidden"
+                                    />
+                                </label>
+                            </div>
+
+
+                            {/* Date & Time */}
+                            <div className="flex gap-2">
+                                <div className="flex-1">
+                                    <label className="block mb-1 font-medium">Date</label>
+                                    <div className="flex items-center border rounded px-2">
+                                        <input
+                                            type="date"
+                                            name="date"
+                                            value={formData.date}
+                                            onChange={handleInputChange}
+                                            className="w-full py-2 focus:outline-none"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex-1">
+                                    <label className="block mb-1 font-medium">Time</label>
+                                    <div className="flex items-center border rounded px-2">
+                                        <input
+                                            type="time"
+                                            name="time"
+                                            value={formData.time}
+                                            onChange={handleInputChange}
+                                            className="w-full py-2 focus:outline-none"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Location */}
+                            <div>
+                                <label className="block mb-1 font-medium">Location</label>
+                                <input
+                                    type="text"
+                                    name="location"
+                                    placeholder="Enter your location"
+                                    value={formData.location}
+                                    onChange={handleInputChange}
+                                    className="w-full border rounded p-2 focus:outline-none"
+                                />
+                                <div className="flex items-center mt-2 text-black cursor-pointer">
+                                    <SlTarget className="mr-1" />
+                                    <span className="text-sm">Use my current Location</span>
+                                </div>
+                            </div>
+
+                            {/* Price */}
+                            <div>
+                                <label className="block mb-1 font-medium">Proposed Price</label>
+                                <div className="flex items-center border rounded px-2">
+                                    <span className="text-gray-500">$</span>
+                                    <input
+                                        type="number"
+                                        name="price"
+                                        placeholder="Enter amount"
+                                        value={formData.price}
+                                        onChange={handleInputChange}
+                                        className="w-full py-2 ml-1 focus:outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Payment Method */}
+                            <div>
+                                <label className="block mb-1 font-medium">Payment Method</label>
+                                <div className="flex justify-between items-center border rounded p-2">
+                                    <div className='flex gap-3'>
+                                        <span className="text-gray-700">**** **** **** **72</span>
+                                        <img src={stripe} className='h-6' alt="" />
+                                    </div>
+
+                                    <button className="text-red-500 hover:text-red-700 text-lg"><GoTrash />
+                                    </button>
+                                </div>
+                            </div>
+
+
+
+                            {/* Submit Button */}
+                            <div className='flex justify-center'>
+                                <button onClick={() => {
+                                    setCustombooking(false);
+                                    setCustombookingtwo(true);
+                                }} className="w-[30em] flex justify-center mt-2 bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-2 rounded-[10px] font-semibold hover:opacity-90">
+                                    Next
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {custombookingtwo && (
+                <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
+                    <div className="bg-white w-full max-w-[36em] rounded-lg shadow-lg pt-6 pb-6 relative max-h-[43rem] overflow-y-auto">
+                        {/* Header */}
+                        <div className="flex justify-between items-center mb-4 border-b-[1px] pb-3 px-6">
+                            <h2 className="text-[24px] font-semibold">Request Custom Service</h2>
+                            <button onClick={() => setCustombookingtwo(false)}>
+                                <RxCross2 size={26} />
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="space-y-6 px-6 text-sm text-gray-800">
+                            {/* Review Details */}
+                            <div className="space-y-1">
+                                <h3 className="font-bold text-[16px]">Review Details</h3>
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h4 className="font-semibold text-[15px]">
+                                            Deep Cleaning for a 2-Bedroom Apartment
+                                        </h4>
+                                        <p className="text-gray-600">
+                                            The standard Lorem Ipsum passage, m ipsum dolor sit amet,
+                                            cetcetur adipiscing elit, sed do eiusmodThe standard Lorem Ipsum passage, used since the, sed do eiusmodThe standard Lorem Ipsum passage.
+                                        </p>
+                                    </div>
+                                    <button className="text-blue-600 text-sm ml-2 mt-1">
+                                        <LuPenLine className='text-[#3338ca]' size={20} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            {/* Location */}
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <h4 className="text-sm font-semibold text-slate-500">Location</h4>
+                                    <p className="font-semibold mt-1">936 Kiehn Route West Ned Tennessee</p>
+                                </div>
+                                <button className="text-blue-600 text-sm ml-2 mt-1">
+                                    <LuPenLine className='text-[#3338ca]' size={20} />
+                                </button>
+                            </div>
+
+                            <hr />
+
+                            {/* Uploaded photos */}
+                            <div>
+                                <div className="flex justify-between mb-2">
+                                    <h4 className="text-sm font-semibold text-slate-500">Uploaded photos</h4>
+                                    <button className="text-blue-600 text-sm ml-2">
+                                        <LuPenLine className='text-[#3338ca]' size={20} />
+                                    </button>
+                                </div>
+                                <div className="flex gap-3">
+                                    {[1, 2, 3].map((_, i) => (
+                                        <img
+                                            key={i}
+                                            src={imageone}
+                                            className="h-20 w-28 rounded object-cover"
+                                            alt="uploaded"
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            {/* Price & Time */}
+                            <div className="flex justify-between gap-6">
+                                <div>
+                                    <h4 className="text-sm font-semibold text-slate-600">Proposed Price</h4>
+                                    <p className="font-semibold mt-1">$300</p>
+                                </div>
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <h4 className="text-sm font-semibold text-slate-600">Preferred Date & Time</h4>
+                                            <p className="font-semibold mt-1">Saturday, 10 AM</p>
+                                        </div>
+                                        <button className="text-blue-600 text-sm ml-2 mt-1">
+                                            <LuPenLine className='text-[#3338ca]' size={20} />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            {/* User Info */}
+                            <div className="flex items-center gap-4">
+                                <img
+                                    src="https://randomuser.me/api/portraits/men/32.jpg"
+                                    className="w-12 h-12 rounded-full"
+                                    alt="user"
+                                />
+                                <div>
+                                    <p className="font-semibold">John Doe</p>
+                                    <p className="flex items-center text-yellow-500">
+                                        <FaStar className="mr-1" /> 4.9
+                                    </p>
+                                </div>
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex flex-col items-center gap-3 mt-4">
+                                <button onClick={() => {
+                                    setCustombookingthree(true);
+                                    setCustombookingtwo(false);
+                                }} className="w-full bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-2 rounded-[10px] font-semibold hover:opacity-90">
+                                    Next
+                                </button>
+                                <button
+                                    className="text-gray-600 underline"
+                                    onClick={() => {
+                                        setCustombooking(true);
+                                        setCustombookingtwo(false);
+                                    }}
+                                >
+                                    Back
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {custombookingthree && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white rounded-xl p-0 md:w-[35em] shadow-2xl pt-4 pb-4">
+                        {/* Header */}
+                        <div className="flex justify-between items-center mb-4 border-b-[1px] pb-3 px-6">
+                            <h2 className="text-[24px] font-semibold">Request Custom Service</h2>
+                            <button onClick={() => setCustombookingthree(false)}>
+                                <RxCross2 size={26} />
+                            </button>
+                        </div>
+
+                        {/* Payment Method Section */}
+                        <div className="space-y-4 pl-6 pr-6">
+                            <h3 className="text-sm font-semibold">Payment Method</h3>
+                            <p className='text-slate-400'>The amount will be held in escrow via Stripe. Once the job is successfully completed, the payment will be released to the service provider.</p>
+
+                            {/* Payment Method Info */}
+                            <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
+                                <div className='w-full'>
+                                    <span className="font-medium text-gray-800">Attached Stripe</span>
+                                    <div className="text-gray-600 bg-[#F3F3F3] rounded-[10px] p-3 w-full mt-2 flex items-center justify-between">
+                                        <div className='flex gap-4'>
+                                            <span>**** **** **** **72</span>
+                                            <img src={stripe} className='w-auto h-6' alt="" />
+                                        </div>
+
+                                        <MdDelete color='red' />
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Payment Summary */}
+                            <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
+                                <div className='w-full bg-[#F3F3F3] p-3 rounded-[10px]'>
+                                    <div className='w-full border-b-[1px] pb-[3px]'>
+                                        <span className="font-medium text-gray-800 ">Payment Summary</span>
+                                    </div>
+                                    <div className="text-gray-600 mt-2">
+                                        <div className='flex justify-between'>
+                                            <p>Subtotal: </p>
+                                            <p>$790</p>
+                                        </div>
+                                        <div className='flex justify-between pt-3'>
+                                            <p className='text-black font-[500]'>Total: </p>
+                                            <p className='text-black font-[500]'>$790</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Action Buttons */}
+                            <div className="pt-6 pb-3">
+                                <button
+                                    className="w-full bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
+                                    onClick={() => {
+                                        setBookrequestsend(true);
+                                        setCustombookingthree(false);
+                                        setInterval(() => {
+                                            setBookrequestsend(false);
+                                            setBookingconfirm(true);
+                                            setInterval(() => {
+                                            navigate("/custom-booking-details");
+                                                
+                                            }, 2000);
+                                        }, 3000);
+                                    }}
+                                >
+                                    Send request to service provider
+                                </button>
+
+                                <div
+                                    className="text-center mt-2 text-sm font-medium text-gray-500 cursor-pointer"
+                                    onClick={() => {
+                                        setCustombookingthree(false)
+                                        setCustombookingtwo(true)
+                                    }}
+                                >
+                                    Back
+                                </div>
+                            </div>
+
+                            {/* Progress Bar */}
+
+                        </div>
+                    </div>
+                </div>
+            )}
 
         </>
     );
