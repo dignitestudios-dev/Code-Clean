@@ -45,9 +45,9 @@ const Navbar = () => {
 
 
   const menuLinks = [
-    { label: "Current Bookings", path: "/bookings" },
-    { label: "Booking History", path: "/history" },
-    { label: "Badges", path: "/badges" },
+    { label: "Current Bookings", path: "/booking-requests" },
+    { label: "Booking History", path: "/booking-history" },
+    { label: "Badges", path: "/app/badge" },
     { label: "Favorites", path: "/favorites" },
     { label: "Messages", path: "/messages" },
   ];
@@ -156,7 +156,7 @@ const Navbar = () => {
                 <div className="space-y-3">
                   <span className="block text-[12px] font-[400] text-[#181818] cursor-pointer"
                     onClick={() => {
-                      navigate("/app/view-profile")
+                      navigate("/app/profile")
                     }}
                   >View Profile</span>
                   <span className="block text-[12px] font-[400] text-[#181818] cursor-pointer" onClick={() => {
@@ -280,7 +280,7 @@ const Navbar = () => {
                   <div className="space-y-3">
                     <span className="block text-[12px] font-[500] hover:text-blue-500 cursor-pointer"
                       onClick={() => {
-                        navigate("/app/view-profile")
+                        navigate("/app/profile")
                       }}
                     >View Profile</span>
                     <span className="block text-[12px] font-[500] hover:text-blue-500 cursor-pointer" onClick={() => {

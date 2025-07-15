@@ -53,6 +53,9 @@ import ServiceImg1 from "./service1.png"
 import ServiceImg2 from "./service2.png"
 import ServiceImg3 from "./service3.png"
 
+import imageone from "./imageone.png"
+import imagetwo from "./imagetwo.png"
+import imagethree from "./imagethree.png"
 // export {
 //     FILENAME(PASCALCASE)
 // }
@@ -107,4 +110,7 @@ export {
   user,
   usertwo,
   stripe,
+  imagethree,
+  imagetwo,
+  imageone,
 };
