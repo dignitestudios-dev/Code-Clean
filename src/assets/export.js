@@ -47,12 +47,22 @@ import LockDarkIcon from "./LockDark.png";
 import user from "./user.png"
 import usertwo from "./usertwo.png"
 import stripe from "./stripe.png"
+import ListingEmpty from "./listing_empty_light.png"
+import DangerIcon from "./danger.png"
+import ServiceImg1 from "./service1.png"
+import ServiceImg2 from "./service2.png"
+import ServiceImg3 from "./service3.png"
 
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
 export {
+  ServiceImg1,
+  ServiceImg2,
+  ServiceImg3,
+  DangerIcon,
+  ListingEmpty,
   LockDarkIcon,
   TickIcon,
   LockIcon,

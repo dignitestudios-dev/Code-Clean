@@ -1,6 +1,9 @@
+import BroadCastBookingDetail from "../../components/app/Profile/BroadCastBookingDetail";
+import Chat from "../../pages/app/Chat/Chat";
 import Home from "../../pages/app/Home";
 import Bookingdetails from "../../pages/app/LandingPage/Bookingdetails";
 import Serviceprovider from "../../pages/app/LandingPage/Serviceprovider";
+import Profile from "../../pages/app/Profile/Profile";
 
 export const appRoutes = [
 
@@ -20,6 +23,24 @@ export const appRoutes = [
         url: "booking-details",
         page: <Bookingdetails/>,
         name: "Booking details",
+        isPublic: true,
+    },
+    {
+        url: "chat",
+        page: <Chat/>,
+        name: "Chat",
+        isPublic: true,
+    },
+    {
+        url: "profile",
+        page: <Profile/>,
+        name: "Profile",
+        isPublic: true,
+    },
+    {
+        url: "service-detail/:id",
+        page: <BroadCastBookingDetail/>,
+        name: "Service Detail",
         isPublic: true,
     }
 ]

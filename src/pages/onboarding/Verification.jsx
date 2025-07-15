@@ -1,13 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { SuccessToast } from "../../components/global/Toaster";
 import { useLocation, useNavigate } from "react-router";
-import {
-  useForgetPassword,
-  useResetVerification,
-} from "../../../../enc/src/hooks/api/Post";
-import { emailVerificationValues } from "../../../../enc/src/init/authentication/AuthValues";
 import { PiSpinnerBold } from "react-icons/pi";
-import {Button} from "../../components/global/GlobalButton";
+import { Button } from "../../components/global/GlobalButton";
+import { emailVerificationValues } from "../../init/authentication/AuthValues";
 
 export default function Verification({ handleNext }) {
   const navigate = useNavigate();
@@ -44,7 +40,7 @@ export default function Verification({ handleNext }) {
 
   const [otp, setOtp] = useState(emailVerificationValues.otp);
 
-  const { verifyLoader, verifyOtpPostData } = useResetVerification();
+  // const { verifyLoader, verifyOtpPostData } = useResetVerification();
 
   const handleChange = (e, i) => {
     const value = e.target.value;
@@ -154,7 +150,7 @@ export default function Verification({ handleNext }) {
               </button>
             </div>
           </div>
-          <Button loading={verifyLoader} text={"Verify"} />
+          <Button text={"Verify"} />
         </div>
       </form>
     </div>

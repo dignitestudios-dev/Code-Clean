@@ -11,7 +11,6 @@ const DashboardLayout = () => {
 
   useEffect(() => {
     if (!navigator.onLine) {
-      // Handle no internet connection
       setOpenNoInternet(true);
     }
   }, []);
