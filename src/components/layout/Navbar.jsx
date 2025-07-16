@@ -48,9 +48,9 @@ const Navbar = () => {
 
 
   const menuLinks = [
-    { label: "Current Bookings", path: "/bookings" },
-    { label: "Booking History", path: "/history" },
-    { label: "Badges", path: "/badges" },
+    { label: "Current Bookings", path: "/booking-requests" },
+    { label: "Booking History", path: "/booking-history" },
+    { label: "Badges", path: "/app/badge" },
     { label: "Favorites", path: "/favorites" },
     { label: "Messages", path: "/messages" },
   ];
