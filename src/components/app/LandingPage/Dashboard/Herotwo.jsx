@@ -5,7 +5,7 @@ import { CiSearch } from "react-icons/ci";
 export default function Herotwo() {
     return (
         <div
-            className="flex bg-cover bg-center flex-col text-center gap-8 justify-center w-full mx-auto items-center -mt-[6em] pt-[10em] pb-[4em] border"
+            className="flex bg-cover bg-center flex-col text-center gap-8 justify-center w-full mx-auto items-center -mt-[6em] pt-[10em] pb-[4em]"
             style={{
                 backgroundImage: `linear-gradient(234.85deg, rgb(39, 168, 226, 1) -20.45%, rgb(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
             }}

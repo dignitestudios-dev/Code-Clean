@@ -150,6 +150,7 @@ export default function Verification({ handleNext }) {
             </div>
           </div>
           <Button text={"Verify"} />
+          <Button text={"Verify"} />
         </div>
       </form>
     </div>
