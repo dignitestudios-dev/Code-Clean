@@ -19,6 +19,11 @@ export const resetPasswordValues = {
   password: "",
   confirmPassword: "",
 };
+export const changedPasswordValues = {
+  password: "",
+  confirmPassword: "",
+  newPassword: "",
+};
 
 
 export const personalDetailsValues = {

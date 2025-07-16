@@ -1,4 +1,7 @@
 import BroadCastBookingDetail from "../../components/app/Profile/BroadCastBookingDetail";
+import CreateCard from "../../components/app/Settings/CreateCard";
+import EditCard from "../../components/app/Settings/EditCard";
+import PaymentMethod from "../../components/app/Settings/PaymentMethod";
 import Chat from "../../pages/app/Chat/Chat";
 import Home from "../../pages/app/Home";
 import Bookingdetails from "../../pages/app/LandingPage/Bookingdetails";
@@ -7,6 +10,7 @@ import Custombooking from "../../pages/app/LandingPage/Custombooking";
 import Favorites from "../../pages/app/LandingPage/favorites";
 import Serviceprovider from "../../pages/app/LandingPage/Serviceprovider";
 import Profile from "../../pages/app/Profile/Profile";
+import Settings from "../../pages/app/Settings/Settings";
 
 export const appRoutes = [
 
@@ -38,6 +42,30 @@ export const appRoutes = [
         url: "app/profile",
         page: <Profile />,
         name: "Profile",
+        isPublic: true,
+    },
+    {
+        url: "app/settings",
+        page: <Settings />,
+        name: "Settings",
+        isPublic: true,
+    },
+    {
+        url: "app/create-card",
+        page: <CreateCard />,
+        name: "Create Card",
+        isPublic: true,
+    },
+    {
+        url: "app/edit-card",
+        page: <EditCard />,
+        name: "Edit Card",
+        isPublic: true,
+    },
+    {
+        url: "app/payment-method",
+        page: <PaymentMethod />,
+        name: "Payment Method",
         isPublic: true,
     },
     {

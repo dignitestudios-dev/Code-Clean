@@ -4,6 +4,8 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { LogoWhite, Avatar } from "../../assets/export";
 import { FaBell } from "react-icons/fa";
 import { IoLogOut, IoNotificationsOutline } from "react-icons/io5";
+import LogOutModal from "../global/LogoutModal";
+import ReportAnIssueModal from "../app/Settings/ReportAnIssueModal";
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,6 +17,7 @@ const Navbar = () => {
   const [userPopup, setUserPopup] = useState(false);
   const [logoutpopup, setLogoutpopup] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isReport, setIsReport] = useState(false);
   const dropdownRef = useRef(null);
   const memberRef = useRef(null);
 
@@ -162,9 +165,7 @@ const Navbar = () => {
                   <span className="block text-[12px] font-[400] text-[#181818] cursor-pointer" onClick={() => {
                     navigate("/app/settings")
                   }}>Settings</span>
-                  <span className="block text-[12px] font-[400] text-[#181818] cursor-pointer" onClick={() => {
-                    navigate("/app/reports")
-                  }}>Report an Issue</span>
+                  <span className="block text-[12px] font-[400] text-[#181818] cursor-pointer" onClick={() => setIsReport(!isReport)}>Report an Issue</span>
                   <span onClick={() => {
                     setLogoutpopup(true);
                   }} className="block text-[12px] font-[400] text-red-600 hover:text-red-700 cursor-pointer">Log Out</span>
@@ -289,6 +290,7 @@ const Navbar = () => {
                     <span className="block text-[12px] font-[500] hover:text-blue-500 cursor-pointer" onClick={() => {
                       navigate("/app/settings")
                     }}>Settings</span>
+                    <span className="block text-[12px] font-[400] text-[#181818] cursor-pointer" onClick={() => setIsReport(!isReport)}>Report an Issue</span>
                     <span onClick={() => {
                       setLogoutpopup(true);
                     }} className="block text-[12px] font-[500] text-red-600 hover:text-red-700 cursor-pointer">Log Out</span>
@@ -348,37 +350,9 @@ const Navbar = () => {
           )}
         </div>
       )}
-      
-      {logoutpopup && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-                  <div className="bg-white rounded-xl shadow-xl p-6 w-[90%] max-w-sm text-center">
-                    <div className=" p-0 w-fit mx-auto rounded-full mb-3">
-                      <IoLogOut size={60} color='#FF3B30' />
-                    </div>
-                    <h2 className="font-semibold text-[#DC1D00] text-[20px] mb-2">Logout</h2>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Are you sure you want to logout your account?
-                    </p>
-                    <div className="flex justify-center gap-3">
-                      <button
-                        className="px-16 py-2 text-sm text-black bg-gray-200 rounded-full"
-                        onClick={() => setLogoutpopup(false)}
-                      >
-                        No
-                      </button>
-                      <button
-                        onClick={() => {
-                          navigate("/auth/login")
-                        }}
-                        className="px-16 py-2 text-sm bg-[#DC1D00] text-white rounded-full"
 
-                      >
-                        Yes
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
+      <LogOutModal isOpen={logoutpopup} setIsOpen={setLogoutpopup} />
+      <ReportAnIssueModal isOpen={isReport} setIsOpen={setIsReport} />
     </nav>
   );
 };

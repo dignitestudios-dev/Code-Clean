@@ -143,7 +143,7 @@ export default function ProviderDetail({ handleNext }) {
                 Set Availability
               </label>
               <div
-                onClick={() => setShowModal(true)}
+            
                 className={`h-[49px] flex cursor-pointer justify-start bg-[#F8F8F899] items-start w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px] `}
               >
                 <input               
@@ -157,10 +157,11 @@ export default function ProviderDetail({ handleNext }) {
                 />
                 <button
                   type="button"
+                  onClick={() => setShowModal(true)}
                   style={{
                     background: "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)"
                   }}
-                  className="w-[15%] h-full rounded-[8px] h-[38px] mt-1  mr-2 bg-transparent text-md text-[#959393] flex items-center justify-center"
+                  className="w-[15%] mt-1 rounded-[8px] h-[38px]   mr-2 bg-transparent text-md text-[#959393] flex items-center justify-center"
                 >
                   <FaPlus color="white" />
                 </button>

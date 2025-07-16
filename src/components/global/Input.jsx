@@ -21,7 +21,7 @@ export default function Input({
         {text}
       </label>
       <div
-        className={`h-[49px] flex justify-start bg-[#F8F8F899] items-start w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px] ${
+        className={`h-[49px] flex justify-start bg-[#FFFFFF] items-start w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px] ${
           error && touched ? "border-red-500" : "border-[#D9D9D9]"
         }`}
       >

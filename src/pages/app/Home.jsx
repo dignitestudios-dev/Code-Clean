@@ -3,6 +3,8 @@ import Navbar from '../../components/layout/Navbar';
 import Herotwo from '../../components/app/LandingPage/Dashboard/Herotwo';
 import { FaMapMarkerAlt, FaBriefcase, FaShieldAlt, FaStar, FaRegHeart, FaChevronRight, FaChevronLeft } from 'react-icons/fa';
 import { LuSettings2 } from 'react-icons/lu';
+import { awardIcon, LocationIcon, WorkIcon } from '../../assets/export';
+import BroadCastModal from '../../components/app/Profile/BroadCastModal';
 
 const professionalsData = [
   {
@@ -83,7 +85,8 @@ const itemsPerPage = 6;
 
 const Home = () => {
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [isOpen, setIsOpen] = useState(false);
+  const [isFilter, setIsFilter] = useState(false);
   const totalPages = Math.ceil(professionalsData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentProfessionals = professionalsData.slice(startIndex, startIndex + itemsPerPage);
@@ -97,15 +100,80 @@ const Home = () => {
           <div className='flex gap-3 justify-between items-center mb-10'>
             <div className='flex items-center gap-3'>
               <h1 className='text-3xl font-[600]'>Hire Top-Rated Professionals</h1>
-              <span className='bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white px-4 py-0 rounded-xl text-sm'>1,358</span>
+              <span className='bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white px-4 py-0 rounded-xl text-sm'>1,358</span>
             </div>
             <div className='flex items-center gap-3'>
-              <button className='bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white p-2 rounded-md'>Broadcast a Request</button>
-              <button className='bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white p-3 rounded-md' ><LuSettings2 />
+              <button onClick={() => setIsOpen(!isOpen)} className='bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white p-2 rounded-md'>Broadcast a Request</button>
+              <button onClick={()=>setIsFilter(!isFilter)} className='bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white p-3 rounded-md' ><LuSettings2 />
               </button>
+              {/* Filter fields */}
             </div>
 
+
           </div>
+          {
+            isFilter && (
+              <div className="space-y-4 w-[400px] bg-[#FFFFFF] rounded-[14px] absolute  right-20 p-4 shadow-lg -mt-10 ">
+                {/* Location */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Location</label>
+                  <select className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2 text-sm">
+                    <option>Select</option>
+                  </select>
+                </div>
+
+                {/* Price */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Price</label>
+                  <div className="flex gap-2 mt-1">
+                    <input
+                      type="number"
+                      placeholder="Min"
+                      className="w-1/2 border border-gray-300 rounded-md px-2 py-2 text-sm"
+                    />
+                    <input
+                      type="number"
+                      placeholder="Max"
+                      className="w-1/2 border border-gray-300 rounded-md px-2 py-2 text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Experience */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Experience</label>
+                  <input
+                    type="text"
+                    className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2 text-sm"
+                    placeholder="Experience"
+                  />
+                </div>
+
+                {/* Rating */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Rating</label>
+                  <select className="w-full mt-1 border border-gray-300 rounded-md px-3 py-2 text-sm">
+                    <option>Rating</option>
+                  </select>
+                </div>
+
+                {/* Distance Slider */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Distance</label>
+                  <input type="range" min="0" max="100" className="bg-gradient-to-r from-[#373856] to-[#27A8E2] w-full mt-2" />
+                  <p className="text-xs text-right mt-1">20 MI</p>
+                </div>
+
+                {/* Buttons */}
+                <div className="flex  items-center gap-3 pt-2">
+                  <button className="bg-[#F8F8F8] px-6 py-3 w-full rounded-[8px] text-sm">Clear All</button>
+                  <button className="bg-gradient-to-r w-full from-[#00034A] to-[#27A8E2] text-white px-6 py-3 rounded-md text-sm font-semibold">
+                    Apply
+                  </button>
+                </div>
+              </div>
+            )
+          }
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {currentProfessionals.map((pro, idx) => (
@@ -129,26 +197,19 @@ const Home = () => {
                 </div>
 
                 <div className="text-sm text-gray-600 space-y-1 mb-4">
-                  <div className="flex justify-between items-center">
+                  <div className="text-sm text-gray-600 space-y-1 mb-2">
                     <div className="flex items-center gap-2">
-                      <FaMapMarkerAlt className="text-[#4147f2]" />
-                      <span className="font-medium text-gray-700">Location</span>
+                      <img src={LocationIcon} alt="LocationIcon" className="w-3" />
+                      Location: {pro.location}
                     </div>
-                    <span>{pro.location}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2 ">
+                      <img src={WorkIcon} alt="LocationIcon" className="w-3" />
+                      Experience: {pro.experience}
+                    </div>
                     <div className="flex items-center gap-2">
-                      <FaBriefcase className="text-[#4147f2]" />
-                      <span className="font-medium text-gray-700">Experience</span>
+                      <img src={awardIcon} alt="LocationIcon" className="w-3" />
+                      Job Success: {pro.success}
                     </div>
-                    <span>{pro.experience}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                      <FaShieldAlt className="text-[#4147f2]" />
-                      <span className="font-medium text-gray-700">Job Success</span>
-                    </div>
-                    <span>{pro.success}</span>
                   </div>
                 </div>
 
@@ -165,9 +226,9 @@ const Home = () => {
               <button
                 onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
                 disabled={currentPage === 1}
-                className="px-4 py-2 bg-white rounded-md disabled:opacity-50 flex items-center gap-3"
+                className="px-4 py-2 bg-white text-[16px] text-[#B7B7B7] font-[500]  rounded-md disabled:opacity-50 flex items-center gap-2"
               >
-                <FaChevronLeft />
+                <FaChevronLeft size={10} />
                 Previous
               </button>
 
@@ -175,7 +236,7 @@ const Home = () => {
                 <button
                   key={i}
                   onClick={() => setCurrentPage(i + 1)}
-                  className={`px-4 py-2  ${currentPage === i + 1 ? 'bg-[#27A8E2]/10  text-[#4147f2] border-2 border-[#4147f2]' : 'bg-white'}`}
+                  className={`px-4 py-2  ${currentPage === i + 1 ? 'bg-[#00034A]/10  text-[#00034A] border-2 border-[#27A8E2] bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent' : 'bg-white'}`}
                 >
                   {i + 1}
 
@@ -186,10 +247,10 @@ const Home = () => {
               <button
                 onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="px-4 py-2 bg-white text-[#4147f2] flex items-center gap-3 rounded-md disabled:opacity-50"
+                className="px-4 py-2 bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent flex items-center gap-2 rounded-md disabled:opacity-50"
               >
                 Next
-                <FaChevronRight color='#4147f2' />
+                <FaChevronRight color='#00034A' size={10} />
 
               </button>
             </div>
@@ -198,7 +259,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-
+      <BroadCastModal custombooking={isOpen} setCustombooking={setIsOpen} />
     </div>
   );
 };

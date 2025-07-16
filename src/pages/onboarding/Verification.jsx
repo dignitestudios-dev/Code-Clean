@@ -24,14 +24,13 @@ export default function Verification({ handleNext }) {
     }
     return () => clearInterval(interval);
   }, [isResendDisabled, timer]);
-  const { loading, postData } = useForgetPassword();
  
   const handleResendClick = async () => {
     const data = {
       email: location?.state?.email,
       role: "user",
     };
-    const res = await postData("auth/forgot", false, null, data, "");
+    // const res = await postData("auth/forgot", false, null, data, "");
     //  console.log(res);
  
     setIsResendDisabled(true);
@@ -146,11 +145,10 @@ export default function Verification({ handleNext }) {
                 disabled={isResendDisabled}
               >
                 {isResendDisabled ? `Resend in ${timer}s` : "Resend now"}{" "}
-                {loading && <PiSpinnerBold className="animate-spin" />}
+                {/* {loading && <PiSpinnerBold className="animate-spin" />} */}
               </button>
             </div>
           </div>
-          <Button text={"Verify"} />
           <Button text={"Verify"} />
         </div>
       </form>
