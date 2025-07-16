@@ -6,6 +6,7 @@ import Chat from "../../pages/app/Chat/Chat";
 import Home from "../../pages/app/Home";
 import Bookingdetails from "../../pages/app/LandingPage/Bookingdetails";
 import Bookinghistory from "../../pages/app/LandingPage/Bookinghistory";
+import Bookingsrequests from "../../pages/app/LandingPage/Bookingsrequests";
 import Custombooking from "../../pages/app/LandingPage/Custombooking";
 import Favorites from "../../pages/app/LandingPage/favorites";
 import Serviceprovider from "../../pages/app/LandingPage/Serviceprovider";
@@ -33,7 +34,7 @@ export const appRoutes = [
         isPublic: true,
     },
     {
-        url: "chat",
+        url: "messages",
         page: <Chat />,
         name: "Chat",
         isPublic: true,
@@ -90,6 +91,12 @@ export const appRoutes = [
         url: "booking-history",
         page: <Bookinghistory />,
         name: "Bookinghistory",
+        isPublic: true,
+    },
+    {
+        url: "booking-requests",
+        page: <Bookingsrequests />,
+        name: "Bookings Requests",
         isPublic: true,
     }
 ]

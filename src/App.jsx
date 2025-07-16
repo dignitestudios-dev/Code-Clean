@@ -19,15 +19,16 @@ import '@fontsource/inter/500.css'; // or 500, 600, etc.
 import '@fontsource/inter/600.css'; // or 500, 600, etc.
 import '@fontsource/inter/100.css'; // or 500, 600, etc.
 import '@fontsource/inter/200.css'; // or 500, 600, etc.
+import { serviceproviderRoutes } from "./routes/app/ServiceproviderRoutes";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to={"/app/landing"} />} />
 
-    
+
       <Route path="app" element={<DashboardLayout />}>
-           <Route path="landing" element={<LandingPage />} />
+        <Route path="landing" element={<LandingPage />} />
         <Route path="badge" element={<Badge />} />
       </Route>
 
@@ -36,13 +37,20 @@ function App() {
       </Route>
 
       <Route path="">
-        {appRoutes?.map((Link , i) => (
+        {appRoutes?.map((Link, i) => (
+          <Route path={Link.url} key={i} element={Link.page} />
+        ))}
+      </Route>
+
+
+      <Route path="">
+        {serviceproviderRoutes?.map((Link, i) => (
           <Route path={Link.url} key={i} element={Link.page} />
         ))}
       </Route>
 
       <Route path="auth" element={<AuthLayout />}>
-       <Route path="role-selection" element={<RoleSelection />} />
+        <Route path="role-selection" element={<RoleSelection />} />
         <Route path="signup" element={<SignUp />} />
         <Route path="login" element={<Login />} />
         <Route path="forgot-password" element={<Forget />} />

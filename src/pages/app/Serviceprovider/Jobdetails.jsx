@@ -7,7 +7,7 @@ import { user } from "../../../assets/export";
 import ServiceRatingUI from '../../../components/app/Profile/ServiceRatingUi';
 import { TiWarning } from "react-icons/ti";
 
-const Bookingdetails = () => {
+const Jobdetails = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
@@ -34,7 +34,7 @@ const Bookingdetails = () => {
                         <FaArrowLeft color='white' size={20} />
                     </button>
                     <h2 className="text-white text-[30px] mt-0 font-bold leading-[48px] capitalize">
-                        Booking details
+                        Job details
                     </h2>
                 </div>
 
@@ -47,7 +47,7 @@ const Bookingdetails = () => {
                         {/* Left Column - Booking Details */}
                         <div className="lg:col-span-2">
                             <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                                <h3 className="text-xl font-bold mb-4">Booking Description</h3>
+                                <h3 className="text-xl font-bold mb-4">Job Description</h3>
                                 <p className="text-gray-600 mb-6">
                                     The standard Lorem Ipsum passage, m ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. The standard Lorem Ipsum passage.
                                 </p>
@@ -106,7 +106,7 @@ const Bookingdetails = () => {
                                             </div>
                                         </div>
                                         <button onClick={() => {
-                                            navigate("/service-provider", { state: { fromViewProfile: true } });
+                                            navigate("/user-provider", { state: { fromViewProfile: true } });
                                         }} className="text-blue-600 text-sm underline hover:text-blue-800 font-medium">
                                             View Profile
                                         </button>
@@ -323,20 +323,13 @@ const Bookingdetails = () => {
                                         </div>
                                     </div>
                                 )}
-
-
-
-
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-
-
         </div >
     );
 }
 
-export default Bookingdetails;
+export default Jobdetails;
