@@ -6,6 +6,7 @@ import { LuSettings2 } from 'react-icons/lu';
 import { awardIcon, LocationIcon, WorkIcon } from '../../assets/export';
 import BroadCastModal from '../../components/app/Profile/BroadCastModal';
 import Filter from '../../components/global/Filter';
+import { useNavigate } from 'react-router';
 
 const professionalsData = [
   {
@@ -91,6 +92,7 @@ const Home = () => {
   const totalPages = Math.ceil(professionalsData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentProfessionals = professionalsData.slice(startIndex, startIndex + itemsPerPage);
+  const navigate = useNavigate();
 
   return (
     <div>
@@ -129,14 +131,18 @@ const Home = () => {
                       className="w-12 h-12 rounded-full object-cover"
                     />
                     <div>
-                      <h2 className="font-semibold text-md text-gray-800">{pro.name}</h2>
+                      <h2 className="font-semibold text-md text-gray-800 cursor-pointer" onClick={()=>{
+                        navigate("/service-provider")
+                      }}>{pro.name}</h2>
                       <div className="flex items-center text-sm text-yellow-500">
                         <FaStar className="mr-1" />
                         {pro.rating}
                       </div>
                     </div>
                   </div>
-                  <FaRegHeart className="text-black text-lg cursor-pointer" />
+                  <FaRegHeart onClick={()=>{
+                        navigate("/favorites")
+                      }} className="text-black text-lg cursor-pointer" />
                 </div>
 
                 <div className="text-sm text-gray-600 space-y-1 mb-4">

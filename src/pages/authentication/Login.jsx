@@ -4,16 +4,35 @@ import { processLogin } from "../../lib/utils";
 import { useFormik } from "formik";
 import { loginValues } from "../../init/authentication/AuthValues";
 import { signInSchema } from "../../schema/authentication/AuthSchema";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router"; // Import useNavigate
 import { FiLoader } from "react-icons/fi";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { FaCheck, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { AppleImage, GoogleImage, LoginRight, Logo } from "../../assets/export";
-import {Button} from "../../components/global/GlobalButton";
+import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
+import { RxCross2 } from "react-icons/rx";
 
 const Login = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { loading, postData } = useLogin();
+  const [type, setType] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(null);
+
+  const navigate = useNavigate(); // Initialize the navigate function
+
+  const roles = [
+    {
+      id: "user",
+      title: "I'm a User",
+      description: "Find and book professional service providers easily.",
+    },
+    {
+      id: "provider",
+      title: "I'm a Service Provider",
+      description:
+        "Offer your services, manage bookings, and grow your business.",
+    },
+  ];
 
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
@@ -29,6 +48,15 @@ const Login = () => {
         postData("/admin/login", false, null, data, processLogin);
       },
     });
+
+  const handleRoleSelection = (roleId) => {
+    setSelectedRole(roleId);
+    if (roleId === "user") {
+      navigate("/home"); // Redirect to Home for users
+    } else if (roleId === "provider") {
+      navigate("/dashboard"); // Redirect to Dashboard for service providers
+    }
+  };
 
   return (
     <div className="w-full h-auto grid grid-cols-2 gap-4 rounded-[19px] bg-white">
@@ -79,7 +107,51 @@ const Login = () => {
             </NavLink>
           </div>
 
-          <Button text={"Log In"} loading={loading} />
+          <Button
+            text={"Log In"}
+            loading={loading}
+            onClick={() => {
+              setType(true);
+            }}
+          />
+
+          {type && (
+            <>
+              <RxCross2 />
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                <div className="flex flex-col md:flex-row gap-8 mb-6 bg-white p-3 rounded-2xl">
+                  <RxCross2
+                    className="absolute top-10 right-10 text-white cursor-pointer"
+                    size={40}
+                    onClick={() => {
+                      setType(false);
+                    }}
+                  />
+                  {roles.map((role) => {
+                    const isSelected = selectedRole === role.id;
+                    return (
+                      <div
+                        key={role.id}
+                        onClick={() => handleRoleSelection(role.id)} // Use the role selection handler
+                        className={`cursor-pointer rounded-[14px] px-6 py-8 flex flex-col items-center justify-center w-[360px] h-[250px] text-center transition-all shadow-md ${isSelected
+                          ? "text-white"
+                          : "text-gray-600 bg-white border border-gray-200"
+                          }`}
+                        style={{
+                          background: isSelected
+                            ? "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)"
+                            : "",
+                        }}
+                      >
+                        <h3 className={`text-[24px]  font-bold  mb-2`}>{role.title}</h3>
+                        <p className="text-[16px] font-[400]">{role.description}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="w-full  flex justify-center items-center">
             <span className="text-[12px] flex gap-1 font-[600] leading-[27px] text-[#959393]">

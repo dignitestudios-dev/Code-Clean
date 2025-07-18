@@ -19,7 +19,6 @@ export default function EditProfileModal({ isOpen, setIsOpen,updateProfile,setUp
     };
 
     const handleSave = () => {
-        console.log('Profile saved:', formData);
         setUpdateProfile(true)
         setIsOpen(false)
         // Handle save logic here

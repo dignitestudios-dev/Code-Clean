@@ -6,7 +6,7 @@ import { FaBell } from "react-icons/fa";
 import { IoLogOut, IoNotificationsOutline } from "react-icons/io5";
 import LogOutModal from "../global/LogoutModal";
 import ReportAnIssueModal from "../app/Settings/ReportAnIssueModal";
-const Navbar = () => {
+const Navbar = ({type }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -47,13 +47,22 @@ const Navbar = () => {
   }, []);
 
 
-  const menuLinks = [
-    { label: "Current Bookings", path: "/booking-requests" },
-    { label: "Booking History", path: "/booking-history" },
-    { label: "Badges", path: "/app/badge" },
-    { label: "Favorites", path: "/favorites" },
-    { label: "Messages", path: "/messages" },
-  ];
+  const menuLinks = type === "serviceprovider"
+    ? [
+      { label: "Dashboard", path: "/dashboard" },
+      { label: "Discover", path: "/discover-job" },
+      { label: "Availability", path: "/calendar" },
+      { label: "Messages", path: "/chat-sp" },
+      { label: "Badges", path: "/badge-sp" },
+      { label: "Wallet", path: "/wallet" },
+    ]
+    : [
+      { label: "Current Bookings", path: "/booking-requests" },
+      { label: "Booking History", path: "/booking-history" },
+      { label: "Badges", path: "/app/badge" },
+      { label: "Favorites", path: "/favorites" },
+      { label: "Messages", path: "/messages" },
+    ];
 
   const togglePopup = () => {
     if (userPopup) setUserPopup(false);
