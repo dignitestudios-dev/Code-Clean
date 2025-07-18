@@ -56,11 +56,15 @@ import ServiceImg3 from "./service3.png"
 import imageone from "./imageone.png"
 import imagetwo from "./imagetwo.png"
 import imagethree from "./imagethree.png"
+import SuccessAlert from "./blueAlert.png"
+import warningAlert from "./warning.png"
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
 export {
+  SuccessAlert,
+  warningAlert,
   ServiceImg1,
   ServiceImg2,
   ServiceImg3,

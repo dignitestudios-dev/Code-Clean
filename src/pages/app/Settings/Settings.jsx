@@ -20,6 +20,7 @@ export default function Settings() {
     const [successFullUpdate, SetSuccessfulUpdate] = useState(false)
     const menuItems = [
         { label: 'Notification Settings', color: 'text-gray-800' },
+        { label: 'Subscription', color: 'text-gray-800' },
         { label: 'Payment Method', color: 'text-gray-800' },
         { label: 'Change Password', color: 'text-gray-800' },
         { label: 'Report An Issue', color: 'text-gray-800' },
@@ -56,7 +57,7 @@ export default function Settings() {
                     {menuItems?.map((item, index) => (
                         <div
                             key={index}
-                            onClick={() => item?.label == "Payment Method" ? navigate("/app/payment-method") : handleItemClick(item.label)}
+                            onClick={() => item?.label == "Payment Method" ? navigate("/app/payment-method") :item?.label == "Subscription" ? navigate("/app/subscription"):handleItemClick(item.label)}
                             className="flex items-center justify-between rounded-[12px] px-6 py-4 bg-[#FFFFFF] border-b border-gray-100 hover:bg-gray-200 cursor-pointer transition-colors duration-200"
                         >
                             <span className={`text-[14px] font-medium ${item.color}`}>

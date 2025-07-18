@@ -194,7 +194,7 @@ const Navbar = () => {
             <div className="flex gap-4">
               <button
                 className="border border-white px-4 py-1 rounded-md"
-                onClick={() => setIsLoggedIn(true)}
+                onClick={() => navigate("/auth/role-selection")}
               >
                 Signup
               </button>

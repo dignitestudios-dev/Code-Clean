@@ -1,14 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa'
 import { HeroBg, ServiceImg1, ServiceImg2, ServiceImg3 } from '../../../assets/export'
 import Navbar from '../../layout/Navbar'
 import Footer from '../../layout/Footer'
-import { CiEdit, CiLocationOn } from 'react-icons/ci'
-import { LuTrash2 } from 'react-icons/lu'
-import { useNavigate } from 'react-router'
+import { CiEdit, CiLocationOn, CiSearch } from 'react-icons/ci'
+import { LuSettings2, LuTrash2 } from 'react-icons/lu'
+import { useLocation, useNavigate } from 'react-router'
+import Filter from '../../global/Filter'
+import AcceptedModal from './AcceptedJobsModal'
+import AlreadyTakenModal from './AlreadyTakenModal'
 
-export default function BroadCastBookingDetail() {
-    const navigate=useNavigate("")
+export default function DiscoverDetail() {
+    const navigate = useNavigate("")
+    const location = useLocation("");
+
+    const [isFilter, setIsFilter] = useState(false);
+    const [isAccept, setIsAccept] = useState(false);
+    const [isAlready, setIsAlready] = useState(false);
     const serviceRequests = [
         {
             id: 1,
@@ -27,7 +35,7 @@ export default function BroadCastBookingDetail() {
             ]
         },
     ];
-
+console.log(location?.state?.status,"status")
 
 
     return (
@@ -41,12 +49,34 @@ export default function BroadCastBookingDetail() {
                 }}
             >
             </div>
-            <div className='h-full px-40   -mt-80 bottom-0 items-center gap-3 '>
-                <div className='flex items-center gap-2 mb-6'>
-                    <button type="button" onClick={() => navigate("/app/dashboard")} >
-                        <FaArrowLeft color='white' size={16} />
-                    </button>
-                    <h1 className="text-2xl font-semibold text-white">Broadcast booking details</h1>
+            <div className='h-full px-5 lg:px-40   -mt-80 bottom-0 items-center gap-3 '>
+                <div className='flex items-center justify-between gap-2 mb-6'>
+                    <div className="flex items-center gap-3">
+                        <button type="button" onClick={() => navigate("/discover-job")} >
+                            <FaArrowLeft color='white' size={16} />
+                        </button>
+                        <h1 className="text-2xl font-semibold text-white">Discover Jobs</h1>
+                    </div>
+                    <div>
+                        <div className='flex items-center gap-4 '>
+                            <div className='relative flex items-center'>
+                                <div className='absolute left-1' >
+                                    <CiSearch color='white' size={20} />
+                                </div>
+                                <input type="text" className="bg-[#FFFFFF4D] blur-[40] outline-none p-2 rounded-[8px] text-white" />
+                            </div>
+                            <button onClick={() => setIsFilter(!isFilter)} className='bg-[#FFFFFF4D] text-white p-3 rounded-md' ><LuSettings2 />
+                            </button>
+                        </div>
+                        <div className="relative top-12 left-20">
+                            {
+                                isFilter && (
+                                    <Filter setIsFilter={setIsFilter} />
+                                )
+                            }
+                        </div>
+                    </div>
+
                 </div>
                 <div className='bg-[#F9FAFA] shadow-lg mb-48 rounded-[8px] p-10 mt-3' >
                     {/* Service Request Cards */}
@@ -58,21 +88,25 @@ export default function BroadCastBookingDetail() {
                                     <div className="flex justify-between items-start mb-4">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-2">
-                                                <h2 className="text-xl font-semibold text-gray-900">{request.title}</h2>                                               
+                                                <h2 className="text-xl font-semibold text-gray-900">{request.title}</h2>
                                             </div>
                                             <div className="flex items-center text-gray-500 text-sm">
                                                 <CiLocationOn color='#00034A' />
                                                 {request.location}
                                             </div>
                                         </div>
-                                        <div className="flex gap-2">
-                                            <button onClick={() => setCustombooking(true)} className="p-2 bg-gradient-to-r from-[#00034A] to-[#27A8E2] rounded-lg transition-colors">
-                                                <CiEdit color='white' className="w-5 h-5" />
-                                            </button>
-                                            <button onClick={() => request.status == "In Progress" ? setIsRestrict(true) : setIsOpen(true)} className="p-2 text-white bg-red-500 rounded-lg transition-colors">
-                                                <LuTrash2 className="w-5 h-5" />
-                                            </button>
-                                        </div>
+                                        {
+                                            location?.state?.status && (
+                                                <div className="flex gap-4">
+                                                    <button onClick={() => navigate("/discover-job")} className="p-2 text-[#000000] bg-[#F2F1F1] px-8 rounded-lg transition-colors">
+                                                        Ignore
+                                                    </button>
+                                                    <button onClick={() => location?.state?.status == "Avaliable" ? setIsAccept(!isAccept) : setIsAlready(!isAlready)} className="p-2 bg-gradient-to-r from-[#00034A] to-[#27A8E2] px-6 text-white rounded-lg transition-colors">
+                                                        Accept Job
+                                                    </button>
+                                                </div>
+                                            )
+                                        }
                                     </div>
 
                                     {/* Images */}
@@ -104,7 +138,7 @@ export default function BroadCastBookingDetail() {
                                                 <p className="text-sm text-gray-500 mb-1">Preferred Date & Time</p>
                                                 <p className="text-lg font-medium text-gray-900">{request.date}</p>
                                             </div>
-                                        </div>                                     
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -113,6 +147,10 @@ export default function BroadCastBookingDetail() {
 
                 </div>
             </div>
+
+            <AcceptedModal isOpen={isAccept} setIsOpen={setIsAccept} />
+            <AlreadyTakenModal isOpen={isAlready} setIsOpen={setIsAlready} />
+
             <Footer />
         </div>
     )

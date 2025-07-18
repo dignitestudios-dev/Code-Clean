@@ -1,6 +1,8 @@
 import Modal from "react-modal";
 import { HiOutlineXMark } from "react-icons/hi2";
+import { useNavigate } from "react-router";
 const LogOutModal = ({ isOpen, setIsOpen, detail }) => {
+    const navigate=useNavigate("");
     return (
         <Modal
             isOpen={isOpen}
@@ -21,7 +23,7 @@ const LogOutModal = ({ isOpen, setIsOpen, detail }) => {
                     <p className="text-[#18181880] text-[16px]">Are you sure you want to log out?</p>
                     <div className="flex gap-3 items-center mt-3" >
                         <button className="bg-[#21293514] text-[#212935] rounded-[8px] px-10 p-2" >No</button>
-                        <button className="bg-[#EE3131] text-[white] rounded-[8px] px-10 p-2"  >Yes</button>
+                        <button className="bg-[#EE3131] text-[white] rounded-[8px] px-10 p-2" onClick={()=>navigate("/auth/login")} >Yes</button>
                     </div>
                 </div>
 
