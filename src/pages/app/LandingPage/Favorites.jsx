@@ -3,6 +3,7 @@ import { FaArrowLeft, FaBriefcase, FaHeart, FaMapMarkerAlt, FaRegHeart, FaShield
 import { HeroBg } from "../../../assets/export"
 import Navbar from '../../../components/layout/Navbar'
 import Footer from "../../../components/layout/Footer"
+import { useNavigate } from 'react-router'
 
 const Favorites = () => {
 
@@ -58,6 +59,7 @@ const Favorites = () => {
        
     ];
     const currentProfessionals = professionalsData;
+    const navigate = useNavigate();
 
 
     return (
