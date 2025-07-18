@@ -9,9 +9,9 @@ import { CiSearch } from "react-icons/ci";
 const Dashboard = () => {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState('Booking Request');
+    const [activeTab, setActiveTab] = useState('Current Bookings');
+    const [statusFilter, setStatusFilter] = useState("All");
 
-    // Sample booking data
     const bookings = [
         {
             id: 1,
@@ -28,20 +28,20 @@ const Dashboard = () => {
             date: "16-January-2025",
             time: "10:00 Am",
             duration: "4hrs",
-            status: "Rejected",
-            avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-        },
-        {
-            id: 2,
-            name: "John Doe",
-            date: "16-January-2025",
-            time: "10:00 Am",
-            duration: "4hrs",
-            status: "In Progress",
+            status: "Pending",
             avatar: "https://randomuser.me/api/portraits/men/2.jpg",
         },
         {
             id: 3,
+            name: "John Doe",
+            date: "16-January-2025",
+            time: "10:00 Am",
+            duration: "4hrs",
+            status: "Pending",
+            avatar: "https://randomuser.me/api/portraits/men/2.jpg",
+        },
+        {
+            id: 4,
             name: "Emily Johnson",
             date: "16-January-2025",
             time: "10:00 Am",
@@ -50,7 +50,7 @@ const Dashboard = () => {
             avatar: "https://randomuser.me/api/portraits/women/3.jpg",
         },
         {
-            id: 4,
+            id: 5,
             name: "Sarah Williams",
             date: "17-January-2025",
             time: "2:00 Pm",
@@ -59,7 +59,7 @@ const Dashboard = () => {
             avatar: "https://randomuser.me/api/portraits/women/4.jpg",
         },
         {
-            id: 5,
+            id: 6,
             name: "Mark Thompson",
             date: "18-January-2025",
             time: "11:00 Am",
@@ -68,7 +68,7 @@ const Dashboard = () => {
             avatar: "https://randomuser.me/api/portraits/men/5.jpg",
         },
         {
-            id: 6,
+            id: 7,
             name: "Ava Martinez",
             date: "19-January-2025",
             time: "9:00 Am",
@@ -77,7 +77,7 @@ const Dashboard = () => {
             avatar: "https://randomuser.me/api/portraits/women/6.jpg",
         },
         {
-            id: 7,
+            id: 8,
             name: "Liam Anderson",
             date: "20-January-2025",
             time: "3:30 Pm",
@@ -86,7 +86,7 @@ const Dashboard = () => {
             avatar: "https://randomuser.me/api/portraits/men/7.jpg",
         },
         {
-            id: 8,
+            id: 9,
             name: "Olivia Garcia",
             date: "21-January-2025",
             time: "12:00 Pm",
@@ -94,7 +94,89 @@ const Dashboard = () => {
             status: "Completed",
             avatar: "https://randomuser.me/api/portraits/women/8.jpg",
         },
+        {
+            id: 10,
+            name: "Noah Evans",
+            date: "22-January-2025",
+            time: "1:00 Pm",
+            duration: "2.5hrs",
+            status: "Rejected",
+            avatar: "https://randomuser.me/api/portraits/men/9.jpg",
+        },
+        {
+            id: 11,
+            name: "Sophia Clark",
+            date: "23-January-2025",
+            time: "4:00 Pm",
+            duration: "3hrs",
+            status: "Waiting",
+            avatar: "https://randomuser.me/api/portraits/women/9.jpg",
+        },
+        {
+            id: 12,
+            name: "James Allen",
+            date: "24-January-2025",
+            time: "10:30 Am",
+            duration: "1hr",
+            status: "Completed",
+            avatar: "https://randomuser.me/api/portraits/men/10.jpg",
+        },
+        {
+            id: 13,
+            name: "Mia Scott",
+            date: "25-January-2025",
+            time: "9:00 Am",
+            duration: "2hrs",
+            status: "In Progress",
+            avatar: "https://randomuser.me/api/portraits/women/10.jpg",
+        },
+        {
+            id: 14,
+            name: "Benjamin Lee",
+            date: "26-January-2025",
+            time: "2:30 Pm",
+            duration: "4hrs",
+            status: "Accepted",
+            avatar: "https://randomuser.me/api/portraits/men/11.jpg",
+        },
+        {
+            id: 15,
+            name: "Chloe Young",
+            date: "27-January-2025",
+            time: "11:45 Am",
+            duration: "2.5hrs",
+            status: "Cancelled",
+            avatar: "https://randomuser.me/api/portraits/women/11.jpg",
+        },
+        {
+            id: 16,
+            name: "Jackson White",
+            date: "28-January-2025",
+            time: "8:15 Am",
+            duration: "5hrs",
+            status: "Waiting",
+            avatar: "https://randomuser.me/api/portraits/men/12.jpg",
+        },
+        {
+            id: 17,
+            name: "Isabella Walker",
+            date: "29-January-2025",
+            time: "1:30 Pm",
+            duration: "1.5hrs",
+            status: "In Progress",
+            avatar: "https://randomuser.me/api/portraits/women/12.jpg",
+        },
+        {
+            id: 18,
+            name: "Lucas Harris",
+            date: "30-January-2025",
+            time: "5:00 Pm",
+            duration: "3hrs",
+            status: "Rejected",
+            avatar: "https://randomuser.me/api/portraits/men/13.jpg",
+        }
     ];
+
 
     // Filtered bookings based on search query
     const filteredBookings = bookings
@@ -105,11 +187,15 @@ const Dashboard = () => {
         )
         .filter((booking) => {
             if (activeTab === "Current Bookings") {
-                return booking.status === "Accepted" || booking.status === "Completed";
+                return booking.status === "Accepted" || booking.status === "Completed" || booking.status === "Pending";
             } else if (activeTab === "Booking Request") {
                 return booking.status === "Waiting" || booking.status === "Rejected" || booking.status === "In Progress";
             }
             return true;
+        })
+        .filter((booking) => {
+            if (statusFilter === "All") return true;
+            return booking.status === statusFilter;
         });
 
 
@@ -168,29 +254,27 @@ const Dashboard = () => {
                                 </button>
                             ))}
                         </div>
-
                     </div>
-
                 </div>
-
             </div>
 
-
-
             {/* Booking Table Section */}
-            <div className="px-[10em] py-[4em] bg-[#f5f8fb00] -mt-[16em] relative z-10 mb-10">
+            <div className="pl-[10em] pr-[10em] pt-0  py-[4em] bg-[#f5f8fb00] -mt-[14em] relative z-10 mb-10">
                 <div className="bg-white rounded-xl shadow-md overflow-x-auto">
                     {/* Tabs for Filter */}
                     <div className="flex border-b px-6 pt-6">
-                        {["All", "Waiting Requests", "Accepted", "Rejected"].map((tab, index) => (
+                        {["All", ...new Set(filteredBookings.map((booking) => booking.status))].map((status, index) => (
                             <button
                                 key={index}
-                                className={`px-4 py-2 text-sm font-medium text-[#3F3F3F] hover:text-[#00AEEF] focus:outline-none border-b-2 ${index === 0 ? "border-[#00AEEF]" : "border-transparent"}`}
+                                onClick={() => setStatusFilter(status)}
+                                className={`px-4 py-2 text-sm font-medium text-[#3F3F3F] hover:text-[#00AEEF] focus:outline-none border-b-2 ${statusFilter === status ? "border-[#00AEEF] text-[#00AEEF]" : "border-transparent"
+                                    }`}
                             >
-                                {tab}
+                                {status === "Waiting" ? "Waiting Requests" : status}
                             </button>
                         ))}
                     </div>
+
 
                     {/* Table */}
                     <table className="w-full text-left mt-4">
@@ -207,7 +291,7 @@ const Dashboard = () => {
                         </thead>
                         <tbody className="text-sm text-[#3F3F3F]" >
                             {filteredBookings.map((row, index) => (
-                                <tr key={index} className="border-t cursor-pointer" onClick={() => navigate(`/booking-details?id=${row.id}&status=${row.status}`)}>
+                                <tr key={index} className="border-t cursor-pointer" onClick={() => navigate(`/job-details?id=${row.id}&status=${row.status}`)}>
                                     <td className="px-6 py-4">{row.id}</td>
                                     <td className="px-6 py-4 flex items-center gap-3">
                                         <img
@@ -228,14 +312,36 @@ const Dashboard = () => {
                                             {row.status}
                                         </span>
                                     </td>
-                                    <td
-                                        className="px-6 py-4 text-[#00AEEF] cursor-pointer"
-
-                                    >
-                                        <span>&gt;</span>
+                                    <td className="px-6 py-4 text-[#00AEEF] cursor-pointer text-center">
+                                        {row.status === "Pending" ? (
+                                            <div className='flex gap-3'>
+                                                <button
+                                                    className='bg-[#EE3131] text-white px-6 py-3 rounded-xl'
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        alert("Rejected");
+                                                    }}
+                                                >
+                                                    Reject
+                                                </button>
+                                                <button
+                                                    className='bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white px-6 py-3 rounded-xl'
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        alert("Accepted");
+                                                    }}
+                                                >
+                                                    Accept
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <span>&gt;</span>
+                                        )}
                                     </td>
 
+
                                 </tr>
+
                             ))}
                         </tbody>
                     </table>
