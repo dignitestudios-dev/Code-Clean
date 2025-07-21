@@ -37,7 +37,6 @@ export default function AddServiceModal({ onClose, onAdd }) {
                 <div className="mb-4">
                     <label className="block text-sm font-semibold mb-1">Service Price</label>
                     <div
-                        onClick={() => setShowModal(true)}
                         className={`h-[49px] flex cursor-pointer justify-start bg-[#F8F8F899] items-start w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px] `}
                     >    <button
                         type="button"

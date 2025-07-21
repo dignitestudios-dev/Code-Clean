@@ -52,6 +52,7 @@ import DangerIcon from "./danger.png"
 import ServiceImg1 from "./service1.png"
 import ServiceImg2 from "./service2.png"
 import ServiceImg3 from "./service3.png"
+import badgesImage from "./badges.png"
 
 import imageone from "./imageone.png"
 import imagetwo from "./imagetwo.png"
@@ -63,6 +64,7 @@ import warningAlert from "./warning.png"
 // }
 
 export {
+  badgesImage,
   SuccessAlert,
   warningAlert,
   ServiceImg1,

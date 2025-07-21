@@ -6,6 +6,7 @@ import Subscription from "../../pages/app/Settings/Subscription";
 import Jobdetails from "../../pages/app/Serviceprovider/Jobdetails";
 import Userprovider from "../../pages/app/Serviceprovider/Userprovider";
 import Wallet from "../../pages/app/Serviceprovider/Wallet";
+import ServiceproviderProfile from "../../pages/app/Serviceprovider/ServiceProviderProfile";
 
 export const serviceproviderRoutes = [
   {
@@ -54,6 +55,12 @@ export const serviceproviderRoutes = [
     url: "wallet",
     page: <Wallet />,
     name: "User Provider",
+    isPublic: true,
+  },
+  {
+    url: "provider-profile",
+    page: <ServiceproviderProfile />,
+    name: "Provider Profile",
     isPublic: true,
   },
 ];
