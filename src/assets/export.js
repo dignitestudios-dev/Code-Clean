@@ -53,12 +53,14 @@ import ServiceImg1 from "./service1.png"
 import ServiceImg2 from "./service2.png"
 import ServiceImg3 from "./service3.png"
 import badgesImage from "./badges.png"
-
 import imageone from "./imageone.png"
 import imagetwo from "./imagetwo.png"
 import imagethree from "./imagethree.png"
 import SuccessAlert from "./blueAlert.png"
 import warningAlert from "./warning.png"
+import facebook from "./facebook.png"
+import linkdin from "./linkdin.png"
+import twitter from "./twitter.jpg"
 // export {
 //     FILENAME(PASCALCASE)
 // }
@@ -119,4 +121,7 @@ export {
   imagethree,
   imagetwo,
   imageone,
+  facebook,
+  linkdin,
+  twitter,
 };
