@@ -25,7 +25,7 @@ const ServiceMarketplace = () => {
           hassle-free experiences.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 m-10 gap-6 md:px-20 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:m-10  gap-10 md:gap-6 md:px-20 mt-8">
           {/* For Users */}
           <div className="bg-white text-gray-800 rounded-[30px] shadow-lg px-4 text-center">
             <div className="flex items-center relative -top-8  flex-col ">

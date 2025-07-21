@@ -3,9 +3,9 @@ import { Button } from "../../global/GlobalButton";
 
 export default function JoinAs() {
   return (
-    <div className="grid grid-cols-2 gap-4 px-28 mt-10">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4  px-10 lg:px-28 mt-10">
       <div
-        className="flex flex-col items-center gap-5 justify-center rounded-[26px] h-[350px] p-4"
+        className="flex flex-col items-center gap-5 justify-center rounded-[26px] lg:h-[350px] p-4"
         style={{
           background:
             " linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",

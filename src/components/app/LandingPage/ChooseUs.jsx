@@ -3,7 +3,7 @@ import { ChoosUs } from '../../../assets/export'
 
 export default function ChooseUs() {
   return (
-     <section className="bg-white py-12 px-6 md:px-20">
+     <section id='whyus' className="bg-white py-12 px-6 md:px-20">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
         {/* Left Text Section */}
         <div className="md:w-1/2">

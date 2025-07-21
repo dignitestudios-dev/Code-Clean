@@ -62,7 +62,7 @@ export default function Faq() {
   };
 
   return (
-    <div className="w-full mt-24 relative px-4 md:px-10 lg:px-48 ">
+    <div id="faq" className="w-full mt-24 relative px-4 md:px-10 lg:px-48 ">
       <div>
         <h3 className={`text-center font-[700] text-[48px] leading-[52px] `}>
           Frequently Asked <span className="text-[#26A7E2]" > Questions</span>

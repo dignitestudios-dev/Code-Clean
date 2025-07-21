@@ -20,7 +20,7 @@ export default function FeaturesCard() {
     },
   ];
   return (
-    <div className="grid p-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 justify-center  px-20 w-full">
+    <div className="grid p-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-5 justify-center px-10 lg:px-20 w-full">
       {cardData?.map((item, i) => (
         <div
           key={i}

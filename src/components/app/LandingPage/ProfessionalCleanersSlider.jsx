@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import {FaStar } from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
 import { HiOutlineHeart } from "react-icons/hi";
 import {
   MdKeyboardArrowRight,
@@ -77,10 +77,29 @@ const ProfessionalCleanersSlider = () => {
         slidesPerView={3}
         onSwiper={(swiper) => (swiperRef.current = swiper)}
         className="h-[250px]"
+        breakpoints={{
+          320: {
+            slidesPerView: 1,
+            spaceBetween: 10,
+          },
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 15,
+          },
+          1024: {
+            slidesPerView: 3,
+            spaceBetween: 20,
+          },
+          1280: {
+            slidesPerView: 4,
+            spaceBetween: 25,
+          },
+        }}
       >
+
         {users.map((user, index) => (
           <SwiperSlide key={index}>
-            <div className="bg-white h-[230px] rounded-xl shadow-lg p-4 relative">
+            <div className="bg-white lg:h-[230px] rounded-xl shadow-lg p-4 relative">
               <div className="flex items-center gap-3 mb-2">
                 <img
                   src={user.img}
