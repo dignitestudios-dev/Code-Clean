@@ -6,7 +6,7 @@ import { FaBell } from "react-icons/fa";
 import { IoLogOut, IoNotificationsOutline } from "react-icons/io5";
 import LogOutModal from "../global/LogoutModal";
 import ReportAnIssueModal from "../app/Settings/ReportAnIssueModal";
-const Navbar = ({ type }) => {
+const Navbar = ({type }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
