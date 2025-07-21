@@ -8,7 +8,7 @@ import Bookingdetails from "../../pages/app/LandingPage/Bookingdetails";
 import Bookinghistory from "../../pages/app/LandingPage/Bookinghistory";
 import Bookingsrequests from "../../pages/app/LandingPage/Bookingsrequests";
 import Custombooking from "../../pages/app/LandingPage/Custombooking";
-import Favorites from "../../pages/app/LandingPage/favorites";
+import Favorites from "../../pages/app/LandingPage/Favorites";
 import Serviceprovider from "../../pages/app/LandingPage/Serviceprovider";
 import Profile from "../../pages/app/Profile/Profile";
 import Settings from "../../pages/app/Settings/Settings";
