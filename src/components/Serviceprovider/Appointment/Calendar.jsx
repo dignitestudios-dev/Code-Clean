@@ -98,7 +98,7 @@ const AppointmentCalendar = () => {
 
 
     <div>
-      <Navbar />
+      <Navbar type="serviceprovider" />
       <div
         className="flex items-center bg-cover bg-center -mt-[6em] pt-[10em] pb-[18em] border "
         style={{
@@ -106,7 +106,7 @@ const AppointmentCalendar = () => {
         }}
       >
       </div>
-      <div className='h-full px-40   -mt-80 bottom-0 items-center gap-3 '>
+      <div className='h-full px-10 lg:px-40   -mt-80 bottom-0 items-center gap-3 '>
         <div className='flex items-center gap-2 mb-6'>
           <button type="button" onClick={() => navigate("/app/landing")} >
             <FaArrowLeft color='white' size={16} />

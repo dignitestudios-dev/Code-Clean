@@ -209,7 +209,7 @@ const Dashboard = () => {
 
     return (
         <div>
-            <Navbar />
+            <Navbar type="serviceprovider" />
 
             {/* Hero Section */}
             <div

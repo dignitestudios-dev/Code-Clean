@@ -7,6 +7,8 @@ import Jobdetails from "../../pages/app/Serviceprovider/Jobdetails";
 import Userprovider from "../../pages/app/Serviceprovider/Userprovider";
 import Wallet from "../../pages/app/Serviceprovider/Wallet";
 import ServiceproviderProfile from "../../pages/app/Serviceprovider/ServiceProviderProfile";
+import ChatSP from "../../pages/app/Serviceprovider/ChatSP";
+import Badgesp from "../../pages/app/Serviceprovider/Badgesp";
 
 export const serviceproviderRoutes = [
   {
@@ -61,6 +63,18 @@ export const serviceproviderRoutes = [
     url: "provider-profile",
     page: <ServiceproviderProfile />,
     name: "Provider Profile",
+    isPublic: true,
+  },
+   {
+    url: "chat-sp",
+    page: <ChatSP />,
+    name: "Chat",
+    isPublic: true,
+  },
+     {
+    url: "badge-sp",
+    page: <Badgesp />,
+    name: "Badge-Sp",
     isPublic: true,
   },
 ];

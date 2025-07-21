@@ -22,7 +22,7 @@ const Jobdetails = () => {
     return (
         <div className="min-h-screen bg-gray-50">
 
-            <Navbar />
+           <Navbar type="serviceprovider" />
             <div
                 className="flex items-center bg-cover bg-center -mt-[6em] pt-[10em] pb-[18em]"
                 style={{

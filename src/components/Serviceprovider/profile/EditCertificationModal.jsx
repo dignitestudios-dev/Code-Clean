@@ -1,15 +1,13 @@
-import React, { useState } from "react";
-import Input from "../global/Input";
 import { useFormik } from "formik";
-import { personalDetailsValues } from "../../init/authentication/AuthValues";
-import { personalDetailsSchema } from "../../schema/authentication/AuthSchema";
+import { useState } from "react";
+import Input from "../../global/Input";
 
-export default function AddCertificationModal({ onClose, onAdd }) {
+export default function EditCertificateModal({ onClose, onAdd }) {
     const [form, setForm] = useState({ title: "", price: "", description: "" });
 
     const formik = useFormik({
         initialValues: "",
-        validationSchema:"",
+        validationSchema: "",
         validateOnChange: true,
         validateOnBlur: true,
         onSubmit: async (values) => {
@@ -36,7 +34,7 @@ export default function AddCertificationModal({ onClose, onAdd }) {
                     &times;
                 </button>
 
-                <h2 className="text-[20px] font-bold mb-6">Add New Certification</h2>
+                <h2 className="text-[20px] font-bold mb-6">Edit Certification</h2>
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();

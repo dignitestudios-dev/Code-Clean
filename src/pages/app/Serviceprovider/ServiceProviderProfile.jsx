@@ -20,6 +20,7 @@ import { LuPenLine } from "react-icons/lu";
 import { MdDelete } from "react-icons/md";
 import ProviderEditProfile from "../../../components/Serviceprovider/profile/ProviderEditProfile";
 import ProviderEditServices from "../../../components/Serviceprovider/profile/EditServicesDetail";
+import ProviderEditCertificate from "../../../components/Serviceprovider/profile/EditCertificateDetail";
 
 const ServiceproviderProfile = () => {
   const [servicetype, setServicetype] = useState(false);
@@ -132,7 +133,7 @@ const ServiceproviderProfile = () => {
 
   return (
     <>
-      <Navbar />
+      <Navbar type={"serviceprovider"} />
       <div
         className="flex items-center bg-cover bg-center -mt-[6em] pt-[10em] pb-[18em]"
         style={{
@@ -148,10 +149,11 @@ const ServiceproviderProfile = () => {
           </h2>
         </div>
       </div>
-      <div className="max-w-6xl mx-auto px-6 py-10 bg-white shadow-md rounded-xl -mt-[16em]">
+      <div className="px-10 lg:px-40" >
+      <div className=" mx-auto px-6 py-10 bg-white shadow-md rounded-xl -mt-[16em]">
         {/* Profile Header */}
         <div className="flex flex-col md:flex-row gap-8">
-          <div className="w-[18em]">
+          <div className="md:w-[18em]">
             <img
               src={usertwo}
               alt="John Doe"
@@ -162,7 +164,10 @@ const ServiceproviderProfile = () => {
               <div className="flex justify-between items-center">
                 <h3 className="font-semibold text-lg">Certificates</h3>
                 <div className="w-[50px]">
-                  <button className="bg-gradient-to-r mt-1 from-[#00034A] to-[#27A8E2] p-3 rounded-[8px]">
+                  <button onClick={() => {
+                    setIsModalType("editCertificate");
+                    setEditProfile(true);
+                  }} className="bg-gradient-to-r mt-1 from-[#00034A] to-[#27A8E2] p-3 rounded-[8px]">
                     {" "}
                     <img
                       src={EditWhiteIcon}
@@ -383,6 +388,7 @@ const ServiceproviderProfile = () => {
           </div>
         </div>
       </div>
+      </div>
 
       {servicetype && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -535,13 +541,12 @@ const ServiceproviderProfile = () => {
                 ].map((time, idx) => (
                   <button
                     key={idx}
-                    className={`px-4 py-2 rounded-lg border text-sm ${
-                      idx === 0
-                        ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
-                        : idx % 2 === 0
+                    className={`px-4 py-2 rounded-lg border text-sm ${idx === 0
+                      ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
+                      : idx % 2 === 0
                         ? "bg-pink-100 text-gray-800"
                         : "bg-white"
-                    }`}
+                      }`}
                   >
                     {time}
                   </button>
@@ -1170,9 +1175,8 @@ const ServiceproviderProfile = () => {
                     {Array.from({ length: 5 }).map((_, i) => (
                       <FaStar
                         key={i}
-                        className={`text-yellow-400 ${
-                          i < Math.floor(review.rating) ? "" : "opacity-50"
-                        }`}
+                        className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
+                          }`}
                       />
                     ))}
                     <span className="ml-1 font-medium text-sm">
@@ -1584,6 +1588,9 @@ const ServiceproviderProfile = () => {
       )}
       {isModalType == "editservice" && (
         <ProviderEditServices isOpen={editProfile} setIsOpen={setEditProfile} />
+      )}
+      {isModalType == "editCertificate" && (
+        <ProviderEditCertificate isOpen={editProfile} setIsOpen={setEditProfile} />
       )}
     </>
   );

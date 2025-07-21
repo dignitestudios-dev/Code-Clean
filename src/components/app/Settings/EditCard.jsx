@@ -90,7 +90,7 @@ export default function EditCard() {
                 }}
             >
             </div>
-            <div className='h-full px-40   -mt-80 bottom-0 items-center gap-3 '>
+            <div className='h-full px-10 lg:px-40 -mt-80 bottom-0 items-center gap-3 '>
                 <div className='flex items-center gap-2 mb-6'>
                     <button type="button" onClick={() => navigate("/app/dashboard")} >
                         <FaArrowLeft color='white' size={16} />

@@ -3,7 +3,7 @@ import { FaTrashAlt, FaPen } from "react-icons/fa";
 import AddServiceModal from "../../components/onboarding/AddServiceModal";
 import { EditIcon } from "../../assets/export";
 
-export default function AddServicesForm({ isOpen, setIsOpen }) {
+export default function AddServicesForm({ handleNext }) {
   const [services, setServices] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
@@ -62,6 +62,7 @@ export default function AddServicesForm({ isOpen, setIsOpen }) {
 
       {/* Next Button */}
       <button
+        onClick={() => handleNext()}
         className="mt-6 w-full rounded-xl py-3 text-white text-[16px] font-semibold"
         style={{
           background:

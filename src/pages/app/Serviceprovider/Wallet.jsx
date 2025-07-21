@@ -39,7 +39,8 @@ const Wallet = () => {
         e.preventDefault();
         // Handle the form submission logic here
         console.log('Form submitted with data:', formData);
-        onClose(); // Close the modal after submission
+        setAddbankaccount(false);
+        setShowModal(true);
     };
 
     const transactions = Array(7).fill({
@@ -53,7 +54,8 @@ const Wallet = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <Navbar />
+            
+            <Navbar type="serviceprovider" />
 
             {/* Hero Section */}
             <div
@@ -95,7 +97,7 @@ const Wallet = () => {
                         <div className="flex justify-between items-center">
                             <h2 className="text-xl font-bold text-black">Attached Bank Account </h2>
                             <button onClick={() => setShowModal(false)} className="text-black">
-                                X
+                                <ImCross />
                             </button>
 
                         </div>
@@ -200,8 +202,8 @@ const Wallet = () => {
                             <h2 className="text-xl font-semibold">Add Bank Account</h2>
                             <button onClick={() => {
                                 setAddbankaccount(false);
-                            }} className="text-gray-500">
-                                X
+                            }} className="text-black">
+                               <ImCross />
                             </button>
                         </div>
                         <form onSubmit={handleSubmit} className="mt-4">

@@ -27,7 +27,7 @@ const UserProvider = () => {
 
     return (
         <div>
-            <Navbar />
+            <Navbar type="serviceprovider" />
 
             {/* Hero Section */}
             <div

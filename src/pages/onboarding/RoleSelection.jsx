@@ -17,7 +17,6 @@ const RoleSelection = () => {
         "Offer your services, manage bookings, and grow your business.",
     },
   ];
-  console.log(selectedRole, "roless");
 
   return (
     <div className="min-h-screen flex flex-col gap-6 items-center justify-center px-4">

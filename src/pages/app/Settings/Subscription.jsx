@@ -85,7 +85,7 @@ export default function Subscription() {
 
   return (
     <div>
-      <Navbar />
+      <Navbar type="serviceprovider" />
       <div
         className="flex items-center bg-cover bg-center -mt-[6em] pt-[10em] pb-[18em] border "
         style={{

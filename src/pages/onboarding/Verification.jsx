@@ -31,7 +31,6 @@ export default function Verification({ handleNext }) {
       role: "user",
     };
     // const res = await postData("auth/forgot", false, null, data, "");
-    //  console.log(res);
  
     setIsResendDisabled(true);
     setTimer(30);

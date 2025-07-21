@@ -1,6 +1,6 @@
 import Modal from "react-modal";
 import { HiOutlineXMark } from "react-icons/hi2";
-const DeleteServiceModal = ({ isOpen, setIsOpen, detail }) => {
+const DeleteProServices = ({ isOpen, setIsOpen, detail }) => {
     return (
         <Modal
             isOpen={isOpen}
@@ -17,8 +17,8 @@ const DeleteServiceModal = ({ isOpen, setIsOpen, detail }) => {
                     </button>
                 </div>
                 <div className="flex items-start px-5 flex-col gap-2 mb-4">
-                    <h2 className="text-[#181818] font-bold text-[20px]">Delete this job</h2>
-                    <p className="text-[#18181880] text-[16px]">Are you sure you want to delete this broadcast request?</p>
+                    <h2 className="text-[#181818] font-bold text-[20px]">{detail.title}</h2>
+                    <p className="text-[#18181880] text-[16px]">{detail.bio}</p>
                     <div className="flex gap-3 items-center mt-3" >
                         <button className="bg-[#21293514] text-[#212935] rounded-[8px] p-3" onClick={() => setIsOpen(!isOpen)} >Don’t delete</button>
                         <button className="bg-[#EE3131] text-[white] rounded-[8px] p-3" onClick={() => setIsOpen(!isOpen)}  >Delete now</button>
@@ -30,4 +30,4 @@ const DeleteServiceModal = ({ isOpen, setIsOpen, detail }) => {
     );
 };
 
-export default DeleteServiceModal;
+export default DeleteProServices;

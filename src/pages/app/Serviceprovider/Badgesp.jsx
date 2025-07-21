@@ -5,7 +5,7 @@ import Navbar from '../../../components/layout/Navbar'
 import BadgeModal from '../../../components/app/Badge/BadgeModal'
 import Footer from '../../../components/layout/Footer'
 
-export default function Badge() {
+export default function Badgesp() {
     const [isOpen, setIsOpen] = useState(false);
     const [currentDetail, setCurrentDetail] = useState(null);
     const BagdeData = [
@@ -80,7 +80,7 @@ export default function Badge() {
 
     return (
         <>
-            <Navbar />
+            <Navbar type="serviceprovider" />
             <div
                 className="flex items-center bg-cover bg-center -mt-[6em] pt-[10em] pb-[18em] border "
                 style={{

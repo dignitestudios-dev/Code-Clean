@@ -6,7 +6,7 @@ import { FaBell } from "react-icons/fa";
 import { IoLogOut, IoNotificationsOutline } from "react-icons/io5";
 import LogOutModal from "../global/LogoutModal";
 import ReportAnIssueModal from "../app/Settings/ReportAnIssueModal";
-const Navbar = () => {
+const Navbar = ({ type }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
@@ -47,13 +47,22 @@ const Navbar = () => {
   }, []);
 
 
-  const menuLinks = [
-    { label: "Current Bookings", path: "/booking-requests" },
-    { label: "Booking History", path: "/booking-history" },
-    { label: "Badges", path: "/app/badge" },
-    { label: "Favorites", path: "/favorites" },
-    { label: "Messages", path: "/messages" },
-  ];
+  const menuLinks = type === "serviceprovider"
+    ? [
+      { label: "Dashboard", path: "/dashboard" },
+      { label: "Discover", path: "/discover-job" },
+      { label: "Availability", path: "/calendar" },
+      { label: "Messages", path: "/chat-sp" },
+      { label: "Badges", path: "/badge-sp" },
+      { label: "Wallet", path: "/wallet" },
+    ]
+    : [
+      { label: "Current Bookings", path: "/booking-requests" },
+      { label: "Booking History", path: "/booking-history" },
+      { label: "Badges", path: "/app/badge" },
+      { label: "Favorites", path: "/favorites" },
+      { label: "Messages", path: "/messages" },
+    ];
 
   const togglePopup = () => {
     if (userPopup) setUserPopup(false);
@@ -159,7 +168,7 @@ const Navbar = () => {
                 <div className="space-y-3">
                   <span className="block text-[12px] font-[400] text-[#181818] cursor-pointer"
                     onClick={() => {
-                      navigate("/app/profile")
+                      type === "serviceprovider" ? navigate("/provider-profile") : navigate("/app/profile")
                     }}
                   >View Profile</span>
                   <span className="block text-[12px] font-[400] text-[#181818] cursor-pointer" onClick={() => {
@@ -281,7 +290,7 @@ const Navbar = () => {
                   <div className="space-y-3">
                     <span className="block text-[12px] font-[500] hover:text-blue-500 cursor-pointer"
                       onClick={() => {
-                        navigate("/app/profile")
+                        type === "serviceprovider" ? navigate("/app/profile") : navigate("/provider-profile")
                       }}
                     >View Profile</span>
                     <span className="block text-[12px] font-[500] hover:text-blue-500 cursor-pointer" onClick={() => {

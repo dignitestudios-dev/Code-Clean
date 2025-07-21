@@ -12,6 +12,7 @@ import AddServiceModal from "../../onboarding/AddServiceModal";
 import { FaTrashAlt } from "react-icons/fa";
 import { EditIcon } from "../../../assets/export";
 import EditServiceModal from "./EditServiceModal";
+import DeleteProServices from "./DeleteProServices";
 export default function ProviderEditServices({ isOpen, setIsOpen }) {
   const [showModal, setShowModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
@@ -90,6 +91,17 @@ export default function ProviderEditServices({ isOpen, setIsOpen }) {
                 onAdd={handleAddService}
               />
             )}
+            {showModal && actionType == "delete" && (
+              <DeleteProServices
+                detail={{
+                  title: "Delete Service",
+                  bio: "Are you sure you want to delete this service?"
+                }
+                }
+                setIsOpen={setShowModal}
+                isOpen={showModal}
+              />
+            )}
             {/* Services List */}
             <div className="mt-16 flex flex-col h-[240px] overflow-auto gap-4">
               {services.map((service, index) => (
@@ -109,7 +121,10 @@ export default function ProviderEditServices({ isOpen, setIsOpen }) {
                     />
                     <FaTrashAlt
                       className="text-red-500 cursor-pointer"
-                      onClick={() => handleDelete(index)}
+                      onClick={() => {
+                        setShowModal(true);
+                        setActionType("delete");
+                      }}
                     />
                   </div>
                   <h4 className="font-[600] text-[12px]">{service.title}</h4>
@@ -125,7 +140,10 @@ export default function ProviderEditServices({ isOpen, setIsOpen }) {
 
             {/* Next Button */}
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                setIsOpen(false)
+                setSuccessModal(true)
+              }}
               className="mt-6 w-full rounded-xl py-3 text-white text-[16px] font-semibold"
               style={{
                 background:
