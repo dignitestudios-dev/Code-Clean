@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
 import { Link, useLocation, useNavigate } from "react-router";
-import { LogoWhite, Avatar, Logo } from "../../assets/export";
+import { LogoWhite, Avatar } from "../../assets/export";
 import { FaBell } from "react-icons/fa";
 import { IoLogOut, IoNotificationsOutline } from "react-icons/io5";
 import LogOutModal from "../global/LogoutModal";
@@ -95,13 +95,13 @@ const Navbar = ({ type }) => {
 
   return (
     <nav className={`w-full ${isMobileMenuOpen ? "fixed top-0 left-0 min-h-screen bg-[#181818] z-50" : ""}  text-white`}>
-      <div className="max-w-7xl border-b border-white/40 mx-auto px-4 py-4 flex items-center justify-between relative">
+      <div className="max-w-7xl border-b border-white/40 mx-auto px-4 py-2 flex items-center justify-between relative">
         {/* Logo */}
         <div className="w-[60%]">
           <img
             src={LogoWhite}
             alt="Logo"
-            className={`w-[180px] cursor-pointer`}
+            className="w-[236px] h-[67px] cursor-pointer"
             onClick={() => navigate("/")}
           />
         </div>
@@ -110,7 +110,14 @@ const Navbar = ({ type }) => {
         {isLoggedIn ? (
           <div className="hidden md:flex justify-end items-center gap-10 font-medium text-sm w-full">
             {menuLinks.map((link) => (
-              <Link key={link.label} to={link.path}>
+              <Link
+                key={link.label}
+                to={link.path}
+                className={`pb-1 relative transition-all duration-300 ${currentPath === link.path
+                    ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
+                    : ""
+                  }`}
+              >
                 {link.label}
               </Link>
             ))}
@@ -152,14 +159,24 @@ const Navbar = ({ type }) => {
         ) : (
           <div className="hidden md:flex items-center gap-6 text-sm font-medium w-full justify-between">
             <ul className="flex gap-6">
-              <li><Link to="/app/landing">Home</Link></li>
+              <li className="relative">
+                <Link
+                  className={`relative pb-1 transition-all duration-300 ${currentPath === "/app/landing"
+                      ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
+                      : ""
+                    }`}
+                  to="/app/landing"
+                >
+                  Home
+                </Link>
+              </li>
               <li><a href="#cleaners">Cleaners</a></li>
               <li><a href="#whyus">Why Choose Us</a></li>
               <li><a href="#faq">FAQs</a></li>
             </ul>
             <div className="flex gap-4">
-              <button className="border border-white px-4 py-1 rounded-md" onClick={() => navigate("/auth/role-selection")}>Signup</button>
-              <button className="bg-[#26A7E2] text-white px-4 py-1 rounded-md" onClick={() => setIsLoggedIn(true)}>Login</button>
+              <button className="border border-white w-[127px] h-[44px] rounded-md" onClick={() => navigate("/auth/role-selection")}>Signup</button>
+              <button className="bg-[#26A7E2] text-white  w-[127px] h-[44px] rounded-md" onClick={() => setIsLoggedIn(true)}>Login</button>
             </div>
           </div>
         )}

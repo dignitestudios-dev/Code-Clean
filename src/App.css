@@ -1,9 +1,23 @@
 /* App.css */
+@font-face {
+  font-family: 'helix-font';
+  src: url('./assets/fonts/Hellix-Light.ttf') format('ttf');
+}
+
 body {
   font-family: 'Inter', sans-serif;
 }
+
 .text-gradient {
   background: linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.helix-font {
+  font-family: 'helix-font', sans-serif;
+}
+
+.swiper-slide {
+  width: 390px !important;
 }

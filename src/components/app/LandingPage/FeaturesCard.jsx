@@ -24,8 +24,7 @@ export default function FeaturesCard() {
       {cardData?.map((item, i) => (
         <div
           key={i}
-          className="shadow-sm flex items-center gap-4  rounded-[14px] justify-center bg-[#FFFFFF] p-5"
-        >
+          className="shadow-[6px_6px_54px_0px_rgba(0,0,0,0.04)] flex items-center gap-4 rounded-[14px] justify-center bg-[#FFFFFF] p-5">
           <img
             src={item?.icon}
             className="h-[60px] w-[60px]"
@@ -33,10 +32,10 @@ export default function FeaturesCard() {
           />
           <div>
             <h3 className="text-[18px] font-[600]">
-              Smart Geolocation Matching
+              {item?.title}
             </h3>
             <p className="text-[16px] font-[400] text-[#787878]">
-              Connect instantly with nearby service providers.
+            {item?.des}
             </p>
           </div>
         </div>

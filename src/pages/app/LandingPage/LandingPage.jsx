@@ -13,14 +13,19 @@ export default function LandingPage() {
   return (
     <div>
       <Navbar />
-      <div
-        className="flex items-center bg-cover bg-center -mt-[6em] pt-[13em] pb-[10em]"
-        style={{
-          backgroundImage: `linear-gradient(234.85deg, rgb(39, 168, 226, 1) -20.45%, rgb(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
-        }}
-      >
-        <Hero />
+      <div className="relative -mt-[6em] pt-[13em] pb-[10em]">
+        <div
+          className="absolute inset-0 bg-cover bg-center "
+          style={{
+            backgroundImage: `linear-gradient(234.85deg, rgba(39,168,226,0.85) -20.45%, rgba(0,3,74,0.85) 124.53%), url(${HeroBg})`,
+            zIndex: -1,
+          }}
+        />
+        <div className="relative z-10 flex items-center">
+          <Hero />
+        </div>
       </div>
+
       <FeaturesCard />
       <ProfessionalCleaners />
       <ChooseUs />

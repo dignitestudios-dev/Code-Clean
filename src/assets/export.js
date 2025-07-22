@@ -59,11 +59,13 @@ import imagetwo from "./imagetwo.png"
 import imagethree from "./imagethree.png"
 import SuccessAlert from "./blueAlert.png"
 import warningAlert from "./warning.png"
+import HearIcon from "./heart-icon.png"
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
 export {
+  HearIcon,
   badgesImage,
   SuccessAlert,
   warningAlert,
