@@ -10,7 +10,6 @@ import {
   MdOutlineKeyboardArrowLeft,
 } from "react-icons/md";
 import { awardIcon, HearIcon, LocationIcon, WorkIcon } from "../../../assets/export";
-
 const users = [
   {
     name: "Mike Smith",
@@ -58,12 +57,12 @@ const users = [
     img: "https://randomuser.me/api/portraits/women/40.jpg",
   },
 ];
-
+ 
 const ProfessionalCleanersSlider = () => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const swiperRef = useRef(null); // Swiper instance
-
+ 
   useEffect(() => {
     if (
       swiperRef.current &&
@@ -83,7 +82,6 @@ const ProfessionalCleanersSlider = () => {
     <div className="relative  w-full  py-8">
       <div className="pointer-events-none w-[300px] absolute left-0 top-0 h-full  bg-gradient-to-r from-white via-white/50 to-transparent z-10" />
       <div className="pointer-events-none absolute right-0 top-0 h-full w-[300px] bg-gradient-to-l from-white via-white/50 to-transparent z-10" />
-
       <Swiper
         modules={[Navigation]}
         onSwiper={(swiper) => (swiperRef.current = swiper)}
@@ -121,7 +119,7 @@ const ProfessionalCleanersSlider = () => {
           },
         }}
       >
-
+ 
         {users.map((user, index) => (
           <SwiperSlide key={index}>
             <div className="bg-white lg:h-[290px]  rounded-xl shadow-lg p-4 relative">
@@ -142,7 +140,7 @@ const ProfessionalCleanersSlider = () => {
                 </div>
                 <img src={HearIcon} alt="HearIcon" className="cursor-pointer w-[20px]" srcset="" />
               </div>
-
+ 
               <div className="text-sm text-gray-600 space-y-1 mb-2">
                 <div className="flex items-center gap-2">
                   <img src={LocationIcon} alt="LocationIcon" className="w-3" />
@@ -157,7 +155,7 @@ const ProfessionalCleanersSlider = () => {
                   Job Success: {user.success}
                 </div>
               </div>
-
+ 
               <div className="text-sm">
                 <p>
                   <span className="font-bold text-[#00034A]">Biography</span>
@@ -168,7 +166,7 @@ const ProfessionalCleanersSlider = () => {
           </SwiperSlide>
         ))}
       </Swiper>
-
+ 
       <div className="flex justify-center mt-10 gap-4">
         <button
           ref={prevRef}
@@ -187,9 +185,8 @@ const ProfessionalCleanersSlider = () => {
           <MdKeyboardArrowRight size={25} />
         </button>
       </div>
-
     </div>
   );
 };
-
+ 
 export default ProfessionalCleanersSlider;
