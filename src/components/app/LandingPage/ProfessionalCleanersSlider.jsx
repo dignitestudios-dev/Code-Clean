@@ -57,12 +57,12 @@ const users = [
     img: "https://randomuser.me/api/portraits/women/40.jpg",
   },
 ];
- 
+
 const ProfessionalCleanersSlider = () => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const swiperRef = useRef(null); // Swiper instance
- 
+
   useEffect(() => {
     if (
       swiperRef.current &&
@@ -86,7 +86,7 @@ const ProfessionalCleanersSlider = () => {
         modules={[Navigation]}
         onSwiper={(swiper) => (swiperRef.current = swiper)}
         className="h-[350px]"
-        initialSlide={1} // 👈 Optional: starts at 2nd real slide
+        initialSlide={2} // 👈 Optional: starts at 2nd real slide
         centeredSlides={true} // 👈 Centers active slide
         autoplay={{
           delay: 3000,
@@ -119,7 +119,7 @@ const ProfessionalCleanersSlider = () => {
           },
         }}
       >
- 
+
         {users.map((user, index) => (
           <SwiperSlide key={index}>
             <div className="bg-white lg:h-[290px]  rounded-xl shadow-lg p-4 relative">
@@ -140,7 +140,7 @@ const ProfessionalCleanersSlider = () => {
                 </div>
                 <img src={HearIcon} alt="HearIcon" className="cursor-pointer w-[20px]" srcset="" />
               </div>
- 
+
               <div className="text-sm text-gray-600 space-y-1 mb-2">
                 <div className="flex items-center gap-2">
                   <img src={LocationIcon} alt="LocationIcon" className="w-3" />
@@ -155,7 +155,7 @@ const ProfessionalCleanersSlider = () => {
                   Job Success: {user.success}
                 </div>
               </div>
- 
+
               <div className="text-sm">
                 <p>
                   <span className="font-bold text-[#00034A]">Biography</span>
@@ -166,7 +166,7 @@ const ProfessionalCleanersSlider = () => {
           </SwiperSlide>
         ))}
       </Swiper>
- 
+
       <div className="flex justify-center mt-10 gap-4">
         <button
           ref={prevRef}
@@ -188,5 +188,5 @@ const ProfessionalCleanersSlider = () => {
     </div>
   );
 };
- 
+
 export default ProfessionalCleanersSlider;
