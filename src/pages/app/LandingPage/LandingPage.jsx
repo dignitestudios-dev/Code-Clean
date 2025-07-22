@@ -14,7 +14,7 @@ export default function LandingPage() {
     <div>
       <Navbar />
       <div
-        className="flex items-center bg-cover bg-center -mt-[6em] pt-[10em] pb-[18em] border "
+        className="flex items-center bg-cover bg-center -mt-[6em] pt-[13em] pb-[10em]"
         style={{
           backgroundImage: `linear-gradient(234.85deg, rgb(39, 168, 226, 1) -20.45%, rgb(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
         }}

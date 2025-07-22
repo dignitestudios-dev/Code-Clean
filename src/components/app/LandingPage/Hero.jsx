@@ -6,7 +6,7 @@ export default function Hero() {
   const navigate=useNavigate("");
   return (
     <div className="flex flex-col text-center gap-8 justify-center lg:w-[70%] mx-auto items-center h-[80%]">
-      <h3 className="text-[#FFFFFF] font-[600] text-[25px] lg:text-[64px] leading-100 ">
+      <h3 className="text-[#FFFFFF] font-[600] text-[25px] lg:text-[64px] leading-[80px]">
         Find Services or Offer Your Expertise – The Choice is Yours!
       </h3>
       <p className="text-[#FFFFFF]">
