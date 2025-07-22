@@ -4,7 +4,7 @@ import { ChoosUs } from '../../../assets/export'
 export default function ChooseUs() {
   return (
      <section id='whyus' className="bg-white py-12 px-6 md:px-20">
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-28">
         {/* Left Text Section */}
         <div className="md:w-1/2">
           <p className="text-[#26A7E2] font-medium mb-2">Why Choose Us?</p>
