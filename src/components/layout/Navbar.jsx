@@ -95,7 +95,7 @@ const Navbar = ({ type }) => {
 
   return (
     <nav className={`w-full ${isMobileMenuOpen ? "fixed top-0 left-0 min-h-screen bg-[#181818] z-50" : ""}  text-white`}>
-      <div className="max-w-7xl border-b border-white/40 mx-auto px-4 py-2 flex items-center justify-between relative">
+      <div className="max-w-7xl border-b border-white/40 mx-auto px-4 py-2 flex z-10 items-center justify-between relative">
         {/* Logo */}
         <div className="w-[60%]">
           <img
