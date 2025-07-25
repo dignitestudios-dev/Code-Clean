@@ -9,6 +9,19 @@ export const signInSchema = Yup.object({
     .min(6, "Password must contain atleast 6 alphanumeric characters.")
     .required("Please enter your password"),
 });
+export const signUpSchema = Yup.object({
+  email: Yup.string()
+    .email("Please enter a valid email address.")
+    .required("Please enter your email"),
+  password: Yup.string()
+    .matches(/^(?!\s)(?!.*\s$)/, "Password must not begin or end with spaces")
+    .min(6, "Password must contain atleast 6 alphanumeric characters.")
+    .required("Please enter your password"),
+  confirmPassword: Yup.string()
+    .matches(/^(?!\s)(?!.*\s$)/, "Password must not begin or end with spaces")
+    .min(6, "Password must contain atleast 6 alphanumeric characters.")
+    .required("Please enter your password"),
+});
 
 export const stripeAccountSchema = Yup.object({
   cardHolderName: Yup.string()
@@ -57,8 +70,24 @@ export const changedPasswordSchema = Yup.object({
 export const personalDetailsSchema = Yup.object({
   fullName: Yup.string().required("Full name is required"),
   phone: Yup.string()
-    .matches(/^[0-9]{7,15}$/, "Enter a valid phone number")
+    .matches(/^[0-9]{10}$/, "Enter a valid phone number")
     .required("Phone number is required"),
+  location: Yup.string().required("Location is required"),
+  profilePic: Yup.mixed()
+    .required("Profile picture is required")
+    .test("fileType", "Only image files are allowed", (value) => {
+      return (
+        value && ["image/jpeg", "image/png", "image/jpg"].includes(value.type)
+      );
+    }),
+});
+export const providerDetailsSchema = Yup.object({
+  fullName: Yup.string().required("Full name is required"),
+  phone: Yup.string()
+    .matches(/^[0-9]{10}$/, "Enter a valid phone number")
+    .required("Phone number is required"),
+  radius:Yup.string().required("Radius is required"),
+  Availability:Yup.string().required("Availability is required"),
   location: Yup.string().required("Location is required"),
   profilePic: Yup.mixed()
     .required("Profile picture is required")

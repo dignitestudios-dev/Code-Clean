@@ -9,6 +9,7 @@ import { MapImg, UploadImg } from "../../assets/export";
 import { IconFilePlus } from "@tabler/icons-react";
 import { FaPlus } from "react-icons/fa";
 import AddAvailabilityModal from "../../components/onboarding/AddAvaliabilityModal";
+import { FiTrash2 } from "react-icons/fi";
 
 export default function ProviderDetail({ handleNext }) {
   const { loading, postData } = useLogin();
@@ -71,7 +72,11 @@ export default function ProviderDetail({ handleNext }) {
           <label htmlFor="profilePic" className="cursor-pointer">
             <img
               src={previewImage}
-              className={`${previewImage == "/src/assets/upload-img.png" ? "w-[280px]" : "w-[100px] rounded-full  h-[100px]"} object-cover`}
+              className={`${
+                previewImage == "/src/assets/upload-img.png"
+                  ? "w-[280px]"
+                  : "w-[100px] rounded-full  h-[100px]"
+              } object-cover`}
               alt="UploadImg"
             />
           </label>
@@ -89,8 +94,7 @@ export default function ProviderDetail({ handleNext }) {
           )}
         </div>
         <div className="grid mt-4  grid-cols-2 gap-4">
-
-          <div className="flex flex-col items-center gap-4" >
+          <div className="flex flex-col items-center gap-4">
             <Input
               text="Full Name"
               name="fullName"
@@ -109,7 +113,13 @@ export default function ProviderDetail({ handleNext }) {
               holder="000 000 00"
               value={values.phone}
               handleBlur={handleBlur}
-              handleChange={handleChange}
+              handleChange={(e) => {
+                const { value } = e.target;
+                // Allow only digits and limit to 10
+                if (/^\d*$/.test(value) && value.length <= 10) {
+                  handleChange(e);
+                }
+              }}
               error={errors.phone}
               touched={touched.phone}
             />
@@ -132,36 +142,31 @@ export default function ProviderDetail({ handleNext }) {
               name="radius"
               type="text"
               holder="Enter working radius here"
-              value={values.fullName}
+              value={values.radius}
               handleBlur={handleBlur}
               handleChange={handleChange}
-              error={errors.fullName}
-              touched={touched.fullName}
+              error={errors.radius}
+              touched={touched.radius}
             />
             <div className="w-full mt-4 h-auto flex flex-col justify-start items-start gap-1">
               <label htmlFor="" className="font-[700] capitalize text-[12px]">
                 Set Availability
               </label>
               <div
-            
-                className={`h-[49px] flex cursor-pointer justify-start bg-[#F8F8F899] items-start w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px] `}
+                className={`h-[49px] flex items-center cursor-pointer justify-between bg-[#FFFFFF] w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px] `}
               >
-                <input               
-                  type={"text"}
-                  id={""}
-                  name={""}
-                  value={""}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  className={`w-full h-[49px] cursor-pointer bg-transparent  outline-none border-0 rounded-[8px] placeholder:text-[#959393] text-[#262626] px-3 text-[16px] font-normal leading-[20.4px] `}
-                />
+                <div className="bg-[#F1F1F1D1] flex gap-2 items-center p-2 h-[38px] rounded-[8px] ml-1">
+                  <p className="text-[14px]">09:00 AM - 08:00 PM (Mon - Fri)</p>
+                  <FiTrash2 color={"#F01A1A"} size={14} />
+                </div>
                 <button
                   type="button"
                   onClick={() => setShowModal(true)}
                   style={{
-                    background: "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)"
+                    background:
+                      "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",
                   }}
-                  className="w-[15%] mt-1 rounded-[8px] h-[38px]   mr-2 bg-transparent text-md text-[#959393] flex items-center justify-center"
+                  className="w-[13%] mt-1 rounded-[8px] h-[38px]   mr-2 bg-transparent text-md text-[#959393] flex items-center justify-center"
                 >
                   <FaPlus color="white" />
                 </button>
@@ -171,10 +176,14 @@ export default function ProviderDetail({ handleNext }) {
               <label htmlFor="" className="font-[700] capitalize text-[12px]">
                 Set Availability
               </label>
-              <textarea name="" rows={8} className="flex resize-none justify-start bg-[#F8F8F899] items-start w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px]" id=""></textarea>
+              <textarea
+                name=""
+                rows={8}
+                className="flex resize-none justify-start bg-[#F8F8F899] items-start w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px]"
+                id=""
+              ></textarea>
             </div>
           </div>
-
         </div>
         <div className="mt-3">
           <Button text="Sign Up" loading={loading} />

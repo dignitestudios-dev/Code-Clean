@@ -72,7 +72,11 @@ const RoleSelection = () => {
 
       <p className="mt-4 text-sm">
         Already have an account?{" "}
-        <span className="text-[#27A8E2] cursor-pointer">Log In</span>
+          <span className="text-[#27A8E2] cursor-pointer" onClick={()=>{
+              navigate("/auth/login")
+            }}>
+              Log In
+            </span>
       </p>
     </div>
   );

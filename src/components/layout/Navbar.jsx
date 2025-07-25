@@ -114,8 +114,8 @@ const Navbar = ({ type }) => {
                 key={link.label}
                 to={link.path}
                 className={`pb-1 relative transition-all duration-300 ${currentPath === link.path
-                    ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
-                    : ""
+                  ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
+                  : ""
                   }`}
               >
                 {link.label}
@@ -162,8 +162,8 @@ const Navbar = ({ type }) => {
               <li className="relative">
                 <Link
                   className={`relative pb-1 transition-all duration-300 ${currentPath === "/app/landing"
-                      ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
-                      : ""
+                    ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
+                    : ""
                     }`}
                   to="/app/landing"
                 >

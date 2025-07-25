@@ -124,7 +124,7 @@ export default function Verification({ handleNext }) {
                 value={item}
                 onChange={(e) => handleChange(e, index)}
                 name="otp"
-                className="flex-1 min-w-[50px] max-w-[66px] h-[60px] rounded-xl bg-transparent outline-none text-center border border-[#c2c6cb] text-3xl focus:bg-[#D0FCB333] focus-within:border-[#3C043A]"
+                className="flex-1 min-w-[50px] max-w-[80px] h-[80px] rounded-[16px] bg-transparent outline-none text-center border border-[#c2c6cb] text-3xl focus:bg-[#D0FCB333] focus-within:border-[#3C043A]"
                 maxLength={1}
                 onPaste={handlePaste}
                 ref={(el) => (otpRefs.current[index] = el)} // Set ref for each input
@@ -132,7 +132,7 @@ export default function Verification({ handleNext }) {
             ))}
           </div>
  
-          <div className="w-full h-auto gap-1 mt-5 mb-5">
+          <div className="w-full h-auto gap-10 mt-5 mb-5">
             <div className="w-full lg:w-[434px] flex gap-1 justify-center items-center">
               <span className="text-[14px] font-medium text-[#565656]">
                 Didn't receive a code?
@@ -147,8 +147,10 @@ export default function Verification({ handleNext }) {
                 {/* {loading && <PiSpinnerBold className="animate-spin" />} */}
               </button>
             </div>
-          </div>
+            <div className="mt-5 w-[360px] mx-auto">
           <Button text={"Verify"} />
+            </div>
+          </div>
         </div>
       </form>
     </div>
