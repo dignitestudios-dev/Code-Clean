@@ -2,6 +2,11 @@ export const loginValues = {
   email: "",
   password: "",
 };
+export const SignUpValues = {
+  email: "",
+  password: "",
+  confirmPassword:""
+};
 
 // Initial Values
 export const stripeAccountValues = {
@@ -32,8 +37,16 @@ export const personalDetailsValues = {
   location: "",
   profilePic: null,
 };
+export const providerDetailsValues = {
+  fullName: "",
+  radius: "",
+  avaliabilty: "",
+  phone: "",
+  location: "",
+  profilePic: null,
+};
 
 
 export const emailVerificationValues = {
-  otp: ["", "", "", "", "", ""], // 6-digit OTP
+  otp: ["", "", "", "", ""], // 6-digit OTP
 };

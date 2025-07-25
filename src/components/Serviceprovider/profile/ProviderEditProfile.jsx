@@ -2,8 +2,14 @@ import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { useLogin } from "../../../hooks/api/Post";
 import { useFormik } from "formik";
-import { personalDetailsValues } from "../../../init/authentication/AuthValues";
-import { personalDetailsSchema } from "../../../schema/authentication/AuthSchema";
+import {
+  personalDetailsValues,
+  providerDetailsValues,
+} from "../../../init/authentication/AuthValues";
+import {
+  personalDetailsSchema,
+  providerDetailsSchema,
+} from "../../../schema/authentication/AuthSchema";
 import { MapImg, usertwo } from "../../../assets/export";
 import Input from "../../global/Input";
 import { FaPlus } from "react-icons/fa";
@@ -20,8 +26,8 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
   const [successModal, setSuccessModal] = useState(false);
 
   const formik = useFormik({
-    initialValues: personalDetailsValues,
-    validationSchema: personalDetailsSchema,
+    initialValues: providerDetailsValues,
+    validationSchema: providerDetailsSchema,
     validateOnChange: true,
     validateOnBlur: true,
     onSubmit: async (values) => {
@@ -137,7 +143,13 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
                     holder="000 000 00"
                     value={values.phone}
                     handleBlur={handleBlur}
-                    handleChange={handleChange}
+                    handleChange={(e) => {
+                      const { value } = e.target;
+                      // Allow only digits and limit to 10
+                      if (/^\d*$/.test(value) && value.length <= 10) {
+                        handleChange(e);
+                      }
+                    }}
                     error={errors.phone}
                     touched={touched.phone}
                   />
@@ -160,11 +172,11 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
                     name="radius"
                     type="text"
                     holder="Enter working radius here"
-                    value={values.fullName}
+                    value={values.radius}
                     handleBlur={handleBlur}
                     handleChange={handleChange}
-                    error={errors.fullName}
-                    touched={touched.fullName}
+                    error={errors.radius}
+                    touched={touched.radius}
                   />
                   <div className="w-full mt-4 h-auto flex flex-col justify-start items-start gap-1">
                     <label
@@ -200,7 +212,7 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
                       htmlFor=""
                       className="font-[700] capitalize text-[12px]"
                     >
-                      Set Availability
+                      Biography
                     </label>
                     <textarea
                       name=""
@@ -216,7 +228,10 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
               </div>
             </form>
             {showModal && (
-              <AddAvailabilityModal onClose={() => setShowModal(false)} edit={true} />
+              <AddAvailabilityModal
+                onClose={() => setShowModal(false)}
+                edit={true}
+              />
             )}
           </div>
         </div>

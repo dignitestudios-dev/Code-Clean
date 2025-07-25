@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { AppleImage, GoogleImage } from "../../assets/export";
 import { Button } from "../global/GlobalButton";
 import Input from "../../components/global/Input";
-import { loginValues } from "../../init/authentication/AuthValues";
-import { signInSchema } from "../../schema/authentication/AuthSchema";
+import { loginValues, SignUpValues } from "../../init/authentication/AuthValues";
+import { signInSchema, signUpSchema } from "../../schema/authentication/AuthSchema";
 import { useLogin } from "../../hooks/api/Post";
 import { processLogin } from "../../lib/utils";
 import { NavLink } from "react-router";
@@ -14,8 +14,8 @@ export default function RegisterForm({ handleNext }) {
 
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
-      initialValues: loginValues,
-      validationSchema: signInSchema,
+      initialValues: SignUpValues,
+      validationSchema: signUpSchema,
       validateOnChange: true,
       validateOnBlur: true,
       onSubmit: async (values, action) => {
@@ -23,6 +23,7 @@ export default function RegisterForm({ handleNext }) {
         const data = {
           email: values?.email,
           password: values?.password,
+          confirmPassword: values?.confirmPassword,
         };
         // postData("/admin/login", false, null, data, processLogin);
       },
@@ -66,14 +67,14 @@ export default function RegisterForm({ handleNext }) {
         />
         <Input
           text={"Confirm password"}
-          name={"password"}
+          name={"confirmPassword"}
           type={"password"}
           holder={"Re-enter password here"}
-          value={values.password}
+          value={values.confirmPassword}
           handleBlur={handleBlur}
           handleChange={handleChange}
-          error={errors.password}
-          touched={touched?.password}
+          error={errors.confirmPassword}
+          touched={touched?.confirmPassword}
         />
 
         <Button text={"Sign Up"} loading={loading} />

@@ -24,7 +24,8 @@ export default function Forget() {
           email: values?.email,
           password: values?.password,
         };
-        postData("/admin/login", false, null, data, processLogin);
+        navigate("/auth/email-verify")
+        // postData("/admin/login", false, null, data, processLogin);
       },
     });
   return (
