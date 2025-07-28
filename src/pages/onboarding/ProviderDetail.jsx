@@ -199,7 +199,7 @@ export default function ProviderDetail({ handleNext }) {
               <textarea
                 name=""
                 rows={8}
-                className="flex resize-none justify-start bg-[#F8F8F899] items-start w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px]"
+                className="flex px-3 resize-none justify-start bg-[#FFFFFF] items-start w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px]"
                 id=""
               ></textarea>
             </div>
