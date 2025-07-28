@@ -31,7 +31,7 @@ const Bookingsrequests = () => {
             status: "Rejected",
             avatar: "https://randomuser.me/api/portraits/men/2.jpg",
         },
-         {
+        {
             id: 2,
             name: "John Doe",
             date: "16-January-2025",
@@ -184,20 +184,22 @@ const Bookingsrequests = () => {
                 <div className="bg-white rounded-xl shadow-md overflow-x-auto">
                     {/* Tabs for Filter */}
                     <div className="flex border-b px-6 pt-6">
-                        {["All", "Waiting Requests", "Accepted", "Rejected"].map((tab, index) => (
+                        {(activeTab === "Booking Request"
+                            ? ["All", "Pending Requests", "Accepted", "Rejected"]
+                            : ["All", "Upcoming Jobs", "In Progress Jobs", "Completed Jobs", "Canceled Jobs"]
+                        ).map((tab, index) => (
                             <button
                                 key={index}
-                                className={`px-4 py-2 text-sm font-medium text-[#3F3F3F] hover:text-[#00AEEF] focus:outline-none border-b-2 ${index === 0 ? "border-[#00AEEF]" : "border-transparent"}`}
+                                className={`px-4 py-2 text-sm font-[500] text-[#000000] hover:text-[#00AEEF] focus:outline-none border-b-2 ${index === 0 ? "border-[#00AEEF]" : "border-transparent"}`}
                             >
                                 {tab}
                             </button>
                         ))}
                     </div>
-
                     {/* Table */}
                     <table className="w-full text-left mt-4">
                         <thead>
-                            <tr className="bg-[#E9F4FB] text-[#3F3F3F] text-sm">
+                            <tr className="bg-[#E9F4FB] text-[#173579] text-sm">
                                 <th className="px-6 py-3">#</th>
                                 <th className="px-6 py-3">Booker</th>
                                 <th className="px-6 py-3">Booking Date</th>
@@ -225,14 +227,14 @@ const Bookingsrequests = () => {
                                     <td className="px-6 py-4">
                                         <span className={`font-semibold ${row.status === "Accepted" ? "text-green-600" :
                                             row.status === "Waiting" ? "text-orange-500" :
-                                             row.status === "In Progress" ? "text-blue-600" :
-                                                "text-red-500"}`}>
+                                                row.status === "In Progress" ? "text-blue-600" :
+                                                    "text-red-500"}`}>
                                             {row.status}
                                         </span>
                                     </td>
                                     <td
                                         className="px-6 py-4 text-[#00AEEF] cursor-pointer"
-                                        
+
                                     >
                                         <span>&gt;</span>
                                     </td>

@@ -105,7 +105,7 @@ const Bookinghistory = () => {
             {["All", "Upcoming Jobs", "In Progress Jobs", "Completed Jobs", "Canceled Jobs"].map((tab, index) => (
               <button
                 key={index}
-                className={`px-4 py-2 text-sm font-medium text-[#3F3F3F] hover:text-[#00AEEF] focus:outline-none border-b-2 ${index === 0 ? "border-[#00AEEF]" : "border-transparent"}`}
+                className={`px-4 py-2 text-sm font-[500] text-[#000000] hover:text-[#00AEEF] focus:outline-none border-b-2 ${index === 0 ? "border-[#00AEEF]" : "border-transparent"}`}
               >
                 {tab}
               </button>
