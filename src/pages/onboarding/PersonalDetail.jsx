@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import {Button} from "../../components/global/GlobalButton";
+import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
 import { useLogin } from "../../hooks/api/Post";
 import { useFormik } from "formik";
 import { personalDetailsValues } from "../../init/authentication/AuthValues";
 import { personalDetailsSchema } from "../../schema/authentication/AuthSchema";
-import { MapImg, UploadImg } from "../../assets/export";
+import { MapImg } from "../../assets/export";
 
 export default function PersonalDetail({ handleNext }) {
   const { loading, postData } = useLogin();
-  const [previewImage, setPreviewImage] = useState(UploadImg); // Default image
+  const [previewImage, setPreviewImage] = useState(); // Default image
 
   const formik = useFormik({
     initialValues: personalDetailsValues,
@@ -65,11 +65,35 @@ export default function PersonalDetail({ handleNext }) {
       >
         <div>
           <label htmlFor="profilePic" className="cursor-pointer">
-            <img
-              src={previewImage}
-              className={`${previewImage=="/src/assets/upload-img.png"?"w-[280px]":"w-[100px] rounded-full  h-[100px]"} object-cover`}
-              alt="UploadImg"
-            />
+            <div className="flex items-center gap-4">
+              <label
+                htmlFor="profilePic"
+                className="w-16 h-16 rounded-full border-2 border-dashed border-[#00034A] flex items-center justify-center cursor-pointer overflow-hidden"
+              >
+                {previewImage ? (
+                  <img
+                    src={previewImage}
+                    alt="Profile Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-lg text-gradient">+</span>
+                )}
+                <input
+                  id="profilePic"
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+              <label
+                htmlFor="profilePic"
+                className="text-gradient font-medium text-[16px] cursor-pointer"
+              >
+                Upload Profile Picture
+              </label>
+            </div>
           </label>
           <input
             type="file"
@@ -104,7 +128,12 @@ export default function PersonalDetail({ handleNext }) {
           holder="000 000 00"
           value={values.phone}
           handleBlur={handleBlur}
-          handleChange={handleChange}
+          handleChange={(e) => {
+            const { value } = e.target;
+            if (/^\d*$/.test(value) && value.length <= 10) {
+              handleChange(e);
+            }
+          }}
           error={errors.phone}
           touched={touched.phone}
         />

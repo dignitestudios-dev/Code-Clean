@@ -82,10 +82,9 @@ export default function SignUp() {
               <PersonalDetail handleNext={handleNext} />
             ) : currentStep === 3 ? (
               <AddStripeAccount handleNext={handleNext} />
-            ) :
-              (
-                <SuccessFullyAccountCreated />
-              )
+            ) : (
+              <SuccessFullyAccountCreated />
+            )
           ) : currentStep === 0 ? (
             <RegisterForm handleNext={handleNext} />
           ) : currentStep === 1 ? (
@@ -98,32 +97,31 @@ export default function SignUp() {
             <AddCertification handleNext={handleNext} />
           ) : currentStep === 5 ? (
             <IdentityVerification handleNext={handleNext} />
-          )
-            : currentStep === 6 ? (
-              <SubscriptionPlans handleNext={handleNext} />
-            )
-              : currentStep === 7 ? (
-                <AddStripeAccount handleNext={handleNext} />
-              )
-                : currentStep === 8 ? (
-                  <BillingSummary handleNext={handleNext} />
-                )
-                  : (
-                    <SuccessFullyAccountCreated />
-                  )}
+          ) : currentStep === 6 ? (
+            <SubscriptionPlans handleNext={handleNext} />
+          ) : currentStep === 7 ? (
+            <AddStripeAccount handleNext={handleNext} />
+          ) : currentStep === 8 ? (
+            <BillingSummary handleNext={handleNext} />
+          ) : (
+            <SuccessFullyAccountCreated />
+          )}
 
           {/* Progress Bar */}
-          <div className="mt-3 flex items-center justify-center gap-3">
-            {steps.map((el, i) => (
-              <div
-                key={i}
-                className={`w-[90px] h-1 rounded-full transition-all duration-500 ${el.completed || el.active
-                  ? "bg-[linear-gradient(234.85deg,_#27A8E2_-20.45%,_#00034A_124.53%)]"
-                  : "bg-[#D9D9D9]"
+          {role == "user" && (
+            <div className="mt-3 flex items-center justify-center gap-3">
+              {steps.map((el, i) => (
+                <div
+                  key={i}
+                  className={`w-[90px] h-1 rounded-full transition-all duration-500 ${
+                    el.completed || el.active
+                      ? "bg-[linear-gradient(234.85deg,_#27A8E2_-20.45%,_#00034A_124.53%)]"
+                      : "bg-[#D9D9D9]"
                   }`}
-              />
-            ))}
-          </div>
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

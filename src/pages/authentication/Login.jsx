@@ -11,7 +11,7 @@ import { AppleImage, GoogleImage, LoginRight, Logo } from "../../assets/export";
 import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
 import { RxCross2 } from "react-icons/rx";
-
+import Cookies from "js-cookie";
 const Login = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const { loading, postData } = useLogin();
@@ -41,6 +41,7 @@ const Login = () => {
       validateOnChange: true,
       validateOnBlur: true,
       onSubmit: async (values, action) => {
+        setType(true);
         const data = {
           email: values?.email,
           password: values?.password,
@@ -52,8 +53,10 @@ const Login = () => {
   const handleRoleSelection = (roleId) => {
     setSelectedRole(roleId);
     if (roleId === "user") {
-      navigate("/home"); // Redirect to Home for users
+      Cookies.set("role", "user");
+      navigate("/home");
     } else if (roleId === "provider") {
+      Cookies.set("role", "provider");
       navigate("/dashboard"); // Redirect to Dashboard for service providers
     }
   };
@@ -107,17 +110,10 @@ const Login = () => {
             </NavLink>
           </div>
 
-          <Button
-            text={"Log In"}
-            loading={loading}
-            onClick={() => {
-              setType(true);
-            }}
-          />
+          <Button text={"Log In"} loading={loading} />
 
           {type && (
             <>
-              <RxCross2 />
               <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                 <div className="flex flex-col md:flex-row gap-8 mb-6 bg-white p-3 rounded-2xl">
                   <RxCross2
@@ -133,18 +129,23 @@ const Login = () => {
                       <div
                         key={role.id}
                         onClick={() => handleRoleSelection(role.id)} // Use the role selection handler
-                        className={`cursor-pointer rounded-[14px] px-6 py-8 flex flex-col items-center justify-center w-[360px] h-[250px] text-center transition-all shadow-md ${isSelected
-                          ? "text-white"
-                          : "text-gray-600 bg-white border border-gray-200"
-                          }`}
+                        className={`cursor-pointer rounded-[14px] px-6 py-8 flex flex-col items-center justify-center w-[360px] h-[250px] text-center transition-all shadow-md ${
+                          isSelected
+                            ? "text-white"
+                            : "text-gray-600 bg-white border border-gray-200"
+                        }`}
                         style={{
                           background: isSelected
                             ? "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)"
                             : "",
                         }}
                       >
-                        <h3 className={`text-[24px]  font-bold  mb-2`}>{role.title}</h3>
-                        <p className="text-[16px] font-[400]">{role.description}</p>
+                        <h3 className={`text-[24px]  font-bold  mb-2`}>
+                          {role.title}
+                        </h3>
+                        <p className="text-[16px] font-[400]">
+                          {role.description}
+                        </p>
                       </div>
                     );
                   })}
@@ -158,7 +159,7 @@ const Login = () => {
               Don’t have an account ?
               <NavLink
                 className="font-medium hover:no-underline hover:text-[#0084FF] text-[#0084FF]"
-                to={"/auth/signup"}
+                to={"/auth/role-selection"}
               >
                 Sign Up
               </NavLink>

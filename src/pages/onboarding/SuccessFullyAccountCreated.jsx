@@ -1,8 +1,9 @@
-import React from "react";
 import { SuccessIcon } from "../../assets/export";
-import {Button} from "../../components/global/GlobalButton";
-
+import { Button } from "../../components/global/GlobalButton";
+import { useNavigate } from "react-router";
+import Cookies from "js-cookie";
 export default function SuccessFullyAccountCreated() {
+  const navigate = useNavigate("");
   return (
     <div className="w-full  h-screen justify-center grid grid-cols-1 gap-4 rounded-[19px] bg-white">
       <div className="w-auto flex flex-col mt-4 justify-center items-center">
@@ -14,9 +15,15 @@ export default function SuccessFullyAccountCreated() {
           <p className="text-[16px] font-[400] text-[#565656]">
             Your profile has been created successfully.
           </p>
-          <Button text={"Explore Services"} />
+          <Button
+            onClick={() => {
+               Cookies.set("role","user")
+              navigate("/app/landing",{state:{type:"user"}});
+            }}
+            text={"Explore Services"}
+          />
         </div>
-      </div>    
+      </div>
     </div>
   );
 }

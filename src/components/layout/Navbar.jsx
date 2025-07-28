@@ -4,13 +4,15 @@ import { Link, useLocation, useNavigate } from "react-router";
 import { LogoWhite, Avatar } from "../../assets/export";
 import { FaBell } from "react-icons/fa";
 import { IoLogOut, IoNotificationsOutline } from "react-icons/io5";
+import Cookies from "js-cookie";
 import LogOutModal from "../global/LogoutModal";
 import ReportAnIssueModal from "../app/Settings/ReportAnIssueModal";
 
-const Navbar = ({ type }) => {
+const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
+  const [role, setRole] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -30,6 +32,7 @@ const Navbar = ({ type }) => {
     setIsPopupOpen(false);
   };
 
+  // Detect click outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -40,9 +43,22 @@ const Navbar = ({ type }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Prevent body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? "hidden" : "auto";
   }, [isMobileMenuOpen]);
+
+  // Check login state & role on mount
+  useEffect(() => {
+    const userRole = Cookies.get("role");
+    if (userRole === "user" || userRole === "provider") {
+      setRole(userRole);
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+      setRole(null);
+    }
+  }, [location.pathname]); // re-check role on route change
 
   const togglePopup = () => {
     setUserPopup(false);
@@ -55,22 +71,24 @@ const Navbar = ({ type }) => {
   };
 
   const menuLinks =
-    type === "serviceprovider"
+    role === "provider"
       ? [
-        { label: "Dashboard", path: "/dashboard" },
-        { label: "Discover", path: "/discover-job" },
-        { label: "Availability", path: "/calendar" },
-        { label: "Messages", path: "/chat-sp" },
-        { label: "Badges", path: "/badge-sp" },
-        { label: "Wallet", path: "/wallet" },
-      ]
-      : [
-        { label: "Current Bookings", path: "/booking-requests" },
-        { label: "Booking History", path: "/booking-history" },
-        { label: "Badges", path: "/app/badge" },
-        { label: "Favorites", path: "/favorites" },
-        { label: "Messages", path: "/messages" },
-      ];
+          { label: "Dashboard", path: "/dashboard" },
+          { label: "Discover", path: "/discover-job" },
+          { label: "Availability", path: "/calendar" },
+          { label: "Messages", path: "/chat-sp" },
+          { label: "Badges", path: "/badge-sp" },
+          { label: "Wallet", path: "/wallet" },
+        ]
+      : role === "user"
+      ? [
+          { label: "Current Bookings", path: "/booking-requests" },
+          { label: "Booking History", path: "/booking-history" },
+          { label: "Badges", path: "/app/badge" },
+          { label: "Favorites", path: "/favorites" },
+          { label: "Messages", path: "/messages" },
+        ]
+      : [];
 
   const notifications = [
     {
@@ -94,9 +112,14 @@ const Navbar = ({ type }) => {
   ];
 
   return (
-    <nav className={`w-full ${isMobileMenuOpen ? "fixed top-0 left-0 min-h-screen bg-[#181818] z-50" : ""}  text-white`}>
+    <nav
+      className={`w-full ${
+        isMobileMenuOpen
+          ? "fixed top-0 left-0 min-h-screen bg-[#181818] z-50"
+          : ""
+      } text-white`}
+    >
       <div className="max-w-7xl border-b border-white/40 mx-auto px-4 py-2 flex z-10 items-center justify-between relative">
-        {/* Logo */}
         <div className="w-[60%]">
           <img
             src={LogoWhite}
@@ -113,25 +136,35 @@ const Navbar = ({ type }) => {
               <Link
                 key={link.label}
                 to={link.path}
-                className={`pb-1 relative transition-all duration-300 ${currentPath === link.path
-                  ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
-                  : ""
-                  }`}
+                className={`pb-1 relative transition-all duration-300 ${
+                  currentPath === link.path
+                    ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
+                    : ""
+                }`}
               >
                 {link.label}
               </Link>
             ))}
             <div className="relative">
-              <IoNotificationsOutline className="text-white text-2xl cursor-pointer" onClick={togglePopup} />
+              <IoNotificationsOutline
+                className="text-white text-2xl cursor-pointer"
+                onClick={togglePopup}
+              />
               {isPopupOpen && (
                 <div className="absolute top-10 right-0 w-96 p-4 bg-white shadow-lg rounded-lg border border-gray-200 z-50">
-                  <h3 className="text-lg font-semibold text-black">Notifications</h3>
+                  <h3 className="text-lg font-semibold text-black">
+                    Notifications
+                  </h3>
                   <div className="mt-4 space-y-4 max-h-60 overflow-y-auto">
                     {notifications.map((n, idx) => (
                       <div key={idx}>
                         <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-black">{n.title}</span>
-                          <span className="text-xs text-gray-600">{n.time}</span>
+                          <span className="text-sm font-medium text-black">
+                            {n.title}
+                          </span>
+                          <span className="text-xs text-gray-600">
+                            {n.time}
+                          </span>
                         </div>
                         <p className="text-sm text-black">{n.message}</p>
                         {n.unreadCount > 0 && (
@@ -146,13 +179,42 @@ const Navbar = ({ type }) => {
                 </div>
               )}
             </div>
-            <img src={Avatar} className="h-10 w-10 rounded-full cursor-pointer" onClick={toggleUserpopup} alt="Avatar" />
+            <img
+              src={Avatar}
+              className="h-10 w-10 rounded-full cursor-pointer"
+              onClick={toggleUserpopup}
+              alt="Avatar"
+            />
             {userPopup && (
               <div className="absolute top-20 right-4 bg-white text-black w-40 rounded shadow-lg p-4 space-y-2 z-50">
-                <span className="block text-sm cursor-pointer" onClick={() => navigate(type === "serviceprovider" ? "/provider-profile" : "/app/profile")}>View Profile</span>
-                <span className="block text-sm cursor-pointer" onClick={() => navigate("/app/settings")}>Settings</span>
-                <span className="block text-sm cursor-pointer" onClick={() => setIsReport(true)}>Report an Issue</span>
-                <span className="block text-sm text-red-600 cursor-pointer" onClick={() => setLogoutpopup(true)}>Log Out</span>
+                <span
+                  className="block text-sm cursor-pointer"
+                  onClick={() =>
+                    navigate(
+                      role === "provider" ? "/provider-profile" : "/app/profile"
+                    )
+                  }
+                >
+                  View Profile
+                </span>
+                <span
+                  className="block text-sm cursor-pointer"
+                  onClick={() => navigate("/app/settings")}
+                >
+                  Settings
+                </span>
+                <span
+                  className="block text-sm cursor-pointer"
+                  onClick={() => setIsReport(true)}
+                >
+                  Report an Issue
+                </span>
+                <span
+                  className="block text-sm text-red-600 cursor-pointer"
+                  onClick={() => setLogoutpopup(true)}
+                >
+                  Log Out
+                </span>
               </div>
             )}
           </div>
@@ -161,36 +223,61 @@ const Navbar = ({ type }) => {
             <ul className="flex gap-6">
               <li className="relative">
                 <Link
-                  className={`relative pb-1 transition-all duration-300 ${currentPath === "/app/landing"
-                    ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
-                    : ""
-                    }`}
+                  className={`relative pb-1 transition-all duration-300 ${
+                    currentPath === "/app/landing"
+                      ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
+                      : ""
+                  }`}
                   to="/app/landing"
                 >
                   Home
                 </Link>
               </li>
-              <li><a href="#cleaners">Cleaners</a></li>
-              <li><a href="#whyus">Why Choose Us</a></li>
-              <li><a href="#faq">FAQs</a></li>
+              <li>
+                <a href="#cleaners">Cleaners</a>
+              </li>
+              <li>
+                <a href="#whyus">Why Choose Us</a>
+              </li>
+              <li>
+                <a href="#faq">FAQs</a>
+              </li>
             </ul>
             <div className="flex gap-4">
-              <button className="border border-white w-[127px] h-[44px] rounded-md" onClick={() => navigate("/auth/role-selection")}>Signup</button>
-              <button className="bg-[#26A7E2] text-white  w-[127px] h-[44px] rounded-md" onClick={() => setIsLoggedIn(true)}>Login</button>
+              <button
+                className="border border-white w-[127px] h-[44px] rounded-md"
+                onClick={() => navigate("/auth/role-selection")}
+              >
+                Signup
+              </button>
+              <button
+                className="bg-[#26A7E2] text-white w-[127px] h-[44px] rounded-md"
+                onClick={() => navigate("/auth/role-selection")}
+              >
+                Login
+              </button>
             </div>
           </div>
         )}
 
-        {/* Mobile Menu Toggle */}
+        {/* Mobile Toggle */}
         <div className="md:hidden flex items-center gap-3">
           {isLoggedIn && (
             <>
               <FaBell className="text-lg" />
-              <img src={Avatar} alt="User Avatar" className="w-9 h-9 rounded-full object-cover border-2 border-white" />
+              <img
+                src={Avatar}
+                alt="User Avatar"
+                className="w-9 h-9 rounded-full object-cover border-2 border-white"
+              />
             </>
           )}
           <button onClick={toggleMobileMenu}>
-            {isMobileMenuOpen ? <HiX size={28} color="#26A7E2" /> : <HiMenu size={28} />}
+            {isMobileMenuOpen ? (
+              <HiX size={28} color="#26A7E2" />
+            ) : (
+              <HiMenu size={28} />
+            )}
           </button>
         </div>
       </div>
@@ -201,29 +288,98 @@ const Navbar = ({ type }) => {
           {isLoggedIn ? (
             <>
               {menuLinks.map((link) => (
-                <Link key={link.label} to={link.path} className="block py-2 border-b border-white/20" onClick={toggleMobileMenu}>
+                <Link
+                  key={link.label}
+                  to={link.path}
+                  className="block py-2 border-b border-white/20"
+                  onClick={toggleMobileMenu}
+                >
                   {link.label}
                 </Link>
               ))}
-              <IoNotificationsOutline className="text-white text-2xl cursor-pointer" onClick={togglePopup} />
-              <img src={Avatar} className="h-10 w-10 rounded-full object-cover cursor-pointer" alt="User Avatar" onClick={toggleUserpopup} />
+              <IoNotificationsOutline
+                className="text-white text-2xl cursor-pointer"
+                onClick={togglePopup}
+              />
+              <img
+                src={Avatar}
+                className="h-10 w-10 rounded-full object-cover cursor-pointer"
+                alt="User Avatar"
+                onClick={toggleUserpopup}
+              />
               {userPopup && (
                 <div className="bg-white text-black w-full rounded shadow-lg p-4 space-y-2 mt-2">
-                  <span className="block text-sm cursor-pointer" onClick={() => navigate("/app/profile")}>View Profile</span>
-                  <span className="block text-sm cursor-pointer" onClick={() => navigate("/app/settings")}>Settings</span>
-                  <span className="block text-sm cursor-pointer" onClick={() => setIsReport(true)}>Report an Issue</span>
-                  <span className="block text-sm text-red-600 cursor-pointer" onClick={() => setLogoutpopup(true)}>Log Out</span>
+                  <span
+                    className="block text-sm cursor-pointer"
+                    onClick={() => navigate("/app/profile")}
+                  >
+                    View Profile
+                  </span>
+                  <span
+                    className="block text-sm cursor-pointer"
+                    onClick={() => navigate("/app/settings")}
+                  >
+                    Settings
+                  </span>
+                  <span
+                    className="block text-sm cursor-pointer"
+                    onClick={() => setIsReport(true)}
+                  >
+                    Report an Issue
+                  </span>
+                  <span
+                    className="block text-sm text-red-600 cursor-pointer"
+                    onClick={() => setLogoutpopup(true)}
+                  >
+                    Log Out
+                  </span>
                 </div>
               )}
             </>
           ) : (
             <>
-              <Link to="/app/landing" className="block py-2" onClick={toggleMobileMenu}>Home</Link>
-              <Link to="#" className="block py-2" onClick={toggleMobileMenu}>Cleaners</Link>
-              <Link to="#" className="block py-2" onClick={toggleMobileMenu}>Why Choose Us</Link>
-              <Link to="#" className="block py-2" onClick={toggleMobileMenu}>FAQs</Link>
-              <button onClick={() => { setIsLoggedIn(true); toggleMobileMenu(); }} className="w-full border border-white px-4 py-1 rounded-md">Signup</button>
-              <button onClick={() => { setIsLoggedIn(true); toggleMobileMenu(); }} className="w-full bg-[#26A7E2] text-white px-4 py-1 rounded-md">Login</button>
+              <Link
+                to="/app/landing"
+                className="block py-2"
+                onClick={toggleMobileMenu}
+              >
+                Home
+              </Link>
+              <a
+                href="#cleaners"
+                className="block py-2"
+                onClick={toggleMobileMenu}
+              >
+                Cleaners
+              </a>
+              <a
+                href="#whyus"
+                className="block py-2"
+                onClick={toggleMobileMenu}
+              >
+                Why Choose Us
+              </a>
+              <a href="#faq" className="block py-2" onClick={toggleMobileMenu}>
+                FAQs
+              </a>
+              <button
+                onClick={() => {
+                  navigate("/auth/role-selection");
+                  toggleMobileMenu();
+                }}
+                className="w-full border border-white px-4 py-1 rounded-md"
+              >
+                Signup
+              </button>
+              <button
+                onClick={() => {
+                  navigate("/auth/role-selection");
+                  toggleMobileMenu();
+                }}
+                className="w-full bg-[#26A7E2] text-white px-4 py-1 rounded-md"
+              >
+                Login
+              </button>
             </>
           )}
         </div>
