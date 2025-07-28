@@ -1,7 +1,9 @@
 import React from "react";
 import { Button } from "../../global/GlobalButton";
+import { useNavigate } from "react-router";
 
 export default function JoinAs() {
+  const navigate = useNavigate("");
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-10 pt-10 pb-10 lg:px-28 mt-10">
       <div
@@ -13,12 +15,17 @@ export default function JoinAs() {
       >
         <h3 className="text-white font-[700] text-[28px]">Become A User</h3>
         <p className="text-white font-[500] text-center text-[16px]">
-          Your go-to platform for hassle-free home services. Join now<br></br> to find
-          and book trusted professionals effortlessly!
+          Your go-to platform for hassle-free home services. Join now<br></br>{" "}
+          to find and book trusted professionals effortlessly!
         </p>
-        <button className="bg-white rounded-[8px] p-3 px-20  ">
+        <button
+          onClick={() => {
+            navigate("/auth/role-selection");
+          }}
+          className="bg-white rounded-[8px] p-3 px-20  "
+        >
           {" "}
-          <span className="bg-gradient-to-r text-[16px] from-[#00034A] to-[#27A8E2] bg-clip-text text-transparents">
+          <span className="text-[16px] text-gradient font-bold">
             {" "}
             Join Now{" "}
           </span>
@@ -35,8 +42,8 @@ export default function JoinAs() {
           Join us as a Service Provider{" "}
         </h3>
         <p className="text-white font-[500] text-center text-[16px]">
-          Join as a service provider, connect with clients, and<br></br>grow your
-          business—on your terms.
+          Join as a service provider, connect with clients, and<br></br>grow
+          your business—on your terms.
         </p>
         <button
           style={{
@@ -46,7 +53,12 @@ export default function JoinAs() {
           className="rounded-[8px] p-3 px-20  "
         >
           {" "}
-          <span className=" text-[16px] text-white bg-clip-text text-transparents">
+          <span
+            onClick={() => {
+              navigate("/auth/role-selection");
+            }}
+            className=" text-[16px] text-white bg-clip-text text-transparents"
+          >
             {" "}
             Join Now{" "}
           </span>

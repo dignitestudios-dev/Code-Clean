@@ -205,9 +205,9 @@ export default function ProviderDetail({ handleNext }) {
             </div>
           </div>
         </div>
-        <div className="mt-3">
-          <Button text="Sign Up" loading={loading} />
-        </div>
+       <div className="w-[360px] mt-10 mx-auto">
+                <Button text="Next" loading={loading} />
+              </div>
       </form>
       {showModal && (
         <AddAvailabilityModal onClose={() => setShowModal(false)} />

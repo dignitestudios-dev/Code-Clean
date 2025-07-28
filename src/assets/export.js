@@ -62,11 +62,13 @@ import HearIcon from "./heart-icon.png"
 import facebook from "./facebook.png"
 import linkdin from "./linkdin.png"
 import twitter from "./twitter.jpg"
+import deleteIcon from "./delete.png"
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
 export {
+  deleteIcon,
   HearIcon,
   badgesImage,
   SuccessAlert,

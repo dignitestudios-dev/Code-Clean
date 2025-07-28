@@ -6,6 +6,7 @@ import {
   serviceMarket,
   userMarket,
 } from "../../../assets/export";
+import { NavLink } from "react-router";
 
 const ServiceMarketplace = () => {
   return (
@@ -37,18 +38,20 @@ const ServiceMarketplace = () => {
               </h3>
               <span className="mb-3 mt-0 text-[#181818] font-[400] text-[16px] ">
                 {" "}
-               Find Help Instantly!
+                Find Help Instantly!
               </span>
               <p className="mb-6 text-[#999999] font-[400] text-[16px] pl-10 pr-10">
-               Browse verified professionals, book services with upfront pricing, and chat with providers before confirming. Enjoy secure payments and effortless scheduling for a stress-free experience.
+                Browse verified professionals, book services with upfront
+                pricing, and chat with providers before confirming. Enjoy secure
+                payments and effortless scheduling for a stress-free experience.
               </p>
-              <a
-                href="#"
+              <NavLink
+                to={"/auth/role-selection"}
                 className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent flex items-center gap-2 font-medium hover:underline"
               >
                 <img src={RightArrow} className="w-[20px]" alt="" /> Let's Join
                 Now
-              </a>
+              </NavLink>
             </div>
           </div>
 
@@ -74,13 +77,13 @@ const ServiceMarketplace = () => {
                 securely. Connect with local clients using real-time geolocation
                 and expand your reach with ease.
               </p>
-              <a
-                href="#"
+              <NavLink
+                to={"/auth/role-selection"}
                 className=" bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent flex items-center gap-2 font-medium hover:underline"
               >
                 <img src={RightArrow} className="w-[20px]" alt="" /> Let's Join
                 Now
-              </a>
+              </NavLink>
             </div>
           </div>
         </div>

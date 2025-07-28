@@ -70,7 +70,7 @@ export default function AddCertificationModal({ onClose, onAdd }) {
                     <Input
                         text="Date of Completion"
                         name="radius"
-                        type="text"
+                        type="date"
                         holder="Enter Date"
                         value={values.name}
                         handleBlur={handleBlur}
@@ -81,7 +81,7 @@ export default function AddCertificationModal({ onClose, onAdd }) {
 
                     <div className="flex flex-col gap-1 mt-3 mb-3" >
                         <label htmlFor="">Description</label>
-                        <textarea name="" id="" rows={5} className="border border-[#BEBEBE] p-2 rounded-[8px]  text-[#727272]" >Briefly explain the certification</textarea>
+                        <textarea name="" id="" placeholder="Briefly explain the certification" rows={5} className="border border-[#BEBEBE] p-2 rounded-[8px]  text-[#727272]" ></textarea>
                     </div>
                     {/* Add Button */}
                     <button

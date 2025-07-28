@@ -98,7 +98,7 @@ const Bookinghistory = () => {
 
 
       {/* Booking Table Section */}
-      <div className="px-[10em] py-[4em] bg-[#f5f8fb00] -mt-[18em] relative z-10 mb-10">
+      <div className="px-[10em] py-[4em] bg-[#f5f8fb00] -mt-[18em] relative mb-10">
         <div className="bg-white rounded-xl shadow-md overflow-x-auto">
           {/* Tabs */}
           <div className="flex border-b px-6 pt-6">

@@ -58,7 +58,7 @@ export default function EditCard() {
             } catch (error) {
                 console.error("Error adding Stripe account:", error);
             } finally {
-                handleNext();
+                // handleNext();
                 setLoading(false);
             }
         },
@@ -92,10 +92,10 @@ export default function EditCard() {
             </div>
             <div className='h-full px-10 lg:px-40 -mt-80 bottom-0 items-center gap-3 '>
                 <div className='flex items-center gap-2 mb-6'>
-                    <button type="button" onClick={() => navigate("/app/dashboard")} >
+                    <button type="button" onClick={() => navigate(-1)} >
                         <FaArrowLeft color='white' size={16} />
                     </button>
-                    <h1 className="text-2xl font-semibold text-white">Payment Method</h1>
+                    <h1 className="text-[32px] font-semibold text-white">Payment Method</h1>
                 </div>
                 <div className='bg-[#F9FAFA] shadow-lg flex flex-col gap-3 mb-48 rounded-[8px] p-8 mt-3' >
                     <h3 className="text-2xl font-semibold text-[#181818]">Edit Stripe credit/debit card</h3>

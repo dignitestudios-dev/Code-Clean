@@ -168,10 +168,10 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
                 </div>
                 <div>
                   <Input
-                    text="Enter working radius here"
+                    text="Working Radius"
                     name="radius"
                     type="text"
-                    holder="Enter working radius here"
+                    holder="10M"
                     value={values.radius}
                     handleBlur={handleBlur}
                     handleChange={handleChange}
@@ -217,13 +217,13 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
                     <textarea
                       name=""
                       rows={8}
-                      className="flex resize-none justify-start bg-[#FFFFFF] items-start w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px]"
+                      className="flex px-2 py-2 resize-none justify-start bg-[#FFFFFF] items-start w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px]"
                       id=""
                     ></textarea>
                   </div>
                 </div>
               </div>
-              <div className="mt-3">
+              <div className="mt-3 w-[360px] mx-auto">
                 <Button text="Update" type={"submit"} loading={loading} />
               </div>
             </form>

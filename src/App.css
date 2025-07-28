@@ -14,6 +14,10 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
+.bg-gradient{
+   background: linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%);
+}
+
 .helix-font {
   font-family: 'helix-font', sans-serif;
 }

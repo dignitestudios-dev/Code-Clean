@@ -151,8 +151,9 @@ export default function PersonalDetail({ handleNext }) {
         />
 
         <img src={MapImg} alt="map.png" />
-
-        <Button text="Sign Up" loading={loading} />
+        <div className="w-[100%] mx-auto">
+          <Button text="Next" loading={loading} />
+        </div>
       </form>
     </div>
   );

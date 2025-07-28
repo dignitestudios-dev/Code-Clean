@@ -27,7 +27,7 @@ export default function PasswordUpdate() {
           <h3 className="text-white text-[52px] font-[600]">
             Connect. Book. Serve
           </h3>
-          <p className="text-white text-[32px] font-[400]">
+          <p className="text-white capitalize text-[32px] font-[400]">
             Book top-rated experts or grow your business—all in one place.
           </p>
         </div>

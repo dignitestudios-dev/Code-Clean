@@ -149,245 +149,272 @@ const ServiceproviderProfile = () => {
           </h2>
         </div>
       </div>
-      <div className="px-10 lg:px-40" >
-      <div className=" mx-auto px-6 py-10 bg-white shadow-md rounded-xl -mt-[16em]">
-        {/* Profile Header */}
-        <div className="flex flex-col md:flex-row gap-8">
-          <div className="md:w-[18em]">
-            <img
-              src={usertwo}
-              alt="John Doe"
-              className="w-80 h-100 rounded-xl object-cover"
-            />
-            {/* Certificates */}
-            <div className="mt-4 border-t-2 pt-3">
-              <div className="flex justify-between items-center">
-                <h3 className="font-semibold text-lg">Certificates</h3>
-                <div className="w-[50px]">
-                  <button onClick={() => {
-                    setIsModalType("editCertificate");
-                    setEditProfile(true);
-                  }} className="bg-gradient-to-r mt-1 from-[#00034A] to-[#27A8E2] p-3 rounded-[8px]">
-                    {" "}
-                    <img
-                      src={EditWhiteIcon}
-                      className="w-[15px]"
-                      alt="editIcon"
-                    />{" "}
-                  </button>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-                <div className="space-y-1">
-                  <h4 className="font-medium text-gradient">
-                    Certification Title
-                  </h4>
-                  <p className="text-sm text-[#919191]">Institution Name</p>
-                  <p className="text-sm text-gray-600">
-                    Lorem ipsum dolore consectetur adipiscing elit, sed do
-                    eiusmod tempor incididunt ut labore magna aliqua.
-                  </p>
-                  <p className="text-sm text-gray-400 mt-1">20/Oct/2021</p>
-                </div>
-                <div className="space-y-1 border-t-2 pt-3">
-                  <h4 className="font-medium text-gradient">
-                    Certification Title
-                  </h4>
-                  <p className="text-sm text-[#919191]">Institution Name</p>
-                  <p className="text-sm text-gray-600">
-                    Lorem ipsum dolore consectetur adipiscing elit, sed do
-                    eiusmod tempor incididunt ut labore magna aliqua.
-                  </p>
-                  <p className="text-sm text-gray-400 mt-1">20/Oct/2021</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1">
-            <div className="flex items-start justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold">John Doe</h2>
-                <p className="text-gray-500">5+ Years Experience</p>
-                <div className="flex items-center text-yellow-500 mt-1">
-                  {[...Array(7)].map((_, i) => (
-                    <FaStar key={i} />
-                  ))}
-                  <span className="ml-2 text-gray-700 font-medium">4.5</span>
-                </div>
-              </div>
-              <div className="space-y-4 text-right">
-                {!fromViewProfile && (
-                  <button
-                    onClick={() => {
-                      setIsModalType("editprofile");
-                      setEditProfile(true);
-                    }}
-                    className="bg-gradient-to-r mt-1 from-[#00034A] to-[#27A8E2] text-white px-8 py-2 rounded-[12px] ml-auto"
-                  >
-                    Edit Profile
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Earned Badges */}
-            <div className="mt-4 text-sm text-gray-700 border-t-2 pt-3">
-              <h3 className="font-semibold mb-1 text-black">Earned Badges</h3>
-              <div className="mt-2 grid grid-cols-3 gap-4">
-                <img src={badgesImage} alt="badgesImage" />
-              </div>
-            </div>
-
-            {/* Bio */}
-            <div className="mt-4 text-sm text-gray-700 border-t-2 pt-3">
-              <h3 className="font-semibold mb-1 text-black">Biography</h3>
-              <p className="pt-1 text-sm">
-                The standard Lorem Ipsum passage, m ipsum dolor sit amet,
-                cectetur adipiscing elit, sed do eiusmThe standard Lorem Ipsum
-                passage, used since the 1500s Lorem ipsum dolor sit amet,
-                cectetur adipiscing elit, sed do eiusmThe standard Lorem Ipsum
-                passage.
-              </p>
-              <div className="mt-4 grid grid-cols-3 gap-4 text-sm text-gray-600 border-t-2 pt-3">
-                <div>
-                  <span className="font-semibold">Location</span>
-                  <br />
-                  Florida, United States
-                </div>
-                <div>
-                  <span className="font-semibold">Distance</span>
-                  <br />
-                  20 miles
-                </div>
-                <div>
-                  <span className="font-semibold">Completed Job</span>
-                  <br />
-                  45+ Job Success
-                </div>
-              </div>
-            </div>
-
-            {/* Pricing */}
-            <div className="mt-6 border-t-2 pt-3">
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="font-semibold text-lg ">
-                  Service Details and Pricing
-                </h3>
-                <div className="w-[50px]">
-                  <button
-                    onClick={() => {
-                      setIsModalType("editservice");
-                      setEditProfile(true);
-                    }}
-                    className="bg-gradient-to-r mt-1 from-[#00034A] to-[#27A8E2] p-3 rounded-[8px]"
-                  >
-                    {" "}
-                    <img
-                      src={EditWhiteIcon}
-                      className="w-[15px]"
-                      alt="editIcon"
-                    />{" "}
-                  </button>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {[
-                  {
-                    title: "Bathroom Cleaning",
-                    desc: [
-                      "Deep cleaning of sinks, tubs, and showers",
-                      "Disinfection of toilets and faucets",
-                      "Mirror and glass polishing",
-                      "Floor scrubbing and mopping",
-                    ],
-                    price: "$120",
-                  },
-                  {
-                    title: "Bedroom Cleaning",
-                    desc: [
-                      "Dusting and wiping surfaces",
-                      "Bed making and linen changing",
-                      "Floor vacuuming and mopping",
-                      "Closet and furniture cleaning",
-                    ],
-                    price: "$100",
-                  },
-                  {
-                    title: "Kitchen Cleaning",
-                    desc: [
-                      "Deep cleaning of sinks, tubs, and showers",
-                      "Disinfection of toilets and faucets",
-                      "Mirror and glass polishing",
-                      "Floor scrubbing and mopping",
-                    ],
-                    price: "$150",
-                  },
-                  {
-                    title: "Full Home Deep Cleaning",
-                    desc: [
-                      "Includes all rooms",
-                      "Sanitization of high-touch areas",
-                      "Custom add-ons available",
-                    ],
-                    price: "$120",
-                  },
-                ].map((service, i) => (
-                  <div
-                    key={i}
-                    className="bg-gray-50 p-3 rounded-md border flex flex-col justify-between h-[250px]"
-                  >
-                    {" "}
-                    {/* Added flex and height */}
-                    <div>
-                      <h4 className="font-semibold text-[12px] mb-2">
-                        {service.title}
-                      </h4>
-                      <ul className="list-disc list-inside text-[11px] text-gray-600 space-y-1">
-                        {service.desc.map((line, j) => (
-                          <li key={j}>{line}</li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className="text-[#27A8E2] font-bold text-lg mt-auto">
-                      {service.price}
-                    </div>{" "}
-                    {/* Fixed price at the bottom */}
+      <div className="px-10 lg:px-40">
+        <div className=" mx-auto px-6 py-10 bg-white shadow-md rounded-xl -mt-[16em]">
+          {/* Profile Header */}
+          <div className="flex flex-col md:flex-row gap-8">
+            <div className="md:w-[18em]">
+              <img
+                src={usertwo}
+                alt="John Doe"
+                className="w-80 h-100 rounded-xl object-cover"
+              />
+              {/* Certificates */}
+              <div className="mt-4 border-t-2 pt-3">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold text-lg">Certificates</h3>
+                  <div className="w-[50px]">
+                    <button
+                      onClick={() => {
+                        setIsModalType("editCertificate");
+                        setEditProfile(true);
+                      }}
+                      className="bg-gradient-to-r mt-1 from-[#00034A] to-[#27A8E2] p-3 rounded-[8px]"
+                    >
+                      {" "}
+                      <img
+                        src={EditWhiteIcon}
+                        className="w-[15px]"
+                        alt="editIcon"
+                      />{" "}
+                    </button>
                   </div>
-                ))}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+                  <div className="space-y-1">
+                    <h4 className="font-medium text-gradient">
+                      Certification Title
+                    </h4>
+                    <p className="text-sm text-[#919191]">Institution Name</p>
+                    <p className="text-sm text-gray-600">
+                      Lorem ipsum dolore consectetur adipiscing elit, sed do
+                      eiusmod tempor incididunt ut labore magna aliqua.
+                    </p>
+                    <p className="text-sm text-gray-400 mt-1">20/Oct/2021</p>
+                  </div>
+                  <div className="space-y-1 border-t-2 pt-3">
+                    <h4 className="font-medium text-gradient">
+                      Certification Title
+                    </h4>
+                    <p className="text-sm text-[#919191]">Institution Name</p>
+                    <p className="text-sm text-gray-600">
+                      Lorem ipsum dolore consectetur adipiscing elit, sed do
+                      eiusmod tempor incididunt ut labore magna aliqua.
+                    </p>
+                    <p className="text-sm text-gray-400 mt-1">20/Oct/2021</p>
+                  </div>
+                </div>
               </div>
             </div>
-            {/* Reviews */}
-            <div className="mt-4 border-t-2 pt-3">
-              <div className="flex justify-between items-center">
-                <h3 className="font-semibold text-lg mb-2">Rating & Reviews</h3>
-                <span
-                  className="text-gradient underline text-[13px] cursor-pointer"
-                  onClick={() => {
-                    setShowrating(true);
-                  }}
-                >
-                  View More
-                </span>
-              </div>
-              <div className="bg-gray-50 p-4 rounded-md border">
-                <p className="font-medium">Mike Smith</p>
-                <div className="flex items-center text-yellow-500 mb-1">
-                  {[...Array(4)].map((_, i) => (
-                    <FaStar key={i} />
-                  ))}
-                  <span className="ml-2 text-gray-700 font-medium">4.5</span>
+
+            <div className="flex-1">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold">John Doe</h2>
+                  <p className="text-gray-500">5+ Years Experience</p>
+                  <div className="flex items-center text-yellow-500 mt-1">
+                    {[...Array(7)].map((_, i) => (
+                      <FaStar key={i} />
+                    ))}
+                    <span className="ml-2 text-gray-700 font-medium">4.5</span>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-600">
-                  The standard Lorem Ipsum passage, used since the Lorem ipsum
-                  dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                  tempor incididunt ut labore et dolore magna aliqua.
+                <div className="space-y-4 text-right">
+                  {!fromViewProfile && (
+                    <button
+                      onClick={() => {
+                        setIsModalType("editprofile");
+                        setEditProfile(true);
+                      }}
+                      className="bg-gradient-to-r mt-1 from-[#00034A] to-[#27A8E2] text-white px-8 py-2 rounded-[12px] ml-auto"
+                    >
+                      Edit Profile
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Earned Badges */}
+              <div className="mt-4 text-sm text-gray-700 border-t-2 pt-3">
+                <h3 className="font-semibold mb-1 text-black">Earned Badges</h3>
+                <div className="mt-2 grid grid-cols-3 gap-4">
+                  <img src={badgesImage} alt="badgesImage" />
+                </div>
+              </div>
+
+              {/* Bio */}
+              <div className="mt-4 text-sm text-gray-700 border-t-2 pt-3">
+                <h3 className="font-semibold mb-1 text-black">Biography</h3>
+                <p className="pt-1 text-sm">
+                  The standard Lorem Ipsum passage, m ipsum dolor sit amet,
+                  cectetur adipiscing elit, sed do eiusmThe standard Lorem Ipsum
+                  passage, used since the 1500s Lorem ipsum dolor sit amet,
+                  cectetur adipiscing elit, sed do eiusmThe standard Lorem Ipsum
+                  passage.
                 </p>
+                <div className="mt-4 grid grid-cols-5 gap-5 text-sm text-[#787878] border-t-2 pt-3">
+                  <div>
+                    <span className="font-semibold">Location</span>
+                    <br />
+                    <span className="text-[#181818] font-[500]">
+                      {" "}
+                      Florida, United States{" "}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold">Working Radius</span>
+                    <br />
+                    <span className="text-[#181818] font-[500]"> 20 miles</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold">Completed Job</span>
+                    <br />
+                    <span className="text-[#181818] font-[500]">
+                      {" "}
+                      45+ Job Success
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold">Working Hours</span>
+                    <br />
+                    <span className="text-[#181818] font-[500]">
+                      {" "}
+                      09:00 AM - 05:00 PM{" "}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold">Working Days</span>
+                    <br />
+                    <span className="text-[#181818] font-[500]">
+                      {" "}
+                      Monday - Friday
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Pricing */}
+              <div className="mt-6 border-t-2 pt-3">
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="font-semibold text-lg ">
+                    Service Details and Pricing
+                  </h3>
+                  <div className="w-[50px]">
+                    <button
+                      onClick={() => {
+                        setIsModalType("editservice");
+                        setEditProfile(true);
+                      }}
+                      className="bg-gradient-to-r mt-1 from-[#00034A] to-[#27A8E2] p-3 rounded-[8px]"
+                    >
+                      {" "}
+                      <img
+                        src={EditWhiteIcon}
+                        className="w-[15px]"
+                        alt="editIcon"
+                      />{" "}
+                    </button>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {[
+                    {
+                      title: "Bathroom Cleaning",
+                      desc: [
+                        "Deep cleaning of sinks, tubs, and showers",
+                        "Disinfection of toilets and faucets",
+                        "Mirror and glass polishing",
+                        "Floor scrubbing and mopping",
+                      ],
+                      price: "$120",
+                    },
+                    {
+                      title: "Bedroom Cleaning",
+                      desc: [
+                        "Dusting and wiping surfaces",
+                        "Bed making and linen changing",
+                        "Floor vacuuming and mopping",
+                        "Closet and furniture cleaning",
+                      ],
+                      price: "$100",
+                    },
+                    {
+                      title: "Kitchen Cleaning",
+                      desc: [
+                        "Deep cleaning of sinks, tubs, and showers",
+                        "Disinfection of toilets and faucets",
+                        "Mirror and glass polishing",
+                        "Floor scrubbing and mopping",
+                      ],
+                      price: "$150",
+                    },
+                    {
+                      title: "Full Home Deep Cleaning",
+                      desc: [
+                        "Includes all rooms",
+                        "Sanitization of high-touch areas",
+                        "Custom add-ons available",
+                      ],
+                      price: "$120",
+                    },
+                  ].map((service, i) => (
+                    <div
+                      key={i}
+                      className="bg-gray-50 p-3 rounded-md border flex flex-col justify-between h-[250px]"
+                    >
+                      {" "}
+                      {/* Added flex and height */}
+                      <div>
+                        <h4 className="font-semibold text-[12px] mb-2">
+                          {service.title}
+                        </h4>
+                        <ul className="list-disc list-inside text-[11px] text-gray-600 space-y-1">
+                          {service.desc.map((line, j) => (
+                            <li key={j}>{line}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div className="text-[#27A8E2] font-bold text-lg mt-auto">
+                        {service.price}
+                      </div>{" "}
+                      {/* Fixed price at the bottom */}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Reviews */}
+              <div className="mt-4 border-t-2 pt-3">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-semibold text-lg mb-2">
+                    Rating & Reviews
+                  </h3>
+                  <span
+                    className="text-gradient underline text-[13px] cursor-pointer"
+                    onClick={() => {
+                      setShowrating(true);
+                    }}
+                  >
+                    View More
+                  </span>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-md border">
+                  <p className="font-medium">Mike Smith</p>
+                  <div className="flex items-center text-yellow-500 mb-1">
+                    {[...Array(4)].map((_, i) => (
+                      <FaStar key={i} />
+                    ))}
+                    <span className="ml-2 text-gray-700 font-medium">4.5</span>
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    The standard Lorem Ipsum passage, used since the Lorem ipsum
+                    dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore magna aliqua.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
       </div>
 
       {servicetype && (
@@ -541,12 +568,13 @@ const ServiceproviderProfile = () => {
                 ].map((time, idx) => (
                   <button
                     key={idx}
-                    className={`px-4 py-2 rounded-lg border text-sm ${idx === 0
-                      ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
-                      : idx % 2 === 0
+                    className={`px-4 py-2 rounded-lg border text-sm ${
+                      idx === 0
+                        ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
+                        : idx % 2 === 0
                         ? "bg-pink-100 text-gray-800"
                         : "bg-white"
-                      }`}
+                    }`}
                   >
                     {time}
                   </button>
@@ -1175,8 +1203,9 @@ const ServiceproviderProfile = () => {
                     {Array.from({ length: 5 }).map((_, i) => (
                       <FaStar
                         key={i}
-                        className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
-                          }`}
+                        className={`text-yellow-400 ${
+                          i < Math.floor(review.rating) ? "" : "opacity-50"
+                        }`}
                       />
                     ))}
                     <span className="ml-1 font-medium text-sm">
@@ -1590,7 +1619,10 @@ const ServiceproviderProfile = () => {
         <ProviderEditServices isOpen={editProfile} setIsOpen={setEditProfile} />
       )}
       {isModalType == "editCertificate" && (
-        <ProviderEditCertificate isOpen={editProfile} setIsOpen={setEditProfile} />
+        <ProviderEditCertificate
+          isOpen={editProfile}
+          setIsOpen={setEditProfile}
+        />
       )}
     </>
   );

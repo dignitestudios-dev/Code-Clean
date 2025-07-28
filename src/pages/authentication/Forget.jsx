@@ -53,14 +53,14 @@ export default function Forget() {
             text={"email address"}
             name={"email"}
             type={"email"}
-            holder={"chris.tom@gmail.com"}
+            holder={"Enter email address"}
             value={values.email}
             handleBlur={handleBlur}
             handleChange={handleChange}
             error={errors.email}
             touched={touched?.email}
           />
-          <Button text={"Log In"} loading={loading} />
+          <Button text={"Send OTP"} loading={loading} />
         </form>
       </div>
       <div
@@ -76,7 +76,7 @@ export default function Forget() {
           <h3 className="text-white text-[52px] font-[600]">
             Connect. Book. Serve
           </h3>
-          <p className="text-white text-[32px] font-[400]">
+          <p className="text-white capitalize text-[32px] font-[400]">
             Book top-rated experts or grow your business—all in one place.
           </p>
         </div>

@@ -13,8 +13,9 @@ export default function Input({
   handleBlur,
   error,
   touched,
+  maxLength
 }) {
-  const [isPassVisible, setIsPassVisible] = useState(false);
+  const [isPassVisible, setIsPassVisible] = useState(true);
   return (
     <div className="w-full h-auto flex flex-col justify-start items-start gap-1">
       <label htmlFor="" className="font-[700] capitalize text-[12px]">
@@ -26,12 +27,17 @@ export default function Input({
         }`}
       >
         {text == "Phone Number" && (
-          <img src={PhoneNumberImage} className="w-[80px] h-[100%] ml-2" alt="PhoneNumberImage" />
+          <img
+            src={PhoneNumberImage}
+            className="w-[80px] h-[100%] ml-2"
+            alt="PhoneNumberImage"
+          />
         )}
 
         <input
-          type={isPassVisible ? "text" : type}
+          type={isPassVisible ? type : "text"}
           id={name}
+          maxLength={maxLength}
           name={name}
           value={value}
           onChange={handleChange}

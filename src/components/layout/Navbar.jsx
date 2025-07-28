@@ -186,9 +186,9 @@ const Navbar = () => {
               alt="Avatar"
             />
             {userPopup && (
-              <div className="absolute top-20 right-4 bg-white text-black w-40 rounded shadow-lg p-4 space-y-2 z-50">
+              <div className="absolute top-20 right-4 bg-white w-[155px] h-[157px] text-black rounded-[8px] shadow-lg p-4 space-y-2 z-[99999]">
                 <span
-                  className="block text-sm cursor-pointer"
+                  className="block font-[400] py-1 text-sm border-b  border-[#E4E4E4] cursor-pointer"
                   onClick={() =>
                     navigate(
                       role === "provider" ? "/provider-profile" : "/app/profile"
@@ -198,19 +198,19 @@ const Navbar = () => {
                   View Profile
                 </span>
                 <span
-                  className="block text-sm cursor-pointer"
+                  className="block font-[400] py-1 border-b  border-[#E4E4E4] text-sm cursor-pointer"
                   onClick={() => navigate("/app/settings")}
                 >
                   Settings
                 </span>
                 <span
-                  className="block text-sm cursor-pointer"
+                  className="block font-[400] py-1 border-b  border-[#E4E4E4] text-sm cursor-pointer"
                   onClick={() => setIsReport(true)}
                 >
                   Report an Issue
                 </span>
                 <span
-                  className="block text-sm text-red-600 cursor-pointer"
+                  className="block font-[400] py-1  text-sm text-red-600 cursor-pointer"
                   onClick={() => setLogoutpopup(true)}
                 >
                   Log Out

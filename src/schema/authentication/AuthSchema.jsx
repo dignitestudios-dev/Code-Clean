@@ -31,11 +31,27 @@ export const stripeAccountSchema = Yup.object({
     .matches(/^[0-9\s]{13,19}$/, "Please enter a valid card number")
     .required("Card number is required"),
   expiry: Yup.string()
-    .matches(
-      /^(0[1-9]|1[0-2])\/\d{2}$/,
-      "Please enter a valid expiry date (MM/YY)"
-    )
-    .required("Expiry date is required"),
+    .required("Expiry date is required")
+    .matches(/^(0[1-9]|1[0-2])\/\d{2}$/, "Expiry must be in MM/YY format")
+    .test("is-future-date", "Expiry must be in the future", (value) => {
+      if (!value) return false;
+
+      const [mm, yy] = value.split("/").map((val) => parseInt(val, 10));
+      if (!mm || !yy) return false;
+
+      // Current date
+      const today = new Date();
+      const currentMonth = today.getMonth() + 1; // 1–12
+      const currentYear = today.getFullYear() % 100; // two digits
+
+      if (yy > currentYear) {
+        return true;
+      } else if (yy === currentYear && mm >= currentMonth) {
+        return true;
+      }
+
+      return false;
+    }), 
   cvc: Yup.string()
     .matches(/^[0-9]{3,4}$/, "Please enter a valid CVC")
     .required("CVC is required"),
@@ -86,8 +102,8 @@ export const providerDetailsSchema = Yup.object({
   phone: Yup.string()
     .matches(/^[0-9]{10}$/, "Enter a valid phone number")
     .required("Phone number is required"),
-  radius:Yup.string().required("Radius is required"),
-  Availability:Yup.string().required("Availability is required"),
+  radius: Yup.string().required("Radius is required"),
+  Availability: Yup.string().required("Availability is required"),
   location: Yup.string().required("Location is required"),
   profilePic: Yup.mixed()
     .required("Profile picture is required")

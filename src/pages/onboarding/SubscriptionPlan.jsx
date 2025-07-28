@@ -70,7 +70,7 @@ const SubscriptionPlans = ({handleNext}) => {
                         Subscription Plan
                     </h1>
                     <p className="text-gray-600 text-sm sm:text-base md:text-lg lg:text-xl px-2 sm:px-4 md:px-0">
-                        Please add your government id card to verify your account
+                       Please add your Government ID card to verify your account
                     </p>
                 </div>
 

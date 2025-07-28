@@ -26,7 +26,6 @@ const RoleSelection = () => {
       <p className="text-[#585858] text-center text-[16px] font-[400] mb-6">
         We’ll streamline your account setup accordingly.
       </p>
-
       <div className="flex flex-col md:flex-row gap-8 mb-6">
         {roles.map((role) => {
           const isSelected = selectedRole === role.id;
@@ -34,19 +33,27 @@ const RoleSelection = () => {
             <div
               key={role.id}
               onClick={() => setSelectedRole(role.id)}
-              className={`cursor-pointer rounded-[14px] px-6 py-8 flex flex-col items-center justify-center w-[460px] h-[350px] text-center transition-all shadow-md ${
-                isSelected
-                  ? "text-white"
-                  : "text-gray-600 bg-white border border-gray-200"
-              }`}
-              style={{
-                background: isSelected
-                  ? "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)"
-                  : "",
-              }}
+              className={`group cursor-pointer rounded-[14px] px-6 py-8 flex flex-col items-center justify-center w-[460px] h-[350px] text-center transition-all shadow-md
+          ${
+            isSelected
+              ? "text-white bg-gradient-to-br from-[#27A8E2] to-[#00034A]"
+              : "text-gray-600 bg-white border border-gray-200 hover:bg-gradient-to-br hover:from-[#27A8E2] hover:to-[#00034A]"
+          }`}
             >
-              <h3 className={`text-[30px]  font-bold  mb-2`}>{role.title}</h3>
-              <p className="text-[16px] font-[400]">{role.description}</p>
+              <h3
+                className={`text-[30px] font-bold mb-2 ${
+                  isSelected ? "" : "group-hover:text-white"
+                }`}
+              >
+                {role.title}
+              </h3>
+              <p
+                className={`text-[16px] font-[400] ${
+                  isSelected ? "" : "group-hover:text-white"
+                }`}
+              >
+                {role.description}
+              </p>
             </div>
           );
         })}
@@ -66,17 +73,20 @@ const RoleSelection = () => {
         {selectedRole === "user"
           ? "Join as a User"
           : selectedRole === "provider"
-          ? "Join as a Provider"
+          ? "Join as Service Provider"
           : "Create Account"}
       </button>
 
       <p className="mt-4 text-sm">
         Already have an account?{" "}
-          <span className="text-[#27A8E2] cursor-pointer" onClick={()=>{
-              navigate("/auth/login")
-            }}>
-              Log In
-            </span>
+        <span
+          className="text-[#27A8E2] cursor-pointer"
+          onClick={() => {
+            navigate("/auth/login");
+          }}
+        >
+          Log In
+        </span>
       </p>
     </div>
   );

@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import {Button} from "../../components/global/GlobalButton";
+import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
 import { stripeAccountValues } from "../../init/authentication/AuthValues";
 import { stripeAccountSchema } from "../../schema/authentication/AuthSchema";
@@ -24,13 +24,21 @@ export default function AddStripeAccount({ handleNext }) {
     }
   };
 
-  // Format expiry date
   const formatExpiry = (value) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
+    const v = value.replace(/\D/g, ""); // remove non-digits
+    let formatted = "";
+
     if (v.length >= 2) {
-      return v.substring(0, 2) + "/" + v.substring(2, 4);
+      formatted = v.substring(0, 2) + "/";
+    } else {
+      formatted = v;
     }
-    return v;
+
+    if (v.length > 2) {
+      formatted += v.substring(2, 4); // only take 2 digits for year
+    }
+
+    return formatted.substring(0, 5); // max length = 5 chars (MM/YY)
   };
 
   const {
@@ -78,11 +86,11 @@ export default function AddStripeAccount({ handleNext }) {
   };
 
   return (
-    <div className="w-auto h-[90%] max-w-2xl mx-auto p-6">
-      <h3 className="font-[600] text-center text-[36px] text-[#181818]">
+    <div className="w-auto h-[90%] flex flex-col justify-center max-w-2xl mx-auto p-6">
+      <h3 className="font-[600] text-center text-[32px] text-[#181818]">
         Add Stripe Account
       </h3>
-      <p className="text-[#565656] mt-3 text-center font-[400] text-[16px]">
+      <p className="text-[#565656] mt-2 text-center font-[400] text-[16px]">
         Enter your payment details to securely process the payment.
       </p>
 
@@ -123,6 +131,7 @@ export default function AddStripeAccount({ handleNext }) {
               text={"Expiry"}
               name={"expiry"}
               type={"text"}
+              maxLength={5}
               holder={"mm/yy"}
               value={values.expiry}
               handleBlur={handleBlur}

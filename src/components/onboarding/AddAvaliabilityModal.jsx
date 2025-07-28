@@ -73,7 +73,7 @@ export default function AddAvailabilityModal({ onClose, edit }) {
 
         <div className="mb-4">
           <h3 className="text-lg font-semibold mb-2">Select Working Days</h3>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center mt-4 justify-between mb-5">
             <span>All Days</span>
             <input
               type="checkbox"
@@ -85,7 +85,7 @@ export default function AddAvailabilityModal({ onClose, edit }) {
           {days.map((day) => (
             <div
               key={day}
-              className="flex items-center justify-between mb-2 capitalize"
+              className="flex items-center justify-between mb-5 capitalize"
             >
               <span>{day}</span>
               <input
@@ -99,6 +99,7 @@ export default function AddAvailabilityModal({ onClose, edit }) {
         </div>
 
         <button
+        onClick={onClose}
           className="w-full py-2 rounded-xl text-white font-semibold"
           style={{
             background:
