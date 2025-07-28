@@ -158,7 +158,7 @@ const Login = () => {
               Don’t have an account ?
               <NavLink
                 className="font-medium hover:no-underline hover:text-[#0084FF] text-[#0084FF]"
-                to={"/auth/role-selection"}
+                to={"/auth/signup"}
               >
                 Sign Up
               </NavLink>

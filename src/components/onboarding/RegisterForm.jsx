@@ -7,10 +7,11 @@ import { loginValues, SignUpValues } from "../../init/authentication/AuthValues"
 import { signInSchema, signUpSchema } from "../../schema/authentication/AuthSchema";
 import { useLogin } from "../../hooks/api/Post";
 import { processLogin } from "../../lib/utils";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 
 export default function RegisterForm({ handleNext }) {
   const { loading, postData } = useLogin();
+  const navigate = useNavigate("");
 
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
@@ -33,7 +34,7 @@ export default function RegisterForm({ handleNext }) {
       <h3 className="font-[600] text-center text-[36px] text-[#181818]">
         SignUp
       </h3>
-      <p className="text-[#565656] text-center font-[400] text-[16px] ">
+      <p className="text-[#565656] text-center font-[400] text-[16px] pt-2">
         Please enter your details to create an account.
       </p>
       <form
@@ -82,9 +83,11 @@ export default function RegisterForm({ handleNext }) {
         <div className="text-center w-full">
           <p className="font-[500] text-[12px] text-[#565656]">
             Already have an account?{" "}
-            <NavLink className={"font-[600] text-[#27A8E2] "} to={"auth/login"}>
+            <span className="text-[#27A8E2] cursor-pointer" onClick={()=>{
+              navigate("/auth/login")
+            }}>
               Log In
-            </NavLink>{" "}
+            </span>
           </p>
           <p className="font-[500] mt-2 text-[12px] text-[#565656]">
             I accept the{" "}
