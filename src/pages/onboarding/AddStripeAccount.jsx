@@ -73,7 +73,7 @@ export default function AddStripeAccount({ handleNext }) {
   };
 
   const handleCvcChange = (e) => {
-    const value = e.target.value.replace(/[^0-9]/g, "").substring(0, 4);
+    const value = e.target.value.replace(/[^0-9]/g, "").substring(0, 3);
     setFieldValue("cvc", value);
   };
 
@@ -123,7 +123,7 @@ export default function AddStripeAccount({ handleNext }) {
               text={"Expiry"}
               name={"expiry"}
               type={"text"}
-              holder={"mm/dd/yy"}
+              holder={"mm/yy"}
               value={values.expiry}
               handleBlur={handleBlur}
               handleChange={handleExpiryChange}

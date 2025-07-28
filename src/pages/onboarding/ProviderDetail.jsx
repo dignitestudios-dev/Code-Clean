@@ -9,11 +9,11 @@ import { MapImg, UploadImg } from "../../assets/export";
 import { IconFilePlus } from "@tabler/icons-react";
 import { FaPlus } from "react-icons/fa";
 import AddAvailabilityModal from "../../components/onboarding/AddAvaliabilityModal";
-import { FiTrash2 } from "react-icons/fi";
+import { FiPlus, FiTrash2 } from "react-icons/fi";
 
 export default function ProviderDetail({ handleNext }) {
   const { loading, postData } = useLogin();
-  const [previewImage, setPreviewImage] = useState(UploadImg); // Default image
+  const [previewImage, setPreviewImage] = useState(); // Default image
   const [showModal, setShowModal] = useState(false);
 
   const formik = useFormik({
@@ -51,7 +51,7 @@ export default function ProviderDetail({ handleNext }) {
       setPreviewImage(imageUrl);
     }
   };
-
+  console.log(previewImage, "/src/assets/upload-img.png", "testing");
   return (
     <div className="w-auto h-[98%]">
       <h3 className="font-[600] text-center text-[36px] text-[#181818]">
@@ -70,15 +70,35 @@ export default function ProviderDetail({ handleNext }) {
       >
         <div>
           <label htmlFor="profilePic" className="cursor-pointer">
-            <img
-              src={previewImage}
-              className={`${
-                previewImage == "/src/assets/upload-img.png"
-                  ? "w-[280px]"
-                  : "w-[100px] rounded-full  h-[100px]"
-              } object-cover`}
-              alt="UploadImg"
-            />
+            <div className="flex items-center gap-4">
+              <label
+                htmlFor="profilePic"
+                className="w-16 h-16 rounded-full border-2 border-dashed border-[#00034A] flex items-center justify-center cursor-pointer overflow-hidden"
+              >
+                {previewImage ? (
+                  <img
+                    src={previewImage}
+                    alt="Profile Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-lg text-gradient">+</span>
+                )}
+                <input
+                  id="profilePic"
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+              <label
+                htmlFor="profilePic"
+                className="text-gradient text-[16px] font-medium cursor-pointer"
+              >
+                Upload Profile Picture
+              </label>
+            </div>
           </label>
           <input
             type="file"
