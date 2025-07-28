@@ -7,6 +7,7 @@ import { awardIcon, LocationIcon, WorkIcon } from '../../assets/export';
 import BroadCastModal from '../../components/app/Profile/BroadCastModal';
 import Filter from '../../components/global/Filter';
 import { useNavigate } from 'react-router';
+import Footer from '../../components/layout/Footer';
 
 const professionalsData = [
   {
@@ -207,8 +208,11 @@ const Home = () => {
 
           </div>
         </div>
+            <Footer />
+
       </div>
       <BroadCastModal custombooking={isOpen} setCustombooking={setIsOpen} />
+    
     </div>
   );
 };
