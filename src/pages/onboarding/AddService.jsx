@@ -42,7 +42,10 @@ export default function AddServicesForm({ handleNext }) {
         <label className="block text-sm font-semibold mb-1">Services</label>
         <div className="flex justify-center items-center h-[100%] w-full  border rounded-[8px] border-dashed border-[#27A8E2] ">
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setActionType("add")
+              setShowModal(true)
+            }}
             className="bg-gradient-to-r from-[#00034A] border-b border-[#00034A] to-[#27A8E2] bg-clip-text text-transparent"
           >
             + Add New Services
@@ -57,7 +60,7 @@ export default function AddServicesForm({ handleNext }) {
         />
       )}
       {/* Services List */}
-      <div className="mt-10 flex flex-col gap-4">
+      <div className="mt-10 h-[200px] overflow-auto flex flex-col gap-4">
         {services.map((service, index) => (
           <div
             key={index}

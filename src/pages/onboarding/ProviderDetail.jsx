@@ -158,7 +158,7 @@ export default function ProviderDetail({ handleNext }) {
           </div>
           <div>
             <Input
-              text="Enter working radius here"
+              text="Working Radius"
               name="radius"
               type="text"
               holder="Enter working radius here"
