@@ -24,7 +24,7 @@ export default function EditServiceModal({ onClose, onAdd }) {
             &times;
           </button>
 
-          <h2 className="text-[20px] font-bold mb-6">Edit New Service</h2>
+          <h2 className="text-[20px] font-bold mb-6">Edit Your Service</h2>
 
           {/* Service Name */}
           <div className="mb-4">

@@ -63,11 +63,13 @@ import facebook from "./facebook.png"
 import linkdin from "./linkdin.png"
 import twitter from "./twitter.jpg"
 import deleteIcon from "./delete.png"
+import ChatIcon from "./Chat.png"
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
 export {
+  ChatIcon,
   deleteIcon,
   HearIcon,
   badgesImage,

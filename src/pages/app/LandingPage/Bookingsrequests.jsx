@@ -180,7 +180,7 @@ const Bookingsrequests = () => {
 
 
             {/* Booking Table Section */}
-            <div className="px-[10em] py-[4em] bg-[#f5f8fb00] -mt-[16em] relative z-10 mb-10">
+            <div className="px-[10em] py-[4em] bg-[#f5f8fb00] -mt-[16em] relative mb-10">
                 <div className="bg-white rounded-xl shadow-md overflow-x-auto">
                     {/* Tabs for Filter */}
                     <div className="flex border-b px-6 pt-6">

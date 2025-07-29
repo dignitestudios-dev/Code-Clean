@@ -63,7 +63,7 @@ const Footer = () => {
         {/* Bottom Row */}
         <div className="flex flex-col md:flex-row justify-between items-center text-sm gap-2">
           <p className="bg-gradient-to-r from-[#00034A] font-extralight to-[#27A8E2] bg-clip-text text-transparen">
-            Copyright © 2024 CodeClean. All rights reserved.
+            Copyright © 2025 CodeClean. All rights reserved.
           </p>
           <div className="flex gap-4 bg-gradient-to-r  font-extralight  from-[#00034A] to-[#27A8E2] bg-clip-text text-transparen">
             <a onClick={() => {

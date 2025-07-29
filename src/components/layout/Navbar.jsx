@@ -136,7 +136,7 @@ const Navbar = () => {
               <Link
                 key={link.label}
                 to={link.path}
-                className={`pb-1 relative transition-all duration-300 ${
+                className={`pb-1 relative text-[16px] font-[500] transition-all duration-300 ${
                   currentPath === link.path
                     ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
                     : ""
@@ -151,27 +151,32 @@ const Navbar = () => {
                 onClick={togglePopup}
               />
               {isPopupOpen && (
-                <div className="absolute top-10 right-0 w-96 p-4 bg-white shadow-lg rounded-lg border border-gray-200 z-50">
+                <div className="absolute top-10 right-0 w-[507px] h-[507px] overflow-auto p-4 bg-white shadow-lg rounded-[16px] border border-gray-200 z-50">
                   <h3 className="text-lg font-semibold text-black">
                     Notifications
                   </h3>
                   <div className="mt-4 space-y-4 max-h-60 overflow-y-auto">
                     {notifications.map((n, idx) => (
                       <div key={idx}>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sm font-medium text-black">
-                            {n.title}
-                          </span>
-                          <span className="text-xs text-gray-600">
-                            {n.time}
-                          </span>
+                        <div className="flex justify-between ">
+                          <div>
+                            <span className="text-[14px] font-bold text-black">
+                              {n.title}
+                            </span>
+                            <p className="text-[13px]  text-[#18181880] font-[400]">{n.message}</p>
+                          </div>
+                          <div>
+                            <div className="text-xs text-gray-600">
+                              {n.time}
+                            </div>
+                            {n.unreadCount > 0 && (
+                              <div className="bg-red-600 mt-1 text-white text-xs rounded-full w-[19px] h-[19px] flex items-center justify-center ">
+                                {n.unreadCount}
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <p className="text-sm text-black">{n.message}</p>
-                        {n.unreadCount > 0 && (
-                          <span className="bg-red-600 text-white text-xs rounded-full px-2 py-1 inline-block">
-                            {n.unreadCount}
-                          </span>
-                        )}
+
                         <hr className="mt-2" />
                       </div>
                     ))}
@@ -223,7 +228,7 @@ const Navbar = () => {
             <ul className="flex gap-6">
               <li className="relative">
                 <Link
-                  className={`relative pb-1 transition-all duration-300 ${
+                  className={`relative pb-1 text-[16px] font-[500] transition-all duration-300 ${
                     currentPath === "/app/landing"
                       ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
                       : ""
@@ -234,13 +239,13 @@ const Navbar = () => {
                 </Link>
               </li>
               <li>
-                <a href="#cleaners">Cleaners</a>
+                <a href="#cleaners" className="text-[16px] font-[500]" >Cleaners</a>
               </li>
               <li>
-                <a href="#whyus">Why Choose Us</a>
+                <a href="#whyus" className="text-[16px] font-[500]" >Why Choose Us</a>
               </li>
               <li>
-                <a href="#faq">FAQs</a>
+                <a href="#faq" className="text-[16px] font-[500]" >FAQs</a>
               </li>
             </ul>
             <div className="flex gap-4">
@@ -340,26 +345,26 @@ const Navbar = () => {
             <>
               <Link
                 to="/app/landing"
-                className="block py-2"
+                className="block py-2 text-[16px] font-[500]"
                 onClick={toggleMobileMenu}
               >
                 Home
               </Link>
               <a
                 href="#cleaners"
-                className="block py-2"
+                className="block py-2 text-[16px] font-[500]"
                 onClick={toggleMobileMenu}
               >
                 Cleaners
               </a>
               <a
                 href="#whyus"
-                className="block py-2"
+                className="block py-2 text-[16px] font-[500]"
                 onClick={toggleMobileMenu}
               >
                 Why Choose Us
               </a>
-              <a href="#faq" className="block py-2" onClick={toggleMobileMenu}>
+              <a href="#faq" className="block py-2 text-[16px] font-[500]" onClick={toggleMobileMenu}>
                 FAQs
               </a>
               <button
@@ -367,7 +372,7 @@ const Navbar = () => {
                   navigate("/auth/role-selection");
                   toggleMobileMenu();
                 }}
-                className="w-full border border-white px-4 py-1 rounded-md"
+                className="w-full border  border-white px-4 py-1 rounded-md"
               >
                 Signup
               </button>

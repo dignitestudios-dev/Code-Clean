@@ -22,25 +22,33 @@ const UpdgradePlane = ({ isOpen, setIsOpen }) => {
             </button>
           </div>
           <div className="flex items-start px-5 flex-col gap-2 mb-4">
-            <h2 className="text-[#181818] font-bold text-[20px]">
+            <h2 className="text-[#181818] capitalize font-bold text-[20px]">
               upgrade plan
             </h2>
-            <p className="text-[#18181880] text-[16px]">
+            <p className="text-[#18181880] font-[400] text-[16px]">
               Are you sure you want to upgrade subscription plan?
             </p>
             <div className="flex gap-3 items-center mt-3">
-              <Button onClick={() => {
-                setIsOpen(!isOpen);
-                setSubscriptionSuccess(true)
-              }} text={"Yes"} />
-              <button className="bg-[#21293514] text-[#212935] rounded-[8px] p-3">
+              <div className="w-[100px]" >
+                <Button
+                  onClick={() => {
+                    setIsOpen(!isOpen);
+                    setSubscriptionSuccess(true);
+                  }}
+                  text={"Yes"}
+                />
+              </div>
+              <button className="bg-[#21293514] w-[106px]  text-[#212935] rounded-[8px] p-3">
                 No
               </button>
             </div>
           </div>
         </div>
       </Modal>
-      <SubscribedPlan setIsOpen={setSubscriptionSuccess} isOpen={subscriptionSuccess}  />
+      <SubscribedPlan
+        setIsOpen={setSubscriptionSuccess}
+        isOpen={subscriptionSuccess}
+      />
     </>
   );
 };

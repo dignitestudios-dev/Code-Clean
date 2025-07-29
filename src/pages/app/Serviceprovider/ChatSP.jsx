@@ -100,7 +100,7 @@ const ChatSP = () => {
                 </div>
                 <div className="max-w-[1260px] mb-0 -mt-80 bottom-0 mx-auto px-6 py-10">
                     <div className='flex items-center gap-2 mb-6'>
-                        <button type="button" onClick={() => navigate("/app/dashboard")} >
+                        <button type="button" onClick={() => navigate(-1)} >
                             <FaArrowLeft color='white' size={16} />
                         </button>
                         <h1 className="text-2xl font-semibold text-white">Messages</h1>

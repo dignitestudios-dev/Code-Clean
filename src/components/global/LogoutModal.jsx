@@ -22,7 +22,7 @@ const LogOutModal = ({ isOpen, setIsOpen, detail }) => {
                     <h2 className="text-[#181818] font-bold text-[20px]">log out</h2>
                     <p className="text-[#18181880] text-[16px]">Are you sure you want to log out?</p>
                     <div className="flex gap-3 items-center mt-3" >
-                        <button className="bg-[#21293514] text-[#212935] rounded-[8px] px-10 p-2" >No</button>
+                        <button className="bg-[#21293514] text-[#212935] rounded-[8px] px-10 p-2" onClick={() => setIsOpen(!isOpen)}     >No</button>
                         <button className="bg-[#EE3131] text-[white] rounded-[8px] px-10 p-2" onClick={()=>navigate("/auth/login")} >Yes</button>
                     </div>
                 </div>

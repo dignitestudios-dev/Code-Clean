@@ -62,7 +62,7 @@ const UserProvider = () => {
                     {/* Three dots menu */}
                     <div className="relative" ref={menuRef}>
                         <div
-                            className="text-gray-400 text-2xl cursor-pointer"
+                            className="text-[#181818] font-bold text-4xl cursor-pointer"
                             onClick={() => setMenuOpen((prev) => !prev)}
                         >
                             ⋮
@@ -72,7 +72,7 @@ const UserProvider = () => {
                         {menuOpen && (
                             <div className="absolute top-8 right-0 w-[8em] bg-white shadow-lg rounded-xl p-2 z-50">
                                 <button
-                                    className="text-sm px-4 py-2 hover:bg-gray-100 rounded-md text-gray-700"
+                                    className="text-[13px] px-4 py-2 hover:bg-gray-100 rounded-md text-[#000000]"
                                    onClick={() => setIsReport(!isReport)}
                                 >
                                     Report User

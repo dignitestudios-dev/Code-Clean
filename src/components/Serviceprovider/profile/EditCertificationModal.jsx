@@ -89,7 +89,7 @@ export default function EditCertificateModal({ onClose, onAdd }) {
                             background: "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",
                         }}
                     >
-                        Add
+                        Save
                     </button>
                 </form>
 

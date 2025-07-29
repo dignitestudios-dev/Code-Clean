@@ -49,17 +49,17 @@ export default function ProviderEditServices({ isOpen, setIsOpen }) {
         className="flex items-center justify-center border-none outline-none z-[1000] "
         overlayClassName="fixed inset-0 bg-[#C6C6C6] bg-opacity-50 backdrop-blur-sm z-[1000]  flex justify-center items-center"
       >
-        <div className="bg-white rounded-[16px] shadow-lg py-4 w-[450px] px-4   flex flex-col justify-center gap-3 ">
+        <div className="bg-white rounded-[16px] shadow-lg py-4 w-[500px] px-4   flex flex-col justify-center gap-3 ">
           <div className="flex justify-end w-full">
             <button onClick={() => setIsOpen(!isOpen)}>
               <HiOutlineXMark size={23} />
             </button>
           </div>
           <div className="">
-            <h3 className="font-[600] text-center text-[28px] text-[#181818]">
+            <h3 className="text-[32px] font-bold text-[#181818] text-center">
               Edit Your services
             </h3>
-            <p className="text-[#565656] text-[16px]">
+            <p className="text-center text-[#565656] text-[16px]">
               Edit your service details or add new services
             </p>
             <div className="h-[130px] mt-10 w-full">
@@ -95,9 +95,8 @@ export default function ProviderEditServices({ isOpen, setIsOpen }) {
               <DeleteProServices
                 detail={{
                   title: "Delete Service",
-                  bio: "Are you sure you want to delete this service?"
-                }
-                }
+                  bio: "Are you sure you want to delete this service?",
+                }}
                 setIsOpen={setShowModal}
                 isOpen={showModal}
               />
@@ -141,8 +140,8 @@ export default function ProviderEditServices({ isOpen, setIsOpen }) {
             {/* Next Button */}
             <button
               onClick={() => {
-                setIsOpen(false)
-                setSuccessModal(true)
+                setIsOpen(false);
+                setSuccessModal(true);
               }}
               className="mt-6 w-full rounded-xl py-3 text-white text-[16px] font-semibold"
               style={{

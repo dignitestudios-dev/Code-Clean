@@ -15,8 +15,8 @@ const Dashboard = () => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [rejectedpopup, setRejectedpopup] = useState(false);
   const [rejectedreasons, setRejectedreasons] = useState(false);
-  const [rejectedreqcomplete, setRejectedreqcomplete] = useState(false);
   const [reason, setReason] = useState("");
+  const [rejectedreqcomplete, setRejectedreqcomplete] = useState(false);
 
   const bookings = [
     {

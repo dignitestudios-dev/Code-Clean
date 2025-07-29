@@ -21,7 +21,7 @@ export default function LandingPage() {
             zIndex: -1,
           }}
         />
-        <div className="relative z-10 flex items-center">
+        <div className="relative  flex items-center">
           <Hero />
         </div>
       </div>

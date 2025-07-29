@@ -73,7 +73,7 @@ const Wallet = () => {
       </div>
 
       {/* Balance Card */}
-      <div className="max-w-7xl mx-auto -mt-[17em] z-10 relative mb-8">
+      <div className="max-w-7xl mx-auto -mt-[17em] relative mb-8">
         <div className="bg-white/30 rounded-xl shadow-md p-6 flex justify-between items-center">
           <div>
             <p className="text-white text-[18px] font-[500]">
