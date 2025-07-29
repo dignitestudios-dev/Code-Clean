@@ -257,7 +257,7 @@ const Navbar = () => {
               </button>
               <button
                 className="bg-[#26A7E2] text-white w-[127px] h-[44px] rounded-md"
-                onClick={() => navigate("/auth/role-selection")}
+                onClick={() => navigate("/auth/login")}
               >
                 Login
               </button>
@@ -372,13 +372,13 @@ const Navbar = () => {
                   navigate("/auth/role-selection");
                   toggleMobileMenu();
                 }}
-                className="w-full border  border-white px-4 py-1 rounded-md"
+                className="w-full border border-white px-4 py-1 rounded-md"
               >
                 Signup
               </button>
               <button
                 onClick={() => {
-                  navigate("/auth/role-selection");
+                  navigate("/auth/login");
                   toggleMobileMenu();
                 }}
                 className="w-full bg-[#26A7E2] text-white px-4 py-1 rounded-md"

@@ -43,23 +43,6 @@ const LandingNavbar = () => {
     }
   }, [location.pathname]);
 
-  useEffect(() => {
-    const sections = ["cleaners", "whyus", "faq"];
-    const handleScroll = () => {
-      for (let section of sections) {
-        const el = document.getElementById(section);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 100 && rect.bottom >= 100) {
-            setActiveSection(section);
-            break;
-          }
-        }
-      }
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -76,7 +59,7 @@ const LandingNavbar = () => {
 
   const linkClass = (id) =>
     `text-[16px] font-[500] relative pb-1 transition-all duration-300 ${
-      activeSection === id
+      activeSection == id
         ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
         : ""
     }`;
@@ -135,17 +118,17 @@ const LandingNavbar = () => {
               </Link>
             </li>
             <li>
-              <a href="#cleaners" className={linkClass("cleaners")}>
+              <a href="#cleaners"  onClick={() => setActiveSection("cleaners")} className={linkClass("cleaners")}>
                 Cleaners
               </a>
             </li>
             <li>
-              <a href="#whyus" className={linkClass("whyus")}>
+              <a href="#whyus"  onClick={() => setActiveSection("whyus")} className={linkClass("whyus")}>
                 Why Choose Us
               </a>
             </li>
             <li>
-              <a href="#faq" className={linkClass("faq")}>
+              <a href="#faq"  onClick={() => setActiveSection("faq")} className={linkClass("faq")}>
                 FAQs
               </a>
             </li>
@@ -250,7 +233,7 @@ const LandingNavbar = () => {
               </button>
               <button
                 className="bg-[#26A7E2] text-white w-[127px] h-[44px] rounded-md"
-                onClick={() => navigate("/auth/role-selection")}
+                onClick={() => navigate("/auth/login")}
               >
                 Login
               </button>
@@ -339,7 +322,7 @@ const LandingNavbar = () => {
               </button>
               <button
                 onClick={() => {
-                  navigate("/auth/role-selection");
+                  navigate("/auth/login");
                   toggleMobileMenu();
                 }}
                 className="w-full bg-[#26A7E2] text-white px-4 py-1 rounded-md"
