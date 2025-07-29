@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Button} from "../../components/global/GlobalButton";
+import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
 import { LoginRight } from "../../assets/export";
 import { useFormik } from "formik";
@@ -7,14 +7,15 @@ import { processLogin } from "../../lib/utils";
 import { useLogin } from "../../hooks/api/Post";
 import { resetPasswordValues } from "../../init/authentication/AuthValues";
 import { resetPasswordSchema } from "../../schema/authentication/AuthSchema";
+import { useNavigate } from "react-router";
 
 export default function ResetPassword() {
   const { loading, postData } = useLogin();
-
+  const navigate = useNavigate("");
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
-  initialValues: resetPasswordValues,
-    validationSchema: resetPasswordSchema,
+      initialValues: resetPasswordValues,
+      validationSchema: resetPasswordSchema,
       validateOnChange: true,
       validateOnBlur: true,
       onSubmit: async (values, action) => {
@@ -22,7 +23,8 @@ export default function ResetPassword() {
           email: values?.email,
           password: values?.password,
         };
-        postData("/admin/login", false, null, data, processLogin);
+        navigate("/auth/login");
+        // postData("/admin/login", false, null, data, processLogin);
       },
     });
 
@@ -57,14 +59,14 @@ export default function ResetPassword() {
           />
           <Input
             text={"Confirm Password"}
-            name={"password"}
+            name={"confirmPassword"}
             type={"password"}
             holder={"Re-enter password here"}
-            value={values.password}
+            value={values.confirmPassword}
             handleBlur={handleBlur}
             handleChange={handleChange}
-            error={errors.password}
-            touched={touched?.password}
+            error={errors.confirmPassword}
+            touched={touched?.confirmPassword}
           />
           <Button text={"Update"} loading={loading} />
         </form>

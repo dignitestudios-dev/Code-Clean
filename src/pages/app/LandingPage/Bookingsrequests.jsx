@@ -352,7 +352,9 @@ const Bookingsrequests = () => {
               {["Current Bookings", "Booking Request"].map((tab) => (
                 <button
                   key={tab}
-                  onClick={() => handleTabClick(tab)}
+                  onClick={() => {
+                    setStatusFilter("All")
+                    handleTabClick(tab)}}
                   className={`px-4 py-2 rounded-lg ${
                     activeTab === tab
                       ? "bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white"
@@ -378,7 +380,7 @@ const Bookingsrequests = () => {
                     <button
                       key={index}
                       onClick={() => setStatusFilter(status)}
-                      className={`px-4 py-2 text-sm font-medium text-[#3F3F3F] hover:text-[#00AEEF] focus:outline-none border-b-2 ${
+                      className={`px-4 py-2 text-sm font-medium text-[#000000] hover:text-[#00AEEF] focus:outline-none border-b-2 ${
                         statusFilter === status
                           ? "border-[#00AEEF] text-gradient"
                           : "border-transparent"
