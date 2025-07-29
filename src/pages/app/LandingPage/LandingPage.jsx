@@ -5,14 +5,14 @@ import ChooseUs from "../../../components/app/LandingPage/ChooseUs";
 import ServiceMarketplace from "../../../components/app/LandingPage/MarketPlace";
 import Faq from "../../../components/app/LandingPage/Faq";
 import JoinAs from "../../../components/app/LandingPage/JoinAs";
-import Navbar from "../../../components/layout/Navbar";
 import Hero from "../../../components/app/LandingPage/Hero";
 import { HeroBg } from "../../../assets/export";
+import LandingNavbar from "../../../components/app/LandingPage/Navbar";
 
 export default function LandingPage() {
   return (
     <div>
-      <Navbar />
+      <LandingNavbar />
       <div className="relative -mt-[6em] pt-[13em] pb-[10em]">
         <div
           className="absolute inset-0 bg-cover bg-center "

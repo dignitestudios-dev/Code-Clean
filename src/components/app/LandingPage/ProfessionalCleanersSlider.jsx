@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
@@ -9,7 +9,12 @@ import {
   MdKeyboardArrowRight,
   MdOutlineKeyboardArrowLeft,
 } from "react-icons/md";
-import { awardIcon, HearIcon, LocationIcon, WorkIcon } from "../../../assets/export";
+import {
+  awardIcon,
+  HearIcon,
+  LocationIcon,
+  WorkIcon,
+} from "../../../assets/export";
 const users = [
   {
     name: "Mike Smith",
@@ -61,7 +66,9 @@ const users = [
 const ProfessionalCleanersSlider = () => {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
-  const swiperRef = useRef(null); // Swiper instance
+  const swiperRef = useRef(null);
+
+  const [showLeftGradient, setShowLeftGradient] = useState(false);
 
   useEffect(() => {
     if (
@@ -77,6 +84,9 @@ const ProfessionalCleanersSlider = () => {
     }
   }, []);
 
+  const handleSlideChange = (swiper) => {
+    setShowLeftGradient(swiper.activeIndex > 2);
+  };
 
   return (
     <div className="relative  w-full  py-8">
@@ -86,6 +96,7 @@ const ProfessionalCleanersSlider = () => {
         modules={[Navigation]}
         onSwiper={(swiper) => (swiperRef.current = swiper)}
         className="h-[350px]"
+         onSlideChange={handleSlideChange}
         initialSlide={2} // 👈 Optional: starts at 2nd real slide
         centeredSlides={true} // 👈 Centers active slide
         autoplay={{
@@ -119,7 +130,6 @@ const ProfessionalCleanersSlider = () => {
           },
         }}
       >
-
         {users.map((user, index) => (
           <SwiperSlide key={index}>
             <div className="bg-white lg:h-[290px]  rounded-xl shadow-lg p-4 relative">
@@ -138,7 +148,11 @@ const ProfessionalCleanersSlider = () => {
                     </div>
                   </div>
                 </div>
-                <img src={HearIcon} alt="HearIcon" className="cursor-pointer w-[20px]" srcset="" />
+                <img
+                  src={HearIcon}
+                  alt="HearIcon"
+                  className="cursor-pointer w-[20px]"
+                />
               </div>
 
               <div className="text-sm text-gray-600 space-y-1 mb-2">
@@ -170,7 +184,12 @@ const ProfessionalCleanersSlider = () => {
       <div className="flex justify-center mt-10 gap-4">
         <button
           ref={prevRef}
-          className="w-10 flex items-center justify-center text-center h-10 rounded-full bg-[#FFFFFF]"
+          className={`w-10 h-10 rounded-full flex items-center justify-center text-center ${
+            showLeftGradient
+              ? "bg-gradient text-white"
+              : "bg-[#FFFFFF] text-black "
+          }`}
+          // disabled={!showLeftGradient}
         >
           <MdOutlineKeyboardArrowLeft size={25} />
         </button>
