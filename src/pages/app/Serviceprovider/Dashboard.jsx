@@ -273,7 +273,7 @@ const Dashboard = () => {
                   className={`px-4 py-2 rounded-lg ${
                     activeTab === tab
                       ? "bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white"
-                      : "bg-white text-blue-600"
+                      : "bg-white text-[#181818]"
                   }`}
                 >
                   {tab}

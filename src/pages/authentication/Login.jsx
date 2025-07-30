@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useLogin } from "../../hooks/api/Post";
-import { processLogin } from "../../lib/utils";
+import { useDispatch } from "react-redux"; // Import useDispatch
+import { login } from "../../redux/slices/auth.slice"; // Import login action from your Redux slice
 import { useFormik } from "formik";
 import { loginValues } from "../../init/authentication/AuthValues";
 import { signInSchema } from "../../schema/authentication/AuthSchema";
-import { NavLink, useNavigate } from "react-router"; // Import useNavigate
+import { NavLink, useNavigate } from "react-router"; // Corrected to react-router-dom
 import { FiLoader } from "react-icons/fi";
 import { FaCheck, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { AppleImage, GoogleImage, LoginRight, Logo } from "../../assets/export";
@@ -12,9 +12,10 @@ import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
 import { RxCross2 } from "react-icons/rx";
 import Cookies from "js-cookie";
+
 const Login = () => {
+  const dispatch = useDispatch(); // Initialize dispatch
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const { loading, postData } = useLogin();
   const [type, setType] = useState(false);
   const [selectedRole, setSelectedRole] = useState(null);
 
@@ -46,7 +47,11 @@ const Login = () => {
           email: values?.email,
           password: values?.password,
         };
-        postData("/admin/login", false, null, data, processLogin);
+
+        // Dispatch the login action here
+        dispatch(login(data)); // Dispatch the login action with the credentials
+
+        // You can handle success or failure based on Redux store
       },
     });
 
@@ -110,7 +115,7 @@ const Login = () => {
             </NavLink>
           </div>
 
-          <Button text={"Log In"} loading={loading} />
+          <Button text={"Log In"}  />
 
           {type && (
             <>

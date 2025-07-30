@@ -18,7 +18,7 @@ const Custombooking = () => {
                 }}
             >
                 <div className='flex items-center gap-3 ml-[8em]'>
-                    <button type="button" cla onClick={() => navigate(-1)} >
+                    <button type="button" onClick={() => navigate(-1)} >
                         <FaArrowLeft color='white' size={20} />
                     </button>
                     <h2 className="text-white text-[30px] mt-0 font-bold leading-[48px] capitalize">
