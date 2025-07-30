@@ -14,12 +14,11 @@ import Profile from "../../pages/app/Profile/Profile";
 import Settings from "../../pages/app/Settings/Settings";
 
 export const appRoutes = [
-
     {
         url: "home",
         page: <Home />,
         name: "Home",
-        isPublic: true,
+        isPublic: true, 
     },
     {
         url: "service-provider",

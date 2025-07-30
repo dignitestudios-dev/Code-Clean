@@ -36,8 +36,6 @@ const Wallet = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle the form submission logic here
-    console.log("Form submitted with data:", formData);
     setAddbankaccount(false);
     setShowModal(true);
   };
