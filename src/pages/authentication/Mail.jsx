@@ -9,7 +9,6 @@ export default function Mail() {
       navigate("/auth/reset-password");
     }, 1000);
   }, []);
-
   return (
     <div className="w-full  h-screen grid grid-cols-2 gap-4 rounded-[19px] bg-white">
       <div className="w-auto flex flex-col mt-4 justify-center items-center">

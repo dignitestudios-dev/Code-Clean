@@ -100,7 +100,6 @@ const Login = () => {
             error={errors.password}
             touched={touched?.password}
           />
-
           <div className="w-full -mt-1  flex items-center justify-end">
             <NavLink
               to={"/auth/forgot-password"}
@@ -128,7 +127,7 @@ const Login = () => {
                     return (
                       <div
                         key={role.id}
-                        onClick={() => handleRoleSelection(role.id)} // Use the role selection handler
+                        onClick={() => handleRoleSelection(role.id)}
                         className={`cursor-pointer rounded-[14px] px-6 py-8 flex flex-col items-center justify-center w-[360px] h-[250px] text-center transition-all shadow-md ${
                           isSelected
                             ? "text-white"
@@ -153,7 +152,6 @@ const Login = () => {
               </div>
             </>
           )}
-
           <div className="w-full  flex justify-center items-center">
             <span className="text-[12px] flex gap-1 font-[600] leading-[27px] text-[#959393]">
               Don’t have an account ?
@@ -172,7 +170,6 @@ const Login = () => {
             </span>
             <div className="flex-1 border-b border-gray-350" />
           </div>
-
           <div className="w-full">
             <button className="border flex items-center p-2 border-[#181818] rounded-full w-full ">
               <img src={GoogleImage} alt="" className="w-8" />

@@ -15,8 +15,6 @@ import { MdDelete } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router';
 import { RxCross2 } from "react-icons/rx";
 
-
-
 const Serviceprovider = () => {
     const [servicetype, setServicetype] = useState(false);
     const [requestservice, setRequestservice] = useState(false);
@@ -120,7 +118,6 @@ const Serviceprovider = () => {
         setRequestservicefour(false);
     }
 
-
     return (
         <>
             <Navbar />
@@ -131,14 +128,13 @@ const Serviceprovider = () => {
                 }}
             >
                 <div className='flex items-center gap-3 ml-[11em]'>
-                    <button type="button" cla onClick={() => navigate(-1)} >
+                    <button type="button"  onClick={() => navigate(-1)} >
                         <FaArrowLeft color='white' size={20} />
                     </button>
                     <h2 className="text-white text-[30px] mt-0 font-bold leading-[48px] capitalize">
                         Service Provider
                     </h2>
                 </div>
-
             </div>
             <div className="max-w-6xl mx-auto px-6 py-10 bg-white shadow-md rounded-xl -mt-[16em]">
                 {/* Profile Header */}
@@ -169,7 +165,6 @@ const Serviceprovider = () => {
                         </div>
                     </div>
 
-
                     <div className="flex-1">
                         <div className="flex items-center justify-between">
                             <div>
@@ -188,10 +183,7 @@ const Serviceprovider = () => {
                                     </button>
                                 )}
                             </div>
-
-
                         </div>
-
                         {/* Bio */}
                         <div className="mt-4 text-sm text-gray-700 border-t-2 pt-3">
                             <h3 className="font-semibold mb-1 text-black">Biography</h3>
@@ -213,7 +205,6 @@ const Serviceprovider = () => {
                                 </div>
                             </div>
                         </div>
-
 
                         {/* Pricing */}
                         <div className="mt-6 border-t-2 pt-3">
