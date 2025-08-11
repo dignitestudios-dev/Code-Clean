@@ -1,129 +1,99 @@
+// src/store/slices/auth.slice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../axios";
 import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
+
+// ================= INITIAL STATE =================
 const initialState = {
   isLoading: false,
   isResendLoading: false,
   error: null,
+  success: null,
   userData: null,
   accessToken: null,
   refreshToken: null,
-  token:null
+  token: null,
 };
 
-// Async thunk for logging in
+// ================= THUNKS =================
+
+// LOGIN
 export const login = createAsyncThunk(
   "/login",
   async (credentials, thunkAPI) => {
     try {
-      const response = await axios.post("/login", credentials);
-      const { accessToken, refreshToken, userData } = response.data;
+      const res = await axios.post("/login", credentials);
+      const {
+        message,
+        token,
+        access_token,
+        refreshToken,
+        refresh_token,
+        user,
+        userData,
+        data,
+      } = res.data || {};
 
-      console.log(axios, "axios");
+      const foundToken =
+        token ?? access_token ?? data?.token ?? data?.access_token ?? null;
+      const foundRefresh =
+        refreshToken ??
+        refresh_token ??
+        data?.refreshToken ??
+        data?.refresh_token ??
+        null;
+      const foundUser = user ?? userData ?? data?.user ?? null;
 
-      // Save the tokens to cookies/localStorage if needed
-      if (typeof window !== "undefined") {
-        document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
-        localStorage.setItem("refresh_token", refreshToken); // Store refresh token
+      if (!foundToken) {
+        return thunkAPI.rejectWithValue("Token not found in response");
       }
 
-      return { accessToken, refreshToken, userData };
-    } catch (error) {
+      // Write cookie
+      const isHttps =
+        typeof window !== "undefined" && window.location.protocol === "https:";
+      const encoded = encodeURIComponent(foundToken);
+
+      document.cookie =
+        "access_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT"; // Clear old cookie
+      document.cookie =
+        `access_token=${encoded}; Path=/; Max-Age=86400` +
+        (isHttps ? "; Secure; SameSite=None" : "; SameSite=Lax");
+
+      // Local storage
+      localStorage.setItem("access_token", foundToken);
+      if (foundRefresh) localStorage.setItem("refresh_token", foundRefresh);
+
+      return {
+        message: message || "Login successful",
+        accessToken: foundToken,
+        refreshToken: foundRefresh ?? null,
+        userData: foundUser ?? null,
+      };
+    } catch (e) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Login failed"
+        e.response?.data?.message || "Login failed"
       );
     }
   }
 );
 
-// Async thunk for logging out
-export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
-  try {
-    // API call for logging out, if necessary
-    localStorage.removeItem("refresh_token");
-    document.cookie = `access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`; // Clear cookie
-
-    return "Logout successful";
-  } catch (error) {
-    return thunkAPI.rejectWithValue("Logout failed");
-  }
+// LOGOUT
+export const logout = createAsyncThunk("auth/logout", async () => {
+  document.cookie =
+    "access_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT";
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  return "Logout successful";
 });
 
-// Auth slice
-const authSlice = createSlice({
-  name: "auth",
-  initialState,
-  reducers: {
-    resetError(state) {
-      state.error = null;
-    },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(login.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(login.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.accessToken = action.payload.accessToken;
-        state.refreshToken = action.payload.refreshToken;
-        state.userData = action.payload.userData;
-      })
-      .addCase(login.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addCase(logout.fulfilled, (state) => {
-        state.isLoading = false;
-        state.userData = null;
-        state.accessToken = null;
-        state.refreshToken = null;
-      })
-      // REGISTER (✅ Automatically login user after register)
-      .addCase(Register.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(Register.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.accessToken = action.payload.accessToken;
-        state.refreshToken = action.payload.refreshToken;
-        state.userData = action.payload.userData;
-      })
-      .addCase(Register.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addCase(verifyEmail.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(verifyEmail.fulfilled, (state, action) => {
-         console.log(action,"action")
-        state.isLoading = false;     
-        state.token=action.payload.token  
-      })
-      .addCase(verifyEmail.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addCase(ResentOtp.pending, (state) => {
-        state.isResendLoading = true;
-      })
-      .addCase(ResentOtp.fulfilled, (state, action) => {
-        state.isResendLoading = false;       
-      })
-      .addCase(ResentOtp.rejected, (state, action) => {
-        state.isResendLoading = false;
-        state.error = action.payload;
-      });
-  },
-});
-
+// REGISTER
 export const Register = createAsyncThunk(
   "/register",
   async (credentials, thunkAPI) => {
     try {
       const response = await axios.post("/register", credentials);
       const { accessToken, refreshToken, userData } = response.data;
+
       if (typeof window !== "undefined") {
         document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
         localStorage.setItem("refresh_token", refreshToken);
@@ -133,33 +103,55 @@ export const Register = createAsyncThunk(
     } catch (error) {
       ErrorToast(error.response?.data?.message);
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Login failed"
+        error.response?.data?.message || "Registration failed"
       );
     }
   }
 );
 
+// COMPLETE PROFILE
 export const CompleteUserProfile = createAsyncThunk(
   "/user/profile",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.post("/user/profile", payload);
-      const { accessToken, refreshToken, userData } = response.data;
-      if (typeof window !== "undefined") {
-        document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
-        localStorage.setItem("refresh_token", refreshToken);
+      // Get token from localStorage or Redux
+      const token = thunkAPI.getState().auth.token;
+      console.log(token);
+      if (!token) {
+        return thunkAPI.rejectWithValue("No token found, please login again");
       }
+       
+      const response = await axios.post("/user/profile", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const { accessToken, refreshToken, userData } = response.data;
+
+      // Update storage if new tokens are returned
+      if (typeof window !== "undefined") {
+        if (accessToken) {
+          document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
+          localStorage.setItem("access_token", accessToken);
+        }
+        if (refreshToken) {
+          localStorage.setItem("refresh_token", refreshToken);
+        }
+      }
+
       SuccessToast(response?.data?.message);
       return { accessToken, refreshToken, userData };
     } catch (error) {
       ErrorToast(error.response?.data?.message);
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Login failed"
+        error.response?.data?.message || "Profile update failed"
       );
     }
   }
 );
 
+// VERIFY EMAIL
 export const verifyEmail = createAsyncThunk(
   "/verify-email",
   async (payload, thunkAPI) => {
@@ -175,22 +167,102 @@ export const verifyEmail = createAsyncThunk(
     }
   }
 );
+
+// RESEND OTP
 export const ResentOtp = createAsyncThunk(
   "/resend-otp",
   async (payload, thunkAPI) => {
     try {
       const response = await axios.post("/resend-otp", payload);
-      console.log(response?.data?.message)
-      SuccessToast(response?.data?.message || "Email verified successfully");
+      SuccessToast(response?.data?.message || "OTP sent successfully");
       return response.data;
     } catch (error) {
       ErrorToast(error.response?.data?.message);
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Verification failed"
+        error.response?.data?.message || "Resend OTP failed"
       );
     }
   }
 );
 
-export const { resetError } = authSlice.actions;
+// ================= SLICE =================
+const authSlice = createSlice({
+  name: "auth",
+  initialState,
+  reducers: {
+    resetAuthState(state) {
+      state.error = null;
+      state.success = null;
+      state.isLoading = false;
+    },
+    resetError(state) {
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      // LOGIN
+      .addCase(login.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
+        state.userData = action.payload.userData;
+        state.success = action.payload.message;
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // LOGOUT
+      .addCase(logout.fulfilled, (state) => {
+        state.userData = null;
+        state.accessToken = null;
+        state.refreshToken = null;
+      })
+      // REGISTER
+      .addCase(Register.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(Register.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
+        state.userData = action.payload.userData;
+      })
+      .addCase(Register.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // VERIFY EMAIL
+      .addCase(verifyEmail.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(verifyEmail.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.token = action.payload.token;
+      })
+      .addCase(verifyEmail.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // RESEND OTP
+      .addCase(ResentOtp.pending, (state) => {
+        state.isResendLoading = true;
+      })
+      .addCase(ResentOtp.fulfilled, (state) => {
+        state.isResendLoading = false;
+      })
+      .addCase(ResentOtp.rejected, (state, action) => {
+        state.isResendLoading = false;
+        state.error = action.payload;
+      });
+  },
+});
+
+export const { resetError, resetAuthState } = authSlice.actions;
 export default authSlice.reducer;

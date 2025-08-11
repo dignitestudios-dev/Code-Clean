@@ -35,7 +35,6 @@ export default function DiscoverDetail() {
             ]
         },
     ];
-console.log(location?.state?.status,"status")
 
 
     return (

@@ -59,7 +59,6 @@ export default function AddStripeAccount({ handleNext }) {
       try {
         // Simulate API call
         await new Promise((resolve) => setTimeout(resolve, 2000));
-        console.log("Stripe Account Data:", values);
       } catch (error) {
         console.error("Error adding Stripe account:", error);
       } finally {

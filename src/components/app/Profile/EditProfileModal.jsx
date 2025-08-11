@@ -37,8 +37,7 @@ export default function EditProfileModal({ isOpen, setIsOpen, updateProfile, set
         setUpdateProfile(true);
         setIsOpen(false);
 
-        // Optional: console.log form data and image file
-        console.log('Form Data:', formData);
+
         if (imageFile) {
             console.log('Selected Image File:', imageFile);
         }

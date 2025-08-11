@@ -51,7 +51,6 @@ export default function ProviderDetail({ handleNext }) {
       setPreviewImage(imageUrl);
     }
   };
-  console.log(previewImage, "/src/assets/upload-img.png", "testing");
   return (
     <div className="w-auto h-[98%]">
       <h3 className="font-[600] text-center text-[36px] text-[#181818]">

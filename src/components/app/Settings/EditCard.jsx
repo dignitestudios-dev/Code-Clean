@@ -53,7 +53,6 @@ export default function EditCard() {
             setLoading(true);
             try {
                 await new Promise((resolve) => setTimeout(resolve, 2000));
-                console.log("Stripe Account Data:", values);
                 navigate("/app/payment-method")
             } catch (error) {
                 console.error("Error adding Stripe account:", error);

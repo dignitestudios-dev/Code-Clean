@@ -8,6 +8,7 @@ import BroadCastModal from '../../components/app/Profile/BroadCastModal';
 import Filter from '../../components/global/Filter';
 import { useNavigate } from 'react-router';
 import Footer from '../../components/layout/Footer';
+import { useSelector } from 'react-redux';
 
 const professionalsData = [
   {
@@ -94,6 +95,8 @@ const Home = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentProfessionals = professionalsData.slice(startIndex, startIndex + itemsPerPage);
   const navigate = useNavigate();
+  const {user,userData,accessToken} = useSelector((state)=>state.auth);
+
 
   return (
     <div>

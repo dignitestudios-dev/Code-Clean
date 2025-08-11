@@ -30,7 +30,6 @@ export default function Settings() {
     ];
 
     const handleItemClick = (item) => {
-        console.log(`Clicked: ${item}`);
         setIsOpen(!isOpen);
         setActiveModal(item);
 

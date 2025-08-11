@@ -1,23 +1,23 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux"; // Import useDispatch
-import { login } from "../../redux/slices/auth.slice"; // Import login action from your Redux slice
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux"; // Import useDispatch and useSelector
+import { login, resetError, resetAuthState } from "../../redux/slices/auth.slice"; // Import login action from Redux
 import { useFormik } from "formik";
 import { loginValues } from "../../init/authentication/AuthValues";
 import { signInSchema } from "../../schema/authentication/AuthSchema";
 import { NavLink, useNavigate } from "react-router"; // Corrected to react-router-dom
-import { AppleImage, GoogleImage, LoginRight, Logo } from "../../assets/export";
+import { FiLoader } from "react-icons/fi";
 import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
-import { RxCross2 } from "react-icons/rx";
+import { ErrorToast, SuccessToast } from "../../components/global/Toaster"; // Import custom toast functions
 import Cookies from "js-cookie";
+import { AppleImage, GoogleImage, LoginRight, Logo } from "../../assets/export";
 
 const Login = () => {
   const dispatch = useDispatch(); // Initialize dispatch
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [type, setType] = useState(false);
-  const [selectedRole, setSelectedRole] = useState(null);
+  const navigate = useNavigate(); // Initialize navigate
+  const { isLoading, error, userData, success,accessToken } = useSelector((state) => state.auth); // Get loading, error, and user data from Redux
 
-  const navigate = useNavigate(); // Initialize the navigate function
+  const [selectedRole, setSelectedRole] = useState(null);
 
   const roles = [
     {
@@ -28,41 +28,48 @@ const Login = () => {
     {
       id: "provider",
       title: "I'm a Service Provider",
-      description:
-        "Offer your services, manage bookings, and grow your business.",
+      description: "Offer your services, manage bookings, and grow your business.",
     },
   ];
 
-  const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
-    useFormik({
-      initialValues: loginValues,
-      validationSchema: signInSchema,
-      validateOnChange: true,
-      validateOnBlur: true,
-      onSubmit: async (values, action) => {
-        setType(true);
-        const data = {
-          email: values?.email,
-          password: values?.password,
-        };
+  const { values, handleBlur, handleChange, handleSubmit, errors, touched } = useFormik({
+    initialValues: loginValues,
+    validationSchema: signInSchema,
+    onSubmit: async (values) => {
+      const data = { email: values?.email, password: values?.password };
+      dispatch(login(data)); // Dispatch login action
+    },
+  });
 
-        // Dispatch the login action here
-        dispatch(login(data)); // Dispatch the login action with the credentials
+  useEffect(() => {
+    dispatch(resetAuthState()); // reset success, error, and loading
+    return () => dispatch(resetAuthState());
+  }, [dispatch]);
 
-        // You can handle success or failure based on Redux store
-      },
-    });
+  //    useEffect(() => {
+  //   dispatch(resetError());
+  //   return () => dispatch(resetError());
+  // }, [dispatch]);
 
-  const handleRoleSelection = (roleId) => {
-    setSelectedRole(roleId);
-    if (roleId === "user") {
-      Cookies.set("role", "user");
-      navigate("/home");
-    } else if (roleId === "provider") {
-      Cookies.set("role", "provider");
-      navigate("/dashboard"); // Redirect to Dashboard for service providers
+  // useEffect for Success Toast
+useEffect(() => {
+  if (success && accessToken) {
+    SuccessToast(typeof success === 'string' ? success : "Login successful!");
+    // e.g. navigate to dashboard
+    navigate('/Home');
+    dispatch(resetAuthState());
+  }
+}, [success, accessToken, dispatch, navigate]);
+
+
+  // useEffect for Error Toast
+  useEffect(() => {
+    if (error) {
+      ErrorToast(error); // Show error toast if there's an error
+      dispatch(resetAuthState()); // clear error after toast
     }
-  };
+  }, [error]);
+
 
   return (
     <div className="w-full h-auto grid grid-cols-2 gap-4 rounded-[19px] bg-white">
@@ -103,7 +110,8 @@ const Login = () => {
             error={errors.password}
             touched={touched?.password}
           />
-          <div className="w-full -mt-1  flex items-center justify-end">
+
+          <div className="w-full -mt-1 flex items-center justify-end">
             <NavLink
               to={"/auth/forgot-password"}
               className="text-[#0084FF] hover:no-underline text-[12px] font-normal leading-[20.4px]"
@@ -112,60 +120,17 @@ const Login = () => {
             </NavLink>
           </div>
 
-          <Button text={"Log In"}  />
+          <Button text={"Log In"} loading={isLoading} />
 
-          {type && (
-            <>
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                <div className="flex flex-col md:flex-row gap-8 mb-6 bg-white p-3 rounded-2xl">
-                  <RxCross2
-                    className="absolute top-10 right-10 text-white cursor-pointer"
-                    size={40}
-                    onClick={() => {
-                      setType(false);
-                    }}
-                  />
-                  {roles.map((role) => {
-                    const isSelected = selectedRole === role.id;
-                    return (
-                      <div
-                        key={role.id}
-                        onClick={() => handleRoleSelection(role.id)}
-                        className={`cursor-pointer rounded-[14px] px-6 py-8 flex flex-col items-center justify-center w-[360px] h-[250px] text-center transition-all shadow-md ${
-                          isSelected
-                            ? "text-white"
-                            : "text-gray-600 bg-white border border-gray-200"
-                        }`}
-                        style={{
-                          background: isSelected
-                            ? "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)"
-                            : "",
-                        }}
-                      >
-                        <h3 className={`text-[24px]  font-bold  mb-2`}>
-                          {role.title}
-                        </h3>
-                        <p className="text-[16px] font-[400]">
-                          {role.description}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          )}
-          <div className="w-full  flex justify-center items-center">
-            <span className="text-[12px] flex gap-1 font-[600] leading-[27px] text-[#959393]">
-              Don’t have an account ?
-              <NavLink
-                className="font-medium hover:no-underline hover:text-[#0084FF] text-[#0084FF]"
-                to={"/auth/role-selection"}
-              >
+          <div className="w-full flex justify-center items-center mt-4">
+            <span className="text-[12px] text-[#959393]">
+              Don’t have an account?{" "}
+              <NavLink to="/auth/signup" className="text-[#0084FF]">
                 Sign Up
               </NavLink>
             </span>
           </div>
+
           <div className="flex w-full items-center rounded-full">
             <div className="flex-1 border-b border-gray-350" />
             <span className="text-[#959393] text-[20px] font-normal leading-8 px-8 ">
@@ -177,14 +142,12 @@ const Login = () => {
             <button className="border flex items-center p-2 border-[#181818] rounded-full w-full ">
               <img src={GoogleImage} alt="" className="w-8" />
               <span className="mx-auto text-[14px] font-[500] text-[#181818]">
-                {" "}
                 Continue With Google
               </span>
             </button>
             <button className="border flex items-center mt-4 p-2 border-[#181818] rounded-full w-full ">
               <img src={AppleImage} alt="" className="w-8" />
               <span className="mx-auto text-[14px] font-[500] text-[#181818]">
-                {" "}
                 Continue With Apple
               </span>
             </button>
@@ -201,14 +164,13 @@ const Login = () => {
         }}
       >
         <div className="flex flex-col justify-end h-full ">
-          <h3 className="text-white text-[52px] font-[600]">
-            Connect. Book. Serve
-          </h3>
+          <h3 className="text-white text-[52px] font-[600]">Connect. Book. Serve</h3>
           <p className="text-white text-[32px] capitalize font-[400]">
             Book top-rated experts or grow your business—all in one place.
           </p>
         </div>
       </div>
+
     </div>
   );
 };
