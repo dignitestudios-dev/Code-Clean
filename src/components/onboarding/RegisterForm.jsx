@@ -3,16 +3,26 @@ import React, { useState } from "react";
 import { AppleImage, GoogleImage } from "../../assets/export";
 import { Button } from "../global/GlobalButton";
 import Input from "../../components/global/Input";
-import { loginValues, SignUpValues } from "../../init/authentication/AuthValues";
-import { signInSchema, signUpSchema } from "../../schema/authentication/AuthSchema";
+import {
+  loginValues,
+  SignUpValues,
+} from "../../init/authentication/AuthValues";
+import {
+  signInSchema,
+  signUpSchema,
+} from "../../schema/authentication/AuthSchema";
 import { useLogin } from "../../hooks/api/Post";
 import { processLogin } from "../../lib/utils";
 import { NavLink, useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { Register } from "../../redux/slices/auth.slice";
+import { ErrorToast } from "../global/Toaster";
 
-export default function RegisterForm({ handleNext }) {
-  const { loading, postData } = useLogin();
+export default function RegisterForm({ handleNext, setEmail }) {
+  const state = useSelector((state) => state.auth);
+  console.log(state, "state");
   const navigate = useNavigate("");
-
+  const dispatch = useDispatch();
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
     useFormik({
       initialValues: SignUpValues,
@@ -20,15 +30,31 @@ export default function RegisterForm({ handleNext }) {
       validateOnChange: true,
       validateOnBlur: true,
       onSubmit: async (values, action) => {
-        handleNext();
+        setEmail(values?.email);
         const data = {
           email: values?.email,
           password: values?.password,
-          confirmPassword: values?.confirmPassword,
+          password_confirmation: values?.confirmPassword,
+          role: "user",
         };
-        // postData("/admin/login", false, null, data, processLogin);
+
+        try {
+          // Await the Register dispatch and unwrap the result
+          await dispatch(Register(data)).unwrap();
+
+          // If success, go to the next step
+          handleNext();
+
+          // Optionally reset form
+          action.resetForm();
+        } catch (error) {
+          // ErrorToast()
+          // If register fails, show error (e.g., toast or log)
+          console.log("Registration failed:", error);
+        }
       },
     });
+
   return (
     <div className="w-auto flex flex-col justify-center h-[100%] ">
       <h3 className="font-[600] text-center text-[36px] text-[#181818]">
@@ -78,14 +104,17 @@ export default function RegisterForm({ handleNext }) {
           touched={touched?.confirmPassword}
         />
 
-        <Button text={"Sign Up"} loading={loading} />
+        <Button text={"Sign Up"} loading={state?.isLoading} />
 
         <div className="text-center w-full">
           <p className="font-[500] text-[12px] text-[#565656]">
             Already have an account?{" "}
-            <span className="text-[#27A8E2] cursor-pointer" onClick={()=>{
-              navigate("/auth/login")
-            }}>
+            <span
+              className="text-[#27A8E2] cursor-pointer"
+              onClick={() => {
+                navigate("/auth/login");
+              }}
+            >
               Log In
             </span>
           </p>

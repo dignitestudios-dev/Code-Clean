@@ -5,8 +5,6 @@ import { useFormik } from "formik";
 import { loginValues } from "../../init/authentication/AuthValues";
 import { signInSchema } from "../../schema/authentication/AuthSchema";
 import { NavLink, useNavigate } from "react-router"; // Corrected to react-router-dom
-import { FiLoader } from "react-icons/fi";
-import { FaCheck, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { AppleImage, GoogleImage, LoginRight, Logo } from "../../assets/export";
 import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";

@@ -6,24 +6,37 @@ import { useFormik } from "formik";
 import { personalDetailsValues } from "../../init/authentication/AuthValues";
 import { personalDetailsSchema } from "../../schema/authentication/AuthSchema";
 import { MapImg } from "../../assets/export";
+import { useDispatch } from "react-redux";
+import { CompleteUserProfile } from "../../redux/slices/auth.slice";
 
 export default function PersonalDetail({ handleNext }) {
   const { loading, postData } = useLogin();
   const [previewImage, setPreviewImage] = useState(); // Default image
-
+  const dispatch = useDispatch();
   const formik = useFormik({
     initialValues: personalDetailsValues,
     validationSchema: personalDetailsSchema,
     validateOnChange: true,
     validateOnBlur: true,
-    onSubmit: async (values) => {
-      handleNext();
+    onSubmit: async (values, action) => {
       const formData = new FormData();
       formData.append("fullName", values.fullName);
       formData.append("phone", values.phone);
       formData.append("location", values.location);
       formData.append("profilePic", values.profilePic);
-
+      const data = {
+        name: values.fullName,
+        phone_number: values.phone,
+        lat: 24.8607,
+        long: 67.0011,
+        state: "Florida",
+        country: "Us",
+        city: "Miami",
+        location: values.location,
+      };
+      await dispatch(CompleteUserProfile(data)).unwrap();
+      handleNext();
+      action.resetForm();
       // postData("/your-api-endpoint", false, null, formData, callbackFn);
     },
   });

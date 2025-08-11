@@ -24,10 +24,10 @@ import SubscriptionPlans from "./SubscriptionPlan";
 import BillingSummary from "./BillingSummary";
 
 export default function SignUp() {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(2);
   const location = useLocation();
   const role = location.state?.role || "user";
-
+ const [email,setEmail]=useState("");
   // Step Data for Service Provider
   const providerSteps = [
     { icon: FaUser, title: "Your details" },
@@ -75,9 +75,9 @@ export default function SignUp() {
         <div className="h-full w-full">
           {role == "user" ? (
             currentStep === 0 ? (
-              <RegisterForm handleNext={handleNext} />
+              <RegisterForm setEmail={setEmail} handleNext={handleNext} />
             ) : currentStep === 1 ? (
-              <Verification handleNext={handleNext} />
+              <Verification email={email} handleNext={handleNext} />
             ) : currentStep === 2 ? (
               <PersonalDetail handleNext={handleNext} />
             ) : currentStep === 3 ? (

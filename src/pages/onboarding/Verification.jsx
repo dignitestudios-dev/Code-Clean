@@ -4,14 +4,17 @@ import { useLocation, useNavigate } from "react-router";
 import { PiSpinnerBold } from "react-icons/pi";
 import { Button } from "../../components/global/GlobalButton";
 import { emailVerificationValues } from "../../init/authentication/AuthValues";
+import { useDispatch, useSelector } from "react-redux";
+import { ResentOtp, verifyEmail } from "../../redux/slices/auth.slice";
 
-export default function Verification({ handleNext }) {
+export default function Verification({ handleNext, email }) {
   const navigate = useNavigate();
-  const [isResendDisabled, setIsResendDisabled] = useState(false);
+  const state = useSelector((state) => state.auth);
+  const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [timer, setTimer] = useState(30);
   const otpRefs = useRef([]);
-  const location = useLocation();
- 
+  const dispatch = useDispatch();
+  const [otp, setOtp] = useState(emailVerificationValues.otp);
   useEffect(() => {
     let interval;
     if (isResendDisabled && timer > 0) {
@@ -24,26 +27,23 @@ export default function Verification({ handleNext }) {
     }
     return () => clearInterval(interval);
   }, [isResendDisabled, timer]);
- 
-  const handleResendClick = async () => {
-    const data = {
-      email: location?.state?.email,
-      role: "user",
-    };
-    // const res = await postData("auth/forgot", false, null, data, "");
- 
-    setIsResendDisabled(true);
-    setTimer(30);
-  };
- 
-  const [otp, setOtp] = useState(emailVerificationValues.otp);
 
-  // const { verifyLoader, verifyOtpPostData } = useResetVerification();
+  const handleResendClick = async () => {
+    const data = { email: email };
+    try {
+      await dispatch(ResentOtp(data)).unwrap();
+      SuccessToast("OTP resent successfully.");
+      setIsResendDisabled(true);
+      setTimer(30);
+    } catch (err) {
+      console.error("Resend OTP failed:", err);
+    }
+  };
 
   const handleChange = (e, i) => {
     const value = e.target.value;
     if (/[^0-9]/.test(value) && value !== "") return;
- 
+
     const otpval = [...otp];
     if (value === "") {
       otpval[i] = "";
@@ -59,7 +59,7 @@ export default function Verification({ handleNext }) {
       }
     }
   };
- 
+
   const handlePaste = (e) => {
     e.preventDefault();
     const pasted = e.clipboardData
@@ -67,7 +67,7 @@ export default function Verification({ handleNext }) {
       .replace(/\D/g, "")
       .slice(0, 6);
     if (!pasted) return;
- 
+
     const updatedOtp = [...otp];
     for (let i = 0; i < pasted.length; i++) {
       updatedOtp[i] = pasted[i];
@@ -75,32 +75,28 @@ export default function Verification({ handleNext }) {
         otpRefs.current[i].value = pasted[i];
       }
     }
- 
+
     setOtp(updatedOtp);
     const nextIndex = Math.min(pasted.length, 5);
     if (otpRefs.current[nextIndex]) {
       otpRefs.current[nextIndex].focus();
     }
   };
- 
+
   const isOtpComplete = otp.join("").length < 5;
- 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const otpValue = otp.join("");
- 
     const data = {
-      email: location?.state?.email,
+      email: email,
       otp: otpValue,
-      role: "user",
     };
- 
-    handleNext(); // Move to next step after success
-    // verifyOtpPostData("auth/verify-otp", false, null, data, () => {
-    //   SuccessToast("OTP Verified Successfully!");
-    // });
+    console.log(data);
+    await dispatch(verifyEmail(data)).unwrap();
+    handleNext();
   };
- 
+
   return (
     <div className="w-auto flex flex-col items-center justify-center h-[90%]">
       <h3 className="font-[600] text-center text-[36px] text-[#181818]">
@@ -131,7 +127,7 @@ export default function Verification({ handleNext }) {
               />
             ))}
           </div>
- 
+
           <div className="w-full h-auto gap-10 mt-5 mb-5">
             <div className="w-full lg:w-[434px] flex gap-1 justify-center items-center">
               <span className="text-[14px] font-medium text-[#565656]">
@@ -144,11 +140,13 @@ export default function Verification({ handleNext }) {
                 disabled={isResendDisabled}
               >
                 {isResendDisabled ? `Resend in ${timer}s` : "Resend now"}{" "}
-                {/* {loading && <PiSpinnerBold className="animate-spin" />} */}
+                {state.isResendLoading && (
+                  <PiSpinnerBold className="animate-spin" />
+                )}
               </button>
             </div>
             <div className="mt-5 w-[360px] mx-auto">
-          <Button text={"Verify"} />
+              <Button text={"Verify"} loading={state?.isLoading} />
             </div>
           </div>
         </div>
@@ -156,4 +154,3 @@ export default function Verification({ handleNext }) {
     </div>
   );
 }
- 

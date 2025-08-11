@@ -10,7 +10,10 @@ import { store } from "./redux/store"; // Import the store from your redux store
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <Provider store={store}>  {/* Provide the store to the entire app */}
+      <ToasterContainer />
+      <Provider store={store}>
+        {" "}
+        {/* Provide the store to the entire app */}
         <App />
       </Provider>
       <ToasterContainer /> {/* Toaster for global notifications */}
