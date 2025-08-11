@@ -37,7 +37,6 @@ export default function PersonalDetail({ handleNext }) {
       await dispatch(CompleteUserProfile(data)).unwrap();
       handleNext();
       action.resetForm();
-      // postData("/your-api-endpoint", false, null, formData, callbackFn);
     },
   });
 
