@@ -3,10 +3,13 @@ import { HiMenu, HiX } from "react-icons/hi";
 import { Link, useLocation, useNavigate } from "react-router";
 import { LogoWhite, Avatar } from "../../assets/export";
 import { FaBell } from "react-icons/fa";
+import { logout, resetError, resetAuthState } from "../../redux/slices/auth.slice"; // Import login action from Redux
 import { IoLogOut, IoNotificationsOutline } from "react-icons/io5";
 import Cookies from "js-cookie";
 import LogOutModal from "../global/LogoutModal";
 import ReportAnIssueModal from "../app/Settings/ReportAnIssueModal";
+import { useDispatch, useSelector } from "react-redux";
+import { ErrorToast, SuccessToast } from "../global/Toaster";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -20,6 +23,41 @@ const Navbar = () => {
   const [logoutpopup, setLogoutpopup] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isReport, setIsReport] = useState(false);
+  const { user, user_data, accessToken, logoutLoading, logoutSuccess, logoutError } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+
+
+  console.log(user_data, "navbar data");
+
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(logout()).unwrap();
+      SuccessToast("Logged out successfully");
+    } catch (e) {
+      ErrorToast(e || "Logout failed");
+    } finally {
+      setIsLoggedIn(false);
+      setLogoutpopup(false);
+      window.location.href = "/auth/login"; // or navigate("/auth/login", { replace: true })
+    }
+  };
+
+  useEffect(() => {
+    if (user_data?.role) {
+      setRole(user_data.role);
+    }
+  }, [user_data]); // dependency array me user_data rakho
+
+  useEffect(() => {
+    if (accessToken) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [accessToken]);
+
+
 
   const dropdownRef = useRef(null);
 
@@ -48,17 +86,17 @@ const Navbar = () => {
     document.body.style.overflow = isMobileMenuOpen ? "hidden" : "auto";
   }, [isMobileMenuOpen]);
 
-  // Check login state & role on mount
-  useEffect(() => {
-    const userRole = Cookies.get("role");
-    if (userRole === "user" || userRole === "provider") {
-      setRole(userRole);
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-      setRole(null);
-    }
-  }, [location.pathname]); // re-check role on route change
+  // // Check login state & role on mount
+  // useEffect(() => {
+  //   const userRole = Cookies.get("role");
+  //   if (userRole === "user" || userRole === "provider") {
+  //     setRole(userRole);
+  //     setIsLoggedIn(true);
+  //   } else {
+  //     setIsLoggedIn(false);
+  //     setRole(null);
+  //   }
+  // }, [location.pathname]); // re-check role on route change
 
   const togglePopup = () => {
     setUserPopup(false);
@@ -71,24 +109,24 @@ const Navbar = () => {
   };
 
   const menuLinks =
-    role === "provider"
+    role === "service_provider"
       ? [
-          { label: "Dashboard", path: "/dashboard" },
-          { label: "Discover", path: "/discover-job" },
-          { label: "Availability", path: "/calendar" },
-          { label: "Messages", path: "/chat-sp" },
-          { label: "Badges", path: "/badge-sp" },
-          { label: "Wallet", path: "/wallet" },
-        ]
+        { label: "Dashboard", path: "/dashboard" },
+        { label: "Discover", path: "/discover-job" },
+        { label: "Availability", path: "/calendar" },
+        { label: "Messages", path: "/chat-sp" },
+        { label: "Badges", path: "/badge-sp" },
+        { label: "Wallet", path: "/wallet" },
+      ]
       : role === "user"
-      ? [
+        ? [
           { label: "Current Bookings", path: "/booking-requests" },
           { label: "Booking History", path: "/booking-history" },
           { label: "Badges", path: "/app/badge" },
           { label: "Favorites", path: "/favorites" },
           { label: "Messages", path: "/messages" },
         ]
-      : [];
+        : [];
 
   const notifications = [
     {
@@ -113,11 +151,10 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`w-full ${
-        isMobileMenuOpen
-          ? "fixed top-0 left-0 min-h-screen bg-[#181818] z-50"
-          : ""
-      } text-white`}
+      className={`w-full ${isMobileMenuOpen
+        ? "fixed top-0 left-0 min-h-screen bg-[#181818] z-50"
+        : ""
+        } text-white`}
     >
       <div className="max-w-7xl border-b border-white/40 mx-auto px-4 py-2 flex z-10 items-center justify-between relative">
         <div className="w-[60%]">
@@ -136,11 +173,10 @@ const Navbar = () => {
               <Link
                 key={link.label}
                 to={link.path}
-                className={`pb-1 relative text-[16px] font-[500] transition-all duration-300 ${
-                  currentPath === link.path
-                    ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
-                    : ""
-                }`}
+                className={`pb-1 relative text-[16px] font-[500] transition-all duration-300 ${currentPath === link.path
+                  ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
+                  : ""
+                  }`}
               >
                 {link.label}
               </Link>
@@ -228,11 +264,10 @@ const Navbar = () => {
             <ul className="flex gap-6">
               <li className="relative">
                 <Link
-                  className={`relative pb-1 text-[16px] font-[500] transition-all duration-300 ${
-                    currentPath === "/app/landing"
-                      ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
-                      : ""
-                  }`}
+                  className={`relative pb-1 text-[16px] font-[500] transition-all duration-300 ${currentPath === "/app/landing"
+                    ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
+                    : ""
+                    }`}
                   to="/app/landing"
                 >
                   Home
@@ -390,7 +425,12 @@ const Navbar = () => {
         </div>
       )}
 
-      <LogOutModal isOpen={logoutpopup} setIsOpen={setLogoutpopup} />
+      <LogOutModal
+        isOpen={logoutpopup}
+        setIsOpen={setLogoutpopup}
+        onConfirm={handleLogout}
+        loading={logoutLoading}
+      />
       <ReportAnIssueModal isOpen={isReport} setIsOpen={setIsReport} />
     </nav>
   );

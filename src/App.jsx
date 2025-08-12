@@ -26,7 +26,6 @@ function App() {
     <Routes>
       <Route path="/" element={<Navigate to={"/app/landing"} />} />
 
-
       <Route path="app" element={<DashboardLayout />}>
         <Route path="landing" element={<LandingPage />} />
         <Route path="badge" element={<Badge />} />

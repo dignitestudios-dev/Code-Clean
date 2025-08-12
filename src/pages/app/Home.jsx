@@ -95,7 +95,9 @@ const Home = () => {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentProfessionals = professionalsData.slice(startIndex, startIndex + itemsPerPage);
   const navigate = useNavigate();
-  const {user,userData,accessToken} = useSelector((state)=>state.auth);
+  const {user,user_data,accessToken} = useSelector((state)=>state.auth);
+
+  console.log(user_data,"user_data")
 
 
   return (
