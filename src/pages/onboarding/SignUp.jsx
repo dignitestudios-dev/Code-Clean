@@ -24,7 +24,7 @@ import SubscriptionPlans from "./SubscriptionPlan";
 import BillingSummary from "./BillingSummary";
 
 export default function SignUp() {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(5);
   const location = useLocation();
   const role = location.state?.role || "user";
  const [email,setEmail]=useState("");
@@ -75,7 +75,7 @@ export default function SignUp() {
         <div className="h-full w-full">
           {role == "user" ? (
             currentStep === 0 ? (
-              <RegisterForm setEmail={setEmail} handleNext={handleNext} />
+              <RegisterForm role={"user"} setEmail={setEmail} handleNext={handleNext} />
             ) : currentStep === 1 ? (
               <Verification email={email} handleNext={handleNext} />
             ) : currentStep === 2 ? (
@@ -86,9 +86,9 @@ export default function SignUp() {
               <SuccessFullyAccountCreated />
             )
           ) : currentStep === 0 ? (
-            <RegisterForm handleNext={handleNext} />
+            <RegisterForm role={"service_provider"} setEmail={setEmail} handleNext={handleNext} />
           ) : currentStep === 1 ? (
-            <Verification handleNext={handleNext} />
+            <Verification  email={email} handleNext={handleNext} />
           ) : currentStep === 2 ? (
             <ProviderDetail handleNext={handleNext} />
           ) : currentStep === 3 ? (

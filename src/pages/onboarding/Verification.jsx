@@ -1,15 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
-import { SuccessToast } from "../../components/global/Toaster";
+import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
 import { useLocation, useNavigate } from "react-router";
 import { PiSpinnerBold } from "react-icons/pi";
 import { Button } from "../../components/global/GlobalButton";
 import { emailVerificationValues } from "../../init/authentication/AuthValues";
 import { useDispatch, useSelector } from "react-redux";
-import { ResentOtp, verifyEmail } from "../../redux/slices/auth.slice";
+import {
+  ResentOtp,
+  resetAuthState,
+  verifyEmail,
+} from "../../redux/slices/auth.slice";
 
 export default function Verification({ handleNext, email }) {
   const navigate = useNavigate();
-  const state = useSelector((state) => state.auth);
+  const { isLoading, error, userData, success, accessToken, isResendLoading } =
+    useSelector((state) => state.auth); // Get loading, error, and user data from Redux
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [timer, setTimer] = useState(30);
   const otpRefs = useRef([]);
@@ -96,6 +101,17 @@ export default function Verification({ handleNext, email }) {
     await dispatch(verifyEmail(data)).unwrap();
     handleNext();
   };
+  useEffect(() => {
+    dispatch(resetAuthState()); // reset success, error, and loading
+    return () => dispatch(resetAuthState());
+  }, [dispatch]);
+  // useEffect for Error Toast
+  useEffect(() => {
+    if (error) {
+      ErrorToast(error); // Show error toast if there's an error
+      dispatch(resetAuthState()); // clear error after toast
+    }
+  }, [error]);
 
   return (
     <div className="w-auto flex flex-col items-center justify-center h-[90%]">
@@ -140,13 +156,11 @@ export default function Verification({ handleNext, email }) {
                 disabled={isResendDisabled}
               >
                 {isResendDisabled ? `Resend in ${timer}s` : "Resend now"}{" "}
-                {state.isResendLoading && (
-                  <PiSpinnerBold className="animate-spin" />
-                )}
+                {isResendLoading && <PiSpinnerBold className="animate-spin" />}
               </button>
             </div>
             <div className="mt-5 w-[360px] mx-auto">
-              <Button text={"Verify"} loading={state?.isLoading} />
+              <Button text={"Verify"} loading={isLoading} />
             </div>
           </div>
         </div>

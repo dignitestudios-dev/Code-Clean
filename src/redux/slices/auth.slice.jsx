@@ -120,7 +120,7 @@ export const CompleteUserProfile = createAsyncThunk(
       if (!token) {
         return thunkAPI.rejectWithValue("No token found, please login again");
       }
-       
+
       const response = await axios.post("/user/profile", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -150,6 +150,202 @@ export const CompleteUserProfile = createAsyncThunk(
     }
   }
 );
+// COMPLETE Provider PROFILE
+export const CompleteProviderProfile = createAsyncThunk(
+  "/provider/complete-profile",
+  async (payload, thunkAPI) => {
+    try {
+      // Get token from localStorage or Redux
+      const token = thunkAPI.getState().auth.token;
+      console.log(token);
+      if (!token) {
+        return thunkAPI.rejectWithValue("No token found, please login again");
+      }
+      const response = await axios.post("/provider/complete-profile", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const { accessToken, refreshToken, userData } = response.data;
+
+      if (typeof window !== "undefined") {
+        if (accessToken) {
+          document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
+          localStorage.setItem("access_token", accessToken);
+        }
+        if (refreshToken) {
+          localStorage.setItem("refresh_token", refreshToken);
+        }
+      }
+
+      SuccessToast(response?.data?.message);
+      return { accessToken, refreshToken, userData };
+    } catch (error) {
+      ErrorToast(error.response?.data?.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
+    }
+  }
+);
+export const CreateService = createAsyncThunk(
+  "/services/create",
+  async (payload, thunkAPI) => {
+    try {
+      // Get token from localStorage or Redux
+      const token = thunkAPI.getState().auth.token;
+      console.log(token);
+      if (!token) {
+        return thunkAPI.rejectWithValue("No token found, please login again");
+      }
+      const response = await axios.post("/services/create", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const { accessToken, refreshToken, userData } = response.data;
+
+      if (typeof window !== "undefined") {
+        if (accessToken) {
+          document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
+          localStorage.setItem("access_token", accessToken);
+        }
+        if (refreshToken) {
+          localStorage.setItem("refresh_token", refreshToken);
+        }
+      }
+
+      SuccessToast(response?.data?.message);
+      return { accessToken, refreshToken, userData };
+    } catch (error) {
+      ErrorToast(error.response?.data?.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
+    }
+  }
+);
+export const CreateCertificate = createAsyncThunk(
+  "/provider/certificate",
+  async (payload, thunkAPI) => {
+    try {
+      // Get token from localStorage or Redux
+      const token = thunkAPI.getState().auth.token;
+      console.log(token);
+      if (!token) {
+        return thunkAPI.rejectWithValue("No token found, please login again");
+      }
+      const response = await axios.post("/provider/certificate", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const { accessToken, refreshToken, userData } = response.data;
+
+      if (typeof window !== "undefined") {
+        if (accessToken) {
+          document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
+          localStorage.setItem("access_token", accessToken);
+        }
+        if (refreshToken) {
+          localStorage.setItem("refresh_token", refreshToken);
+        }
+      }
+
+      SuccessToast(response?.data?.message);
+      return { accessToken, refreshToken, userData };
+    } catch (error) {
+      ErrorToast(error.response?.data?.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
+    }
+  }
+);
+export const DeleteCertificate = createAsyncThunk(
+  "/provider/certificate/delete",
+  async (payload, thunkAPI) => {
+    try {
+      // Get token from localStorage or Redux
+      const token = thunkAPI.getState().auth.token;
+      console.log(token);
+      if (!token) {
+        return thunkAPI.rejectWithValue("No token found, please login again");
+      }
+      const response = await axios.post(`/provider/certificate/${payload.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const { accessToken, refreshToken, userData } = response.data;
+
+      if (typeof window !== "undefined") {
+        if (accessToken) {
+          document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
+          localStorage.setItem("access_token", accessToken);
+        }
+        if (refreshToken) {
+          localStorage.setItem("refresh_token", refreshToken);
+        }
+      }
+
+      SuccessToast(response?.data?.message);
+      return { accessToken, refreshToken, userData };
+    } catch (error) {
+      ErrorToast(error.response?.data?.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
+    }
+  }
+);
+
+export const CreateVerification = createAsyncThunk(
+  "/provider/verification",
+  async (payload, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.token;
+      if (!token) {
+        return thunkAPI.rejectWithValue("No token found, please login again");
+      }
+
+      const formData = new FormData();
+      formData.append("national_id_front", payload.national_id_front);
+      formData.append("national_id_back", payload.national_id_back);
+
+      const response = await axios.post("/provider/verification", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const { accessToken, refreshToken, userData } = response.data;
+
+      if (typeof window !== "undefined") {
+        if (accessToken) {
+          document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
+          localStorage.setItem("access_token", accessToken);
+        }
+        if (refreshToken) {
+          localStorage.setItem("refresh_token", refreshToken);
+        }
+      }
+
+      SuccessToast(response?.data?.message);
+      return { accessToken, refreshToken, userData };
+    } catch (error) {
+      ErrorToast(error.response?.data?.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Verification failed"
+      );
+    }
+  }
+);
 
 // VERIFY EMAIL
 export const verifyEmail = createAsyncThunk(
@@ -159,6 +355,44 @@ export const verifyEmail = createAsyncThunk(
       const response = await axios.post("/verify-email", payload);
       SuccessToast(response?.data?.message || "Email verified successfully");
       return response.data;
+    } catch (error) {
+      ErrorToast(error.response?.data?.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Verification failed"
+      );
+    }
+  }
+);
+
+export const getProfile = createAsyncThunk(
+  "/provider/profile",
+  async (payload, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.token;
+      if (!token) {
+        return thunkAPI.rejectWithValue("No token found, please login again");
+      }
+      const response = await axios.post("/provider/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const { accessToken, refreshToken, userData } = response.data;
+
+      if (typeof window !== "undefined") {
+        if (accessToken) {
+          document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
+          localStorage.setItem("access_token", accessToken);
+        }
+        if (refreshToken) {
+          localStorage.setItem("refresh_token", refreshToken);
+        }
+      }
+
+      SuccessToast(response?.data?.message);
+      return { accessToken, refreshToken, userData };
     } catch (error) {
       ErrorToast(error.response?.data?.message);
       return thunkAPI.rejectWithValue(
@@ -215,6 +449,23 @@ const authSlice = createSlice({
         state.success = action.payload.message;
       })
       .addCase(login.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(getProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getProfile.fulfilled, (state, action) => {
+        console.log(action.payload,"payloadProfile")
+        state.isLoading = false;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
+        state.userData = action.payload.userData;
+        state.success = action.payload.message;
+      })
+      .addCase(getProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })

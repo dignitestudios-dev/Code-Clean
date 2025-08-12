@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 
-export default function AddAvailabilityModal({ onClose, edit }) {
+export default function AddAvailabilityModal({ onClose, onSave, edit }) {
+  const [startTime, setStartTime] = useState("09:00");
+  const [endTime, setEndTime] = useState("18:00");
   const [workingDays, setWorkingDays] = useState({
     all: false,
     monday: true,
@@ -15,16 +17,11 @@ export default function AddAvailabilityModal({ onClose, edit }) {
   const toggleDay = (day) => {
     if (day === "all") {
       const allChecked = !workingDays.all;
-      setWorkingDays({
-        all: allChecked,
-        monday: allChecked,
-        tuesday: allChecked,
-        wednesday: allChecked,
-        thursday: allChecked,
-        friday: allChecked,
-        saturday: allChecked,
-        sunday: allChecked,
-      });
+      const updated = Object.keys(workingDays).reduce((acc, d) => {
+        acc[d] = allChecked;
+        return acc;
+      }, {});
+      setWorkingDays(updated);
     } else {
       setWorkingDays((prev) => ({ ...prev, [day]: !prev[day], all: false }));
     }
@@ -39,6 +36,15 @@ export default function AddAvailabilityModal({ onClose, edit }) {
     "saturday",
     "sunday",
   ];
+
+  const handleSave = () => {
+    const selectedDays = days.filter((day) => workingDays[day]);
+    onSave({
+      start_time: startTime,
+      end_time: endTime,
+      days: selectedDays,
+    });
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
@@ -59,6 +65,8 @@ export default function AddAvailabilityModal({ onClose, edit }) {
             <label className="block text-sm font-medium mb-1">Start Time</label>
             <input
               type="time"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
               className="w-full border border-[#BEBEBE] rounded-lg p-2 text-sm focus:outline-none"
             />
           </div>
@@ -66,6 +74,8 @@ export default function AddAvailabilityModal({ onClose, edit }) {
             <label className="block text-sm font-medium mb-1">End Time</label>
             <input
               type="time"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
               className="w-full border border-[#BEBEBE] rounded-lg p-2 text-sm focus:outline-none"
             />
           </div>
@@ -99,7 +109,7 @@ export default function AddAvailabilityModal({ onClose, edit }) {
         </div>
 
         <button
-        onClick={onClose}
+          onClick={handleSave}
           className="w-full py-2 rounded-xl text-white font-semibold"
           style={{
             background:

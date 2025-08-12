@@ -46,7 +46,10 @@ export default function AddCertification({ handleNext }) {
         </label>
         <div className="flex justify-center items-center h-[100%] w-full w-full border rounded-[8px] border-dashed border-[#00034A] ">
           <button
-            onClick={() => setShowModal(true)}
+            onClick={() => {
+              setShowModal(true);
+              setActionType("add")
+            }}
             className="bg-gradient-to-r from-[#00034A] border-b border-[#00034A] to-[#27A8E2] bg-clip-text text-transparent"
           >
             + Add New Certification

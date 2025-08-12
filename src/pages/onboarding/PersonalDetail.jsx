@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
 import { useLogin } from "../../hooks/api/Post";
@@ -6,12 +6,20 @@ import { useFormik } from "formik";
 import { personalDetailsValues } from "../../init/authentication/AuthValues";
 import { personalDetailsSchema } from "../../schema/authentication/AuthSchema";
 import { MapImg } from "../../assets/export";
-import { useDispatch } from "react-redux";
-import { CompleteUserProfile } from "../../redux/slices/auth.slice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  CompleteUserProfile,
+  resetAuthState,
+} from "../../redux/slices/auth.slice";
+import { ErrorToast } from "../../components/global/Toaster";
 
 export default function PersonalDetail({ handleNext }) {
   const { loading, postData } = useLogin();
   const [previewImage, setPreviewImage] = useState(); // Default image
+  const { isLoading, error, userData, success, accessToken } = useSelector(
+    (state) => state.auth
+  ); // Get loading, error, and user data from Redux
+
   const dispatch = useDispatch();
   const formik = useFormik({
     initialValues: personalDetailsValues,
@@ -49,6 +57,18 @@ export default function PersonalDetail({ handleNext }) {
     errors,
     touched,
   } = formik;
+  useEffect(() => {
+    dispatch(resetAuthState()); // reset success, error, and loading
+    return () => dispatch(resetAuthState());
+  }, [dispatch]);
+
+  // useEffect for Error Toast
+  useEffect(() => {
+    if (error) {
+      ErrorToast(error); // Show error toast if there's an error
+      dispatch(resetAuthState()); // clear error after toast
+    }
+  }, [error]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -164,7 +184,7 @@ export default function PersonalDetail({ handleNext }) {
 
         <img src={MapImg} alt="map.png" />
         <div className="w-[100%] mx-auto">
-          <Button text="Next" loading={loading} />
+          <Button text="Next" loading={isLoading} />
         </div>
       </form>
     </div>

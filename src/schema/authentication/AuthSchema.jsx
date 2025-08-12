@@ -51,7 +51,7 @@ export const stripeAccountSchema = Yup.object({
       }
 
       return false;
-    }), 
+    }),
   cvc: Yup.string()
     .matches(/^[0-9]{3,4}$/, "Please enter a valid CVC")
     .required("CVC is required"),
@@ -103,7 +103,9 @@ export const providerDetailsSchema = Yup.object({
     .matches(/^[0-9]{10}$/, "Enter a valid phone number")
     .required("Phone number is required"),
   radius: Yup.string().required("Radius is required"),
-  Availability: Yup.string().required("Availability is required"),
+  experience: Yup.string().required("experience is required"),
+  // Availability: Yup.string().required("Availability is required"),
+  biography: Yup.string().required("biography is required"),
   location: Yup.string().required("Location is required"),
   profilePic: Yup.mixed()
     .required("Profile picture is required")
@@ -119,4 +121,30 @@ export const otpSchema = Yup.object({
     .of(Yup.string().matches(/^\d$/, "Must be a digit"))
     .min(6, "OTP must be 6 digits")
     .required("OTP is required"),
+});
+
+export const serviceAddSchema = Yup.object({
+  title: Yup.string()
+    .required("Service name is required")
+    .max(100, "Max 100 characters"),
+  price: Yup.number()
+    .typeError("Price must be a number")
+    .required("Price is required")
+    .positive("Price must be greater than 0"),
+  description: Yup.string().max(500, "Max 500 characters").required(),
+});
+
+export const certificationSchema = Yup.object().shape({
+  certificationName: Yup.string()
+    .required("Certification name is required")
+    .min(3, "Name must be at least 3 characters"),
+  institution: Yup.string()
+    .required("Institution name is required")
+    .min(2, "Institution name must be at least 2 characters"),
+  completionDate: Yup.date()
+    .required("Completion date is required")
+    .max(new Date(), "Completion date cannot be in the future"),
+  description: Yup.string()
+    .required("Description is required")
+    .min(10, "Description must be at least 10 characters"),
 });

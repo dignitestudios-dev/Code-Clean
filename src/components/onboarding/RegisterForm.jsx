@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AppleImage, GoogleImage } from "../../assets/export";
 import { Button } from "../global/GlobalButton";
 import Input from "../../components/global/Input";
@@ -15,12 +15,14 @@ import { useLogin } from "../../hooks/api/Post";
 import { processLogin } from "../../lib/utils";
 import { NavLink, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { Register } from "../../redux/slices/auth.slice";
+import { Register, resetAuthState } from "../../redux/slices/auth.slice";
 import { ErrorToast } from "../global/Toaster";
 
-export default function RegisterForm({ handleNext, setEmail }) {
-  const state = useSelector((state) => state.auth);
-  console.log(state, "state");
+export default function RegisterForm({ handleNext, setEmail, role }) {
+  const { isLoading, error, userData, success, accessToken } = useSelector(
+    (state) => state.auth
+  ); // Get loading, error, and user data from Redux
+
   const navigate = useNavigate("");
   const dispatch = useDispatch();
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
@@ -35,7 +37,7 @@ export default function RegisterForm({ handleNext, setEmail }) {
           email: values?.email,
           password: values?.password,
           password_confirmation: values?.confirmPassword,
-          role: "user",
+          role: role,
         };
 
         try {
@@ -55,6 +57,17 @@ export default function RegisterForm({ handleNext, setEmail }) {
       },
     });
 
+  useEffect(() => {
+    dispatch(resetAuthState()); // reset success, error, and loading
+    return () => dispatch(resetAuthState());
+  }, [dispatch]);
+  // useEffect for Error Toast
+  useEffect(() => {
+    if (error) {
+      ErrorToast(error); // Show error toast if there's an error
+      dispatch(resetAuthState()); // clear error after toast
+    }
+  }, [error]);
   return (
     <div className="w-auto flex flex-col justify-center h-[100%] ">
       <h3 className="font-[600] text-center text-[36px] text-[#181818]">
@@ -104,7 +117,7 @@ export default function RegisterForm({ handleNext, setEmail }) {
           touched={touched?.confirmPassword}
         />
 
-        <Button text={"Sign Up"} loading={state?.isLoading} />
+        <Button text={"Sign Up"} loading={isLoading} />
 
         <div className="text-center w-full">
           <p className="font-[500] text-[12px] text-[#565656]">

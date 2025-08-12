@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import AccountCreatedSuccess from "../../components/onboarding/AccountCreatedSuccessfully";
 import { PendingIcon, RejectIcon, SuccessIcon } from "../../assets/export";
+import { useDispatch, useSelector } from "react-redux";
+import { CreateVerification, getProfile } from "../../redux/slices/auth.slice";
+import toast from "react-hot-toast";
+import { ErrorToast } from "../../components/global/Toaster";
 
 // Status Icon Component
 const StatusIcon = ({ status }) => {
@@ -53,6 +57,11 @@ export default function IdentityVerification({ handleNext }) {
   const [showModal, setShowModal] = useState(false);
   const [flage, setFlage] = useState(true);
   const [currentStatus, setCurrentStatus] = useState("idcard");
+  const dispatch = useDispatch();
+  const [frontFile, setFrontFile] = useState(null);
+  const [backFile, setBackFile] = useState(null);
+
+  const { isLoading } = useSelector((state) => state.auth);
 
   const statusFlow = ["submitted", "pending", "approved", "success"];
 
@@ -102,6 +111,7 @@ export default function IdentityVerification({ handleNext }) {
   const config = statusConfig[currentStatus];
 
   useEffect(() => {
+    dispatch(getProfile());
     if (currentStatus != "idcard" && flage) {
       const timeout1 = setTimeout(() => {
         setCurrentStatus("pending");
@@ -124,15 +134,29 @@ export default function IdentityVerification({ handleNext }) {
     }
   }, [currentStatus]);
 
+  const handleSubmit = async () => {
+    if (!frontFile || !backFile) {
+      ErrorToast("Please upload both front and back ID images.");
+      return;
+    }
+    await dispatch(
+      CreateVerification({
+        national_id_front: frontFile,
+        national_id_back: backFile,
+      })
+    ).unwrap();
+   setCurrentStatus("pending")
+  };
+
   return (
     <div className="w-full max-w-lg mx-auto py-6">
       {currentStatus === "idcard" ? (
         <>
           <h2 className="text-[32px] font-bold text-[#181818] text-center">
-            Add Certification
+            Identity Verification
           </h2>
           <p className="text-center text-[#565656] text-[16px] mt-2">
-            Please enter your certification details to add certification
+            Please add your Government ID card to verify your account
           </p>
 
           {/* Front ID Upload */}
@@ -141,25 +165,47 @@ export default function IdentityVerification({ handleNext }) {
               Government ID{" "}
               <span className="text-[#565656] text-[14px]">(Front)</span>
             </label>
-            <div className="flex justify-center items-center h-full w-full border rounded-[8px] border-dashed border-[#00034A]">
-              <div className="text-center">
-                <label
-                  htmlFor="cardfront"
-                  className="bg-gradient-to-r cursor-pointer from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent"
-                >
-                  Upload “Government ID Card”
-                </label>
-                <input
-                  type="file"
-                  name="cardfront"
-                  id="cardfront"
-                  className="hidden"
-                />
-                <br />
-                <span className="text-[#8F8F8F] font-[400] text-[12px]">
-                  Upload files up to 20 MB JPG, PNG
-                </span>
-              </div>
+            <div className="flex justify-center items-center h-full w-full border rounded-[8px] border-dashed border-[#00034A] overflow-hidden">
+              {frontFile ? (
+                <>
+                  <label htmlFor="cardfront" className="h-full w-full">
+                    <img
+                      src={URL.createObjectURL(frontFile)}
+                      alt="Front ID Preview"
+                      className="cursor-pointer w-full h-full"
+                    />
+                  </label>
+                  <input
+                    type="file"
+                    name="cardfront"
+                    id="cardfront"
+                    className="hidden"
+                    accept="image/png,image/jpeg"
+                    onChange={(e) => setFrontFile(e.target.files[0])}
+                  />
+                </>
+              ) : (
+                <div className="text-center">
+                  <label
+                    htmlFor="cardfront"
+                    className="bg-gradient-to-r cursor-pointer from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent"
+                  >
+                    Upload “Government ID Card”
+                  </label>
+                  <input
+                    type="file"
+                    name="cardfront"
+                    id="cardfront"
+                    className="hidden"
+                    accept="image/png,image/jpeg"
+                    onChange={(e) => setFrontFile(e.target.files[0])}
+                  />
+                  <br />
+                  <span className="text-[#8F8F8F] font-[400] text-[12px]">
+                    Upload files up to 20 MB JPG, PNG
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
@@ -169,40 +215,61 @@ export default function IdentityVerification({ handleNext }) {
               Government ID{" "}
               <span className="text-[#565656] text-[14px]">(Back)</span>
             </label>
-            <div className="flex justify-center items-center h-full w-full border rounded-[8px] border-dashed border-[#00034A]">
-              <div className="text-center">
-                <label
-                  htmlFor="cardback"
-                  className="bg-gradient-to-r cursor-pointer from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent"
-                >
-                  Upload “Government ID Card”
-                </label>
-                <input
-                  type="file"
-                  name="cardback"
-                  id="cardback"
-                  className="hidden"
-                />
-                <br />
-                <span className="text-[#8F8F8F] font-[400] text-[12px]">
-                  Upload files up to 20 MB JPG, PNG
-                </span>
-              </div>
+            <div className="flex justify-center  items-center h-full w-full border rounded-[8px] border-dashed border-[#00034A] overflow-hidden">
+              {backFile ? (
+                <>
+                  <label htmlFor="cardback" className="w-full h-full">
+                    <img
+                      src={URL.createObjectURL(backFile)}
+                      alt="Back ID Preview"
+                      className=" w-full cursor-pointer h-full"
+                    />
+                  </label>
+                  <input
+                    type="file"
+                    name="cardback"
+                    id="cardback"
+                    className="hidden"
+                    accept="image/png,image/jpeg"
+                    onChange={(e) => setBackFile(e.target.files[0])}
+                  />
+                </>
+              ) : (
+                <div className="text-center">
+                  <label
+                    htmlFor="cardback"
+                    className="bg-gradient-to-r cursor-pointer from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent"
+                  >
+                    Upload “Government ID Card”
+                  </label>
+                  <input
+                    type="file"
+                    name="cardback"
+                    id="cardback"
+                    className="hidden"
+                    accept="image/png,image/jpeg"
+                    onChange={(e) => setBackFile(e.target.files[0])}
+                  />
+                  <br />
+                  <span className="text-[#8F8F8F] font-[400] text-[12px]">
+                    Upload files up to 20 MB JPG, PNG
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Next Button */}
           <button
-            onClick={() => {
-              setShowModal(true); // Show modal
-            }}
+            onClick={handleSubmit}
+            disabled={isLoading}
             className="mt-12 w-full rounded-xl py-3 text-white text-[16px] font-semibold"
             style={{
               background:
                 "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",
             }}
           >
-            Next
+            {isLoading ? "Uploading..." : "Next"}
           </button>
         </>
       ) : (
