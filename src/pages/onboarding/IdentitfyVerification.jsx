@@ -3,7 +3,6 @@ import AccountCreatedSuccess from "../../components/onboarding/AccountCreatedSuc
 import { PendingIcon, RejectIcon, SuccessIcon } from "../../assets/export";
 import { useDispatch, useSelector } from "react-redux";
 import { CreateVerification, getProfile } from "../../redux/slices/auth.slice";
-import toast from "react-hot-toast";
 import { ErrorToast } from "../../components/global/Toaster";
 
 // Status Icon Component
@@ -54,18 +53,16 @@ const Button = ({ text, onClick, variant = "primary" }) => {
 };
 
 export default function IdentityVerification({ handleNext }) {
-  const [showModal, setShowModal] = useState(false);
-  const [flage, setFlage] = useState(true);
-  const [currentStatus, setCurrentStatus] = useState("idcard");
   const dispatch = useDispatch();
+  const { isLoading, user_data } = useSelector((state) => state.auth);
+
   const [frontFile, setFrontFile] = useState(null);
   const [backFile, setBackFile] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+console.log(user_data,"testtt")
+  // Current status fetched from API
+  const currentStatus = user_data?.identity_verification?.status || "idcard";
 
-  const { isLoading } = useSelector((state) => state.auth);
-
-  const statusFlow = ["submitted", "pending", "approved", "success"];
-
-  // Status configurations
   const statusConfig = {
     pending: {
       title: "Request Pending!",
@@ -89,6 +86,7 @@ export default function IdentityVerification({ handleNext }) {
       showButton: true,
       buttonText: "Resubmit",
       buttonVariant: "danger",
+      onClick: () => {}, // Could reset form here
     },
     approved: {
       title: "Congratulations!",
@@ -106,33 +104,19 @@ export default function IdentityVerification({ handleNext }) {
       buttonText: "Get Started",
       buttonVariant: "primary",
     },
+    idcard: {
+      title: "Identity Verification",
+      message: "Please add your Government ID card to verify your account",
+      showButton: false,
+    },
   };
 
   const config = statusConfig[currentStatus];
 
+  // Fetch profile on mount
   useEffect(() => {
     dispatch(getProfile());
-    if (currentStatus != "idcard" && flage) {
-      const timeout1 = setTimeout(() => {
-        setCurrentStatus("pending");
-      }, 1000);
-
-      const timeout2 = setTimeout(() => {
-        setCurrentStatus("approved");
-        setFlage(false);
-      }, 2000);
-
-      const timeout3 = setTimeout(() => {
-        setCurrentStatus("success");
-      }, 3000);
-
-      return () => {
-        clearTimeout(timeout1);
-        clearTimeout(timeout2);
-        clearTimeout(timeout3);
-      };
-    }
-  }, [currentStatus]);
+  }, [dispatch]);
 
   const handleSubmit = async () => {
     if (!frontFile || !backFile) {
@@ -145,18 +129,18 @@ export default function IdentityVerification({ handleNext }) {
         national_id_back: backFile,
       })
     ).unwrap();
-   setCurrentStatus("pending")
+    dispatch(getProfile()); // refresh status from API
   };
 
   return (
     <div className="w-full max-w-lg mx-auto py-6">
-      {currentStatus === "idcard" ? (
+      {currentStatus == "idcard" ? (
         <>
           <h2 className="text-[32px] font-bold text-[#181818] text-center">
             Identity Verification
           </h2>
           <p className="text-center text-[#565656] text-[16px] mt-2">
-            Please add your Government ID card to verify your account
+            {config?.message}
           </p>
 
           {/* Front ID Upload */}
@@ -177,7 +161,6 @@ export default function IdentityVerification({ handleNext }) {
                   </label>
                   <input
                     type="file"
-                    name="cardfront"
                     id="cardfront"
                     className="hidden"
                     accept="image/png,image/jpeg"
@@ -194,14 +177,13 @@ export default function IdentityVerification({ handleNext }) {
                   </label>
                   <input
                     type="file"
-                    name="cardfront"
                     id="cardfront"
                     className="hidden"
                     accept="image/png,image/jpeg"
                     onChange={(e) => setFrontFile(e.target.files[0])}
                   />
                   <br />
-                  <span className="text-[#8F8F8F] font-[400] text-[12px]">
+                  <span className="text-[#8F8F8F] text-[12px]">
                     Upload files up to 20 MB JPG, PNG
                   </span>
                 </div>
@@ -215,19 +197,18 @@ export default function IdentityVerification({ handleNext }) {
               Government ID{" "}
               <span className="text-[#565656] text-[14px]">(Back)</span>
             </label>
-            <div className="flex justify-center  items-center h-full w-full border rounded-[8px] border-dashed border-[#00034A] overflow-hidden">
+            <div className="flex justify-center items-center h-full w-full border rounded-[8px] border-dashed border-[#00034A] overflow-hidden">
               {backFile ? (
                 <>
-                  <label htmlFor="cardback" className="w-full h-full">
+                  <label htmlFor="cardback" className="h-full w-full">
                     <img
                       src={URL.createObjectURL(backFile)}
                       alt="Back ID Preview"
-                      className=" w-full cursor-pointer h-full"
+                      className="cursor-pointer w-full h-full"
                     />
                   </label>
                   <input
                     type="file"
-                    name="cardback"
                     id="cardback"
                     className="hidden"
                     accept="image/png,image/jpeg"
@@ -244,14 +225,13 @@ export default function IdentityVerification({ handleNext }) {
                   </label>
                   <input
                     type="file"
-                    name="cardback"
                     id="cardback"
                     className="hidden"
                     accept="image/png,image/jpeg"
                     onChange={(e) => setBackFile(e.target.files[0])}
                   />
                   <br />
-                  <span className="text-[#8F8F8F] font-[400] text-[12px]">
+                  <span className="text-[#8F8F8F] text-[12px]">
                     Upload files up to 20 MB JPG, PNG
                   </span>
                 </div>
@@ -259,7 +239,7 @@ export default function IdentityVerification({ handleNext }) {
             </div>
           </div>
 
-          {/* Next Button */}
+          {/* Submit Button */}
           <button
             onClick={handleSubmit}
             disabled={isLoading}
@@ -273,15 +253,15 @@ export default function IdentityVerification({ handleNext }) {
           </button>
         </>
       ) : (
-        <div className="w-full h-screen flex items-center justify-center">
+        <div className="w-full min-h-[60vh] flex items-center justify-center">
           <div className="flex flex-col items-center gap-6 text-center max-w-md w-full px-4">
             <StatusIcon status={currentStatus} />
             <h3 className="text-3xl font-semibold text-gray-900">
-              {config.title}
+              {config?.title}
             </h3>
-            <p className="text-gray-600">{config.message}</p>
+            <p className="text-gray-600">{config?.message}</p>
 
-            {config.reasons && (
+            {config?.reasons && (
               <ol className="text-gray-600 space-y-1 text-left">
                 {config.reasons.map((reason, index) => (
                   <li key={index} className="flex gap-2">
@@ -292,7 +272,7 @@ export default function IdentityVerification({ handleNext }) {
               </ol>
             )}
 
-            {config.showButton && (
+            {config?.showButton && (
               <Button
                 text={config.buttonText}
                 variant={config.buttonVariant}
@@ -308,10 +288,9 @@ export default function IdentityVerification({ handleNext }) {
         isOpen={showModal}
         handleNext={() => {
           setShowModal(false);
-          setCurrentStatus("submitted"); // Triggers transition flow
+          dispatch(getProfile()); // Refresh after modal close
         }}
         setIsOpen={setShowModal}
-        setCurrentStatus={setCurrentStatus}
       />
     </div>
   );

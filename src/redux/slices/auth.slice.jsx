@@ -19,9 +19,8 @@ const initialState = {
   resetpasswordLoading: false,
   resetpasswordSuccess: null,
   resetpasswordError: null,
-  isResendSuccess : null,
+  isResendSuccess: null,
 };
-
 // ================= THUNKS =================
 
 // LOGIN
@@ -103,8 +102,6 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
-
-
 export const logout = createAsyncThunk("/user/logout", async (_, thunkAPI) => {
   const state = thunkAPI.getState();
   const existingToken =
@@ -112,11 +109,15 @@ export const logout = createAsyncThunk("/user/logout", async (_, thunkAPI) => {
 
   try {
     await axios.get("/logout", {
-      headers: existingToken ? { Authorization: `Bearer ${existingToken}` } : {},
+      headers: existingToken
+        ? { Authorization: `Bearer ${existingToken}` }
+        : {},
     });
     return { message: "Logout successful" };
   } catch (e) {
-    return thunkAPI.rejectWithValue(e?.response?.data?.message || "Logout failed");
+    return thunkAPI.rejectWithValue(
+      e?.response?.data?.message || "Logout failed"
+    );
   } finally {
     const isHttps =
       typeof window !== "undefined" && window.location.protocol === "https:";
@@ -127,8 +128,6 @@ export const logout = createAsyncThunk("/user/logout", async (_, thunkAPI) => {
     localStorage.removeItem("refresh_token");
   }
 });
-
-
 
 // REGISTER
 export const Register = createAsyncThunk(
@@ -408,37 +407,34 @@ export const verifyEmail = createAsyncThunk(
   }
 );
 
-
-
 export const getProfile = createAsyncThunk(
   "/provider/profile",
   async (payload, thunkAPI) => {
     try {
-      const token = thunkAPI.getState().auth.token;
+      const state = thunkAPI.getState();
+      const token =
+        state.auth.accessToken ||
+        localStorage.getItem("access_token") ||
+        state.auth.token;
       if (!token) {
         return thunkAPI.rejectWithValue("No token found, please login again");
       }
-      const response = await axios.post("/provider/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      const { accessToken, refreshToken, userData } = response.data;
-
-      if (typeof window !== "undefined") {
-        if (accessToken) {
-          document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
-          localStorage.setItem("access_token", accessToken);
+      const response = await axios.post(
+        "/provider/profile",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
         }
-        if (refreshToken) {
-          localStorage.setItem("refresh_token", refreshToken);
-        }
-      }
+      );
+
+      const { user } = response.data;
+      console.log(response.data, "data");
 
       SuccessToast(response?.data?.message);
-      return { accessToken, refreshToken, userData };
+      return { user };
     } catch (error) {
       ErrorToast(error.response?.data?.message);
       return thunkAPI.rejectWithValue(
@@ -458,11 +454,12 @@ export const ResentOtp = createAsyncThunk(
       return { success: true, message: response?.data?.message }; // Return success
     } catch (error) {
       ErrorToast(error.response?.data?.message || "Resend OTP failed");
-      return thunkAPI.rejectWithValue(error.response?.data?.message || "Resend OTP failed");
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Resend OTP failed"
+      );
     }
   }
 );
-
 
 // ================= SLICE =================
 const authSlice = createSlice({
@@ -487,7 +484,6 @@ const authSlice = createSlice({
       state.resetSuccess = null;
       state.resetError = null;
     },
-
   },
   extraReducers: (builder) => {
     builder
@@ -508,6 +504,24 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+      // GetProfile
+      .addCase(getProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getProfile.fulfilled, (state, action) => {
+        console.log(action.payload, "payload");
+        state.isLoading = false;
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
+        state.user_data = action.payload.user;
+        state.success = action.payload.message;
+      })
+      .addCase(getProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       // RESET PASSWORD
       .addCase(resetPassword.pending, (state) => {
         state.resetLoading = true;
@@ -516,7 +530,8 @@ const authSlice = createSlice({
       })
       .addCase(resetPassword.fulfilled, (state, action) => {
         state.resetLoading = false;
-        state.resetSuccess = action.payload?.message || "Password reset successful";
+        state.resetSuccess =
+          action.payload?.message || "Password reset successful";
       })
       .addCase(resetPassword.rejected, (state, action) => {
         state.resetLoading = false;
@@ -575,7 +590,7 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       // RESEND OTP
-     .addCase(ResentOtp.pending, (state) => {
+      .addCase(ResentOtp.pending, (state) => {
         state.isResendLoading = true;
       })
       .addCase(ResentOtp.fulfilled, (state, action) => {

@@ -24,7 +24,7 @@ import SubscriptionPlans from "./SubscriptionPlan";
 import BillingSummary from "./BillingSummary";
 
 export default function SignUp() {
-  const [currentStep, setCurrentStep] = useState(5);
+  const [currentStep, setCurrentStep] = useState(6);
   const location = useLocation();
   const role = location.state?.role || "user";
  const [email,setEmail]=useState("");

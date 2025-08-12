@@ -15,7 +15,7 @@ import { AppleImage, GoogleImage, LoginRight, Logo } from "../../assets/export";
 const Login = () => {
   const dispatch = useDispatch(); // Initialize dispatch
   const navigate = useNavigate(); // Initialize navigate
-  const { isLoading, error, userData, success,accessToken } = useSelector((state) => state.auth); // Get loading, error, and user data from Redux
+  const { isLoading, error, user_data, success,accessToken } = useSelector((state) => state.auth); // Get loading, error, and user data from Redux
 
   const [selectedRole, setSelectedRole] = useState(null);
 
@@ -56,7 +56,12 @@ useEffect(() => {
   if (success && accessToken) {
     SuccessToast(typeof success === 'string' ? success : "Login successful!");
     // e.g. navigate to dashboard
-    navigate('/Home');
+    console.log(user_data,"userData")
+    if (user_data?.role=="service_provider") {
+       navigate('/dashboard');
+    }else{
+      navigate('/Home');
+    }
     dispatch(resetAuthState());
   }
 }, [success, accessToken, dispatch, navigate]);
