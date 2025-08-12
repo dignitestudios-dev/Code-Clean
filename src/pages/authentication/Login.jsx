@@ -125,7 +125,7 @@ useEffect(() => {
           <div className="w-full flex justify-center items-center mt-4">
             <span className="text-[12px] text-[#959393]">
               Don’t have an account?{" "}
-              <NavLink to="/auth/signup" className="text-[#0084FF]">
+              <NavLink to="/auth/role-selection" className="text-[#0084FF]">
                 Sign Up
               </NavLink>
             </span>
