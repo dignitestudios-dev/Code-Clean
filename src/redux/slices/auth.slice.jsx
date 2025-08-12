@@ -338,7 +338,7 @@ export const DeleteCertificate = createAsyncThunk(
       }
 
       SuccessToast(response?.data?.message);
-      return { accessToken, refreshToken, userData };
+      return { accessToken, refreshToken, user_data };
     } catch (error) {
       ErrorToast(error.response?.data?.message);
       return thunkAPI.rejectWithValue(
@@ -407,7 +407,6 @@ export const verifyEmail = createAsyncThunk(
     }
   }
 );
-
 
 // RESEND OTP
 export const ResentOtp = createAsyncThunk(

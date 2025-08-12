@@ -55,13 +55,14 @@ const Button = ({ text, onClick, variant = "primary" }) => {
 
 export default function IdentityVerification({ handleNext }) {
   const dispatch = useDispatch();
-  const { isLoading, user_data } = useSelector((state) => state?.provider_data);
+  const { isLoading, provider_data } = useSelector((state) => state?.provider);
   const [frontFile, setFrontFile] = useState(null);
   const [backFile, setBackFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
-console.log(user_data,"testtt")
+  console.log(provider_data, "testtt");
   // Current status fetched from API
-  const currentStatus = user_data?.identity_verification?.status || "idcard";
+  const currentStatus =
+    provider_data?.identity_verification?.status || "idcard";
 
   const statusConfig = {
     pending: {
