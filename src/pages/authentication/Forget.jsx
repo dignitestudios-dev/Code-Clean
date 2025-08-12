@@ -3,7 +3,7 @@ import { Button } from "../../components/global/GlobalButton";
 import { useFormik } from "formik";
 import { forgetPasswordValues } from "../../init/authentication/AuthValues";
 import { forgetPasswordSchema } from "../../schema/authentication/AuthSchema";
-import { verifyEmail, ResentOtp } from "../../redux/slices/auth.slice"; // Import actions from Redux
+import { verifyEmail, ResentOtp, clearforgetpasswordState } from "../../redux/slices/auth.slice"; // Import actions from Redux
 import { useLogin } from "../../hooks/api/Post";
 import Input from "../../components/global/Input";
 import { LoginRight } from "../../assets/export";
@@ -19,7 +19,7 @@ export default function Forget() {
 
   const [step, setStep] = useState("email"); // Step can be either 'email' or 'otp'
   const [resendTimer, setResendTimer] = useState(0); // Timer for OTP resend
-  const { isResendSuccess, emailError } = useSelector((state) => state.auth); // Retrieve email error state
+  const { isResendSuccess, emailError, isResendLoading } = useSelector((state) => state.auth); // Retrieve email error state
 
   // Countdown timer for Resend OTP
   useEffect(() => {
@@ -28,47 +28,48 @@ export default function Forget() {
     return () => clearInterval(t);
   }, [resendTimer]);
 
+  // Formik initialization
   const { values, handleBlur, handleChange, handleSubmit, errors, touched, setFieldValue, setFieldTouched } = useFormik({
-  initialValues: { email: "", otp: "" },
-  validationSchema: forgetPasswordSchema,
-  validateOnChange: true,
-  validateOnBlur: true,
-  onSubmit: async (vals) => {
-    if (step === "email") {
-      // Step 1: Submit email and send OTP
-      const payload = { email: vals.email };
-      try {
-        // Dispatch ResentOtp action to send OTP
-        const response = await dispatch(ResentOtp(payload));
+    initialValues: { email: "", otp: "" },
+    validationSchema: forgetPasswordSchema,
+    validateOnChange: true,
+    validateOnBlur: true,
+    onSubmit: async (vals) => {
+      if (step === "email") {
+        // Step 1: Submit email and send OTP
+        const payload = { email: vals.email };
+        try {
+          // Dispatch ResentOtp action to send OTP
+          const response = await dispatch(ResentOtp(payload));
 
-        // Check if the OTP was sent successfully
-        if (response?.payload?.success || isResendSuccess) {
-          setStep("otp"); // Proceed to OTP step
-          setResendTimer(60); // Start OTP resend timer
-          setFieldValue("otp", ""); // Clear OTP input
-          setFieldTouched("otp", false, false); // Reset OTP touch state
-        } else {
-          // Handle failure case if OTP was not sent
-          ErrorToast("Failed to send OTP. Please try again.");
+          // Check if the OTP was sent successfully
+          if (response?.payload?.success || isResendSuccess) {
+            setStep("otp"); // Proceed to OTP step
+            setResendTimer(60); // Start OTP resend timer
+            setFieldValue("otp", ""); // Clear OTP input
+            setFieldTouched("otp", false, false); // Reset OTP touch state
+            dispatch(clearforgetpasswordState()); // Reset the state for next use
+          } else {
+            // Handle failure case if OTP was not sent
+            ErrorToast(emailError);
+          }
+        } catch (e) {
+          // Handle errors during the OTP request (e.g., network failure)
+          ErrorToast("An error occurred while sending OTP. Please try again.");
         }
-      } catch (e) {
-        // Handle errors during the OTP request (e.g., network failure)
-        ErrorToast("An error occurred while sending OTP. Please try again.");
+      } else {
+        // Step 2: Verify OTP
+        const payload = { email: vals.email, otp: vals.otp };
+        try {
+          await dispatch(verifyEmail(payload)).unwrap(); // Verify OTP
+          navigate("/auth/reset-password", { state: { email: vals.email } });
+        } catch (e) {
+          // Handle OTP verification errors (show toast or alert)
+          ErrorToast("Invalid OTP. Please try again.");
+        }
       }
-    } else {
-      // Step 2: Verify OTP
-      const payload = { email: vals.email, otp: vals.otp };
-      try {
-        await dispatch(verifyEmail(payload)).unwrap(); // Verify OTP
-        navigate("/auth/reset-password", { state: { email: vals.email } });
-      } catch (e) {
-        // Handle OTP verification errors (show toast or alert)
-        ErrorToast("Invalid OTP. Please try again.");
-      }
-    }
-  },
-});
-
+    },
+  });
 
   const handleResend = async () => {
     if (resendTimer > 0) return; // Prevent resend if timer is active
@@ -136,7 +137,7 @@ export default function Forget() {
                 error={errors.email}
                 touched={touched?.email}
               />
-              <Button text={"Send OTP"} loading={loading} />
+              <Button text={"Send OTP"} loading={isResendLoading} />
             </>
           )}
 
@@ -168,7 +169,7 @@ export default function Forget() {
                   {resendTimer > 0 ? `Resend in ${resendTimer}s` : "Resend OTP"}
                 </button>
               </div>
-              <Button text={"Verify OTP"} loading={loading} />
+              <Button text={"Verify OTP"} loading={isResendLoading} />
             </>
           )}
         </form>

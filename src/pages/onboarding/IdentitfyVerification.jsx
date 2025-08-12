@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import AccountCreatedSuccess from "../../components/onboarding/AccountCreatedSuccessfully";
 import { PendingIcon, RejectIcon, SuccessIcon } from "../../assets/export";
 import { useDispatch, useSelector } from "react-redux";
-import { CreateVerification, getProfile } from "../../redux/slices/auth.slice";
+import { CreateVerification } from "../../redux/slices/auth.slice";
 import { ErrorToast } from "../../components/global/Toaster";
+import { getProfile } from "../../redux/slices/provider.slice";
 
 // Status Icon Component
 const StatusIcon = ({ status }) => {
@@ -54,8 +55,7 @@ const Button = ({ text, onClick, variant = "primary" }) => {
 
 export default function IdentityVerification({ handleNext }) {
   const dispatch = useDispatch();
-  const { isLoading, user_data } = useSelector((state) => state.auth);
-
+  const { isLoading, user_data } = useSelector((state) => state?.provider_data);
   const [frontFile, setFrontFile] = useState(null);
   const [backFile, setBackFile] = useState(null);
   const [showModal, setShowModal] = useState(false);

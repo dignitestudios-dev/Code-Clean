@@ -8,6 +8,7 @@ const initialState = {
   isLoading: false,
   isResendLoading: false,
   error: null,
+  emailError: null,
   success: null,
   user_data: null,
   accessToken: null,
@@ -337,7 +338,7 @@ export const DeleteCertificate = createAsyncThunk(
       }
 
       SuccessToast(response?.data?.message);
-      return { accessToken, refreshToken, user_data };
+      return { accessToken, refreshToken, userData };
     } catch (error) {
       ErrorToast(error.response?.data?.message);
       return thunkAPI.rejectWithValue(
@@ -407,42 +408,6 @@ export const verifyEmail = createAsyncThunk(
   }
 );
 
-export const getProfile = createAsyncThunk(
-  "/provider/profile",
-  async (payload, thunkAPI) => {
-    try {
-      const state = thunkAPI.getState();
-      const token =
-        state.auth.accessToken ||
-        localStorage.getItem("access_token") ||
-        state.auth.token;
-      if (!token) {
-        return thunkAPI.rejectWithValue("No token found, please login again");
-      }
-      const response = await axios.post(
-        "/provider/profile",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      const { user } = response.data;
-      console.log(response.data, "data");
-
-      SuccessToast(response?.data?.message);
-      return { user };
-    } catch (error) {
-      ErrorToast(error.response?.data?.message);
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Verification failed"
-      );
-    }
-  }
-);
 
 // RESEND OTP
 export const ResentOtp = createAsyncThunk(
@@ -484,6 +449,12 @@ const authSlice = createSlice({
       state.resetSuccess = null;
       state.resetError = null;
     },
+    clearforgetpasswordState(state){
+      state.isResendLoading = false;
+      state.isResendSuccess = null;
+      state.emailError = null;
+    }
+
   },
   extraReducers: (builder) => {
     builder
@@ -505,23 +476,7 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       // GetProfile
-      .addCase(getProfile.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-        state.success = null;
-      })
-      .addCase(getProfile.fulfilled, (state, action) => {
-        console.log(action.payload, "payload");
-        state.isLoading = false;
-        state.accessToken = action.payload.accessToken;
-        state.refreshToken = action.payload.refreshToken;
-        state.user_data = action.payload.user;
-        state.success = action.payload.message;
-      })
-      .addCase(getProfile.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
+     
       // RESET PASSWORD
       .addCase(resetPassword.pending, (state) => {
         state.resetLoading = true;
@@ -601,10 +556,10 @@ const authSlice = createSlice({
       .addCase(ResentOtp.rejected, (state, action) => {
         state.isResendLoading = false;
         state.isResendSuccess = false; // Set success to false if error occurs
-        state.error = action.payload;
+        state.emailError = action.payload;
       });
   },
 });
 
-export const { resetError, resetAuthState } = authSlice.actions;
+export const { resetError, resetAuthState,clearforgetpasswordState,resetLogoutState,clearResetState } = authSlice.actions;
 export default authSlice.reducer;
