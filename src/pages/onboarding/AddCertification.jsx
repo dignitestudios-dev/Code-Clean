@@ -4,32 +4,17 @@ import { deleteIcon, EditIcon } from "../../assets/export";
 import AddCertificationModal from "../../components/onboarding/AddCertificationModal";
 import EditCertificateModal from "../../components/Serviceprovider/profile/EditCertificationModal";
 import DeleteProServices from "../../components/Serviceprovider/profile/DeleteProServices";
+import { useSelector } from "react-redux";
 
 export default function AddCertification({ handleNext }) {
   const [showModal, setShowModal] = useState(false);
-  const [successModal, setSuccessModal] = useState(false);
   const [actionType, setActionType] = useState("");
-  const [services, setServices] = useState([
-    {
-      title: "Service Title",
-      price: "50$",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-    },
-    {
-      title: "Service Title",
-      price: "50$",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-    },
-  ]);
-
-  const handleDelete = (index) => {
-    setServices((prev) => prev.filter((_, i) => i !== index));
-  };
+  const { certificates } = useSelector((state) => state?.auth?.user_data);
+  const [selectedItem, setSelectedItem] = useState(null);
+  console.log(certificates);
 
   const handleAddService = (newService) => {
-    setServices((prev) => [...prev, newService]);
+    // setServices((prev) => [...prev, newService]);
   };
 
   return (
@@ -48,7 +33,7 @@ export default function AddCertification({ handleNext }) {
           <button
             onClick={() => {
               setShowModal(true);
-              setActionType("add")
+              setActionType("add");
             }}
             className="bg-gradient-to-r from-[#00034A] border-b border-[#00034A] to-[#27A8E2] bg-clip-text text-transparent"
           >
@@ -65,24 +50,27 @@ export default function AddCertification({ handleNext }) {
       )}
       {showModal && actionType == "edit" && (
         <EditCertificateModal
+          selectedItem={selectedItem}
           onClose={() => setShowModal(false)}
-          onAdd={handleAddService}
+          onAdd={handleAddService}       
         />
       )}
       {showModal && actionType == "delete" && (
         <DeleteProServices
+          selectedItem={selectedItem}
           detail={{
             title: "Delete Certification",
             bio: "Are you sure you want to delete this certification?",
           }}
           setIsOpen={setShowModal}
+          delete="certificate"
           isOpen={showModal}
         />
       )}
       {/* Services List */}
       <div className="mt-16 flex flex-col gap-4">
         <div className="mt-0 flex flex-col gap-4 h-[200px] overflow-auto ">
-          {services.map((service, index) => (
+          {certificates?.map((service, index) => (
             <div
               key={index}
               className="border rounded-[10px] p-4 bg-white shadow-sm relative"
@@ -91,6 +79,7 @@ export default function AddCertification({ handleNext }) {
                 <img
                   src={EditIcon}
                   onClick={() => {
+                    setSelectedItem(service);
                     setShowModal(true);
                     setActionType("edit");
                   }}
@@ -100,6 +89,7 @@ export default function AddCertification({ handleNext }) {
                 <img
                   src={deleteIcon}
                   onClick={() => {
+                    setSelectedItem(service);
                     setShowModal(true);
                     setActionType("delete");
                   }}
@@ -107,12 +97,12 @@ export default function AddCertification({ handleNext }) {
                   alt=""
                 />
               </div>
-              <h3 className="font-semibold text-[16px]">Certification Name</h3>
+              <h3 className="font-semibold text-[16px]">{service?.name}</h3>
               <h4 className="font-[400] text-[#3A3A3A] text-[12px]">
-                Institute Name
+                {service?.institution}
               </h4>
               <p className="text-[#727272] text-[12px] mt-1">
-                {service.description}
+                {service?.description}
               </p>
               <p className="font-[600] text-[12px] mt-2">12 Jan, 2024</p>
             </div>

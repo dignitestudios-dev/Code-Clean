@@ -8,39 +8,18 @@ const initialState = {
   error: null,
   success: null,
   provider_data: null,
+  services:null,
+  plans: null,
 };
 // ================= THUNKS =================
 
 export const getProfile = createAsyncThunk(
   "/provider/profile",
-  async (payload, thunkAPI) => {
+  async (_, thunkAPI) => {
     try {
-      const state = thunkAPI.getState();
-      const token =
-        state.auth.accessToken ||
-        localStorage.getItem("access_token") ||
-        state.auth.token;
-      if (!token) {
-        return thunkAPI.rejectWithValue("No token found, please login again");
-      }
-      const response = await axios.post(
-        "/provider/profile",
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      const { user } = response.data;
-      console.log(response.data, "data");
-
-      SuccessToast(response?.data?.message);
-      return { user };
+      const response = await axios.get("/provider/profile");
+      return response.data; // Return entire API response
     } catch (error) {
-      ErrorToast(error.response?.data?.message);
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Verification failed"
       );
@@ -48,9 +27,56 @@ export const getProfile = createAsyncThunk(
   }
 );
 
+export const getPlans = createAsyncThunk(
+  "/plans", // The action type
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get("/plans"); // API request to fetch the profile
+      return response.data; // Assuming the API returns the user profile data
+    } catch (error) {
+      const msg = error?.response?.data?.message || "Failed to Fetch Plans";
+      ErrorToast(msg); // Show error toast
+      return thunkAPI.rejectWithValue(msg); // Handle rejection
+    }
+  }
+);
+
+export const getServices = createAsyncThunk(
+  "/provider/services", // The action type
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get("/provider/services"); // API request to fetch the profile
+      console.log(response,"response")
+      return response.data;
+    } catch (error) {
+      const msg = error?.response?.data?.message || "Failed to Fetch Plans";
+      ErrorToast(msg); // Show error toast
+      return thunkAPI.rejectWithValue(msg); // Handle rejection
+    }
+  }
+);
+
+// RESEND OTP
+export const AddCard = createAsyncThunk(
+  "/provider/payment-methods",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.post("/provider/payment-methods", payload);    
+      SuccessToast(response?.data?.message)
+      return { success: true, message: response?.data?.message };
+
+    } catch (error) {
+      ErrorToast(error.response?.data?.message || "Card Add failed");
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Card Add failed"
+      );
+    }
+  }
+);
+
 // ================= SLICE =================
-const ProviderSlice = createSlice({
-  name: "Provider",
+const providerSlice = createSlice({
+  name: "provider",
   initialState,
   reducers: {
     resetProviderState(state) {
@@ -64,14 +90,13 @@ const ProviderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Provide
+      // Provide Profile
       .addCase(getProfile.pending, (state) => {
         state.isLoading = true;
         state.error = null;
         state.success = null;
       })
       .addCase(getProfile.fulfilled, (state, action) => {
-        console.log(action.payload, "payload");
         state.isLoading = false;
         state.provider_data = action.payload.user;
         state.success = action.payload.message;
@@ -79,9 +104,53 @@ const ProviderSlice = createSlice({
       .addCase(getProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      // Provider Plans
+      .addCase(getPlans.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getPlans.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.plans = action.payload;
+        state.success = "Plans Get Successfully";
+      })
+      .addCase(getPlans.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // get services
+      .addCase(getServices.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getServices.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.services = action.payload;
+        state.success = "Services Get Successfully";
+      })
+      .addCase(getServices.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      //Add Card
+      .addCase(AddCard.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(AddCard.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.success = "Card Add Successfully";
+      })
+      .addCase(AddCard.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { resetError, resetProviderState } = ProviderSlice.actions;
-export default ProviderSlice.reducer;
+export const { resetError, resetProviderState } = providerSlice.actions;
+export default providerSlice.reducer;

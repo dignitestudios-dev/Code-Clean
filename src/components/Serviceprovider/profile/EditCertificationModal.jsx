@@ -2,7 +2,7 @@ import { useFormik } from "formik";
 import { useState } from "react";
 import Input from "../../global/Input";
 
-export default function EditCertificateModal({ onClose, onAdd }) {
+export default function EditCertificateModal({ onClose,selectedItem, }) {
     const [form, setForm] = useState({ title: "", price: "", description: "" });
 
     const formik = useFormik({
@@ -44,7 +44,7 @@ export default function EditCertificateModal({ onClose, onAdd }) {
                 >
                     <Input
                         text="Certification Name"
-                        name="radius"
+                        name="name"
                         type="text"
                         holder="Enter Certification Name"
                         value={values.name}
@@ -56,30 +56,30 @@ export default function EditCertificateModal({ onClose, onAdd }) {
 
                     <Input
                         text="Institution"
-                        name="radius"
+                        name="institution"
                         type="text"
                         holder="Enter Institution"
-                        value={values.name}
+                        value={values.institution}
                         handleBlur={handleBlur}
                         handleChange={handleChange}
-                        error={errors.name}
-                        touched={touched.name}
+                        error={errors.institution}
+                        touched={touched.institution}
                     />
                     <Input
                         text="Date of Completion"
-                        name="radius"
+                        name="date_of_completion"
                         type="text"
                         holder="Enter Date"
-                        value={values.name}
+                        value={values.date_of_completion}
                         handleBlur={handleBlur}
                         handleChange={handleChange}
-                        error={errors.name}
-                        touched={touched.name}
+                        error={errors.date_of_completion}
+                        touched={touched.date_of_completion}
                     />
 
                     <div className="flex flex-col gap-1 mt-3 mb-3" >
-                        <label htmlFor="">Description</label>
-                        <textarea name="" id="" rows={5} className="border border-[#BEBEBE] p-2 rounded-[8px]  text-[#727272]" >Briefly explain the certification</textarea>
+                        <label htmlFor="description">Description</label>
+                        <textarea name="description" id="" rows={5} className="border border-[#BEBEBE] p-2 rounded-[8px]  text-[#727272]" >Briefly explain the certification</textarea>
                     </div>
                     {/* Add Button */}
                     <button

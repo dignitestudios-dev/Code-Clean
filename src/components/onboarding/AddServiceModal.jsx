@@ -5,12 +5,13 @@ import { ServiceValues } from "../../init/authentication/AuthValues";
 import Input from "../../components/global/Input";
 import { Button } from "../global/GlobalButton";
 import { ErrorToast } from "../global/Toaster";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CreateService } from "../../redux/slices/auth.slice";
+import { getServices } from "../../redux/slices/provider.slice";
 
 export default function AddServiceModal({ onClose, onAdd }) {
   const dispatch = useDispatch();
-
+  const { isLoading } = useSelector((state) => state.auth);
   const {
     values,
     handleBlur,
@@ -26,13 +27,13 @@ export default function AddServiceModal({ onClose, onAdd }) {
     validateOnBlur: true,
     onSubmit: async (values, action) => {
       try {
-        onAdd(values);
-        const data={
-          title:values.title,
-          amount:values.price,
-          description:values.description,
-        }
+        const data = {
+          title: values.title,
+          amount: values.price,
+          description: values.description,
+        };
         await dispatch(CreateService(data)).unwrap();
+        dispatch(getServices());
         // Optionally reset form
         action.resetForm();
         onClose();
@@ -41,8 +42,6 @@ export default function AddServiceModal({ onClose, onAdd }) {
       }
     },
   });
-
-  console.log(errors, "Tableet");
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -111,7 +110,7 @@ export default function AddServiceModal({ onClose, onAdd }) {
           </div>
 
           {/* Add Button */}
-          <Button text="Add Service" type="submit" />
+          <Button text="Add Service" type="submit" loading={isLoading} />
         </form>
       </div>
     </div>

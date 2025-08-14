@@ -22,12 +22,15 @@ import AddCertification from "./AddCertification";
 import IdentityVerification from "./IdentitfyVerification";
 import SubscriptionPlans from "./SubscriptionPlan";
 import BillingSummary from "./BillingSummary";
-
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 export default function SignUp() {
-  const [currentStep, setCurrentStep] = useState(6);
+  const [currentStep, setCurrentStep] = useState(4);
   const location = useLocation();
   const role = location.state?.role || "user";
- const [email,setEmail]=useState("");
+  const [email, setEmail] = useState("");
+  const stripePromise = loadStripe(import.meta.env.VITE_APP_STRIPE_KEY);
+
   // Step Data for Service Provider
   const providerSteps = [
     { icon: FaUser, title: "Your details" },
@@ -75,20 +78,30 @@ export default function SignUp() {
         <div className="h-full w-full">
           {role == "user" ? (
             currentStep === 0 ? (
-              <RegisterForm role={"user"} setEmail={setEmail} handleNext={handleNext} />
+              <RegisterForm
+                role={"user"}
+                setEmail={setEmail}
+                handleNext={handleNext}
+              />
             ) : currentStep === 1 ? (
               <Verification email={email} handleNext={handleNext} />
             ) : currentStep === 2 ? (
               <PersonalDetail handleNext={handleNext} />
             ) : currentStep === 3 ? (
-              <AddStripeAccount handleNext={handleNext} />
+              <Elements stripe={stripePromise}>
+                <AddStripeAccount handleNext={handleNext} />
+              </Elements>
             ) : (
               <SuccessFullyAccountCreated />
             )
           ) : currentStep === 0 ? (
-            <RegisterForm role={"service_provider"} setEmail={setEmail} handleNext={handleNext} />
+            <RegisterForm
+              role={"service_provider"}
+              setEmail={setEmail}
+              handleNext={handleNext}
+            />
           ) : currentStep === 1 ? (
-            <Verification  email={email} handleNext={handleNext} />
+            <Verification email={email} handleNext={handleNext} />
           ) : currentStep === 2 ? (
             <ProviderDetail handleNext={handleNext} />
           ) : currentStep === 3 ? (
@@ -100,7 +113,9 @@ export default function SignUp() {
           ) : currentStep === 6 ? (
             <SubscriptionPlans handleNext={handleNext} />
           ) : currentStep === 7 ? (
-            <AddStripeAccount handleNext={handleNext} />
+            <Elements stripe={stripePromise}>
+              <AddStripeAccount handleNext={handleNext} />
+            </Elements>
           ) : currentStep === 8 ? (
             <BillingSummary handleNext={handleNext} />
           ) : (

@@ -158,18 +158,7 @@ export const CompleteUserProfile = createAsyncThunk(
   "/user/profile",
   async (payload, thunkAPI) => {
     try {
-      // Get token from localStorage or Redux
-      const token = thunkAPI.getState().auth.token;
-      console.log(token);
-      if (!token) {
-        return thunkAPI.rejectWithValue("No token found, please login again");
-      }
-
-      const response = await axios.post("/user/profile", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.post("/user/profile", payload);
 
       const { accessToken, refreshToken, user_data } = response.data;
 
@@ -199,18 +188,7 @@ export const CompleteProviderProfile = createAsyncThunk(
   "/provider/complete-profile",
   async (payload, thunkAPI) => {
     try {
-      // Get token from localStorage or Redux
-      const token = thunkAPI.getState().auth.token;
-      console.log(token);
-      if (!token) {
-        return thunkAPI.rejectWithValue("No token found, please login again");
-      }
-      const response = await axios.post("/provider/complete-profile", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const response = await axios.post("/provider/complete-profile", payload);
       const { accessToken, refreshToken, userData } = response.data;
 
       if (typeof window !== "undefined") {
@@ -237,17 +215,8 @@ export const CreateService = createAsyncThunk(
   "/services/create",
   async (payload, thunkAPI) => {
     try {
-      // Get token from localStorage or Redux
-      const token = thunkAPI.getState().auth.token;
-      console.log(token);
-      if (!token) {
-        return thunkAPI.rejectWithValue("No token found, please login again");
-      }
-      const response = await axios.post("/services/create", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      console.log(payload, "payload");
+      const response = await axios.post("/services/create", payload);
 
       const { accessToken, refreshToken, userData } = response.data;
 
@@ -271,6 +240,54 @@ export const CreateService = createAsyncThunk(
     }
   }
 );
+export const UpdateService = createAsyncThunk(
+  "/services/id",
+  async (payload, thunkAPI) => {
+    try {
+      console.log(payload, "payload");
+      const response = await axios.post(
+        `/services/${payload?.id}`,
+        payload?.data
+      );
+
+      const { accessToken, refreshToken, userData } = response.data;
+
+      if (typeof window !== "undefined") {
+        if (accessToken) {
+          document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
+          localStorage.setItem("access_token", accessToken);
+        }
+        if (refreshToken) {
+          localStorage.setItem("refresh_token", refreshToken);
+        }
+      }
+
+      SuccessToast("Service Update Successfully");
+      return { accessToken, refreshToken, userData };
+    } catch (error) {
+      ErrorToast(error.response?.data?.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
+    }
+  }
+);
+
+export const DeleteService = createAsyncThunk(
+  "/services/id",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.delete(`/services/${payload}`);
+      SuccessToast("Delete Service Successfully");
+    } catch (error) {
+      ErrorToast(error.response?.data?.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
+    }
+  }
+);
+
 export const CreateCertificate = createAsyncThunk(
   "/provider/certificate",
   async (payload, thunkAPI) => {
@@ -309,6 +326,39 @@ export const CreateCertificate = createAsyncThunk(
     }
   }
 );
+export const UpdateCertificate = createAsyncThunk(
+  "/provider/certificate/id",
+  async (payload, thunkAPI) => {
+    try {
+      console.log(payload, "payload");
+      const response = await axios.post(
+        `/services/${payload?.id}`,
+        payload?.data
+      );
+
+      const { accessToken, refreshToken, userData } = response.data;
+
+      if (typeof window !== "undefined") {
+        if (accessToken) {
+          document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
+          localStorage.setItem("access_token", accessToken);
+        }
+        if (refreshToken) {
+          localStorage.setItem("refresh_token", refreshToken);
+        }
+      }
+
+      SuccessToast("Service Update Successfully");
+      return { accessToken, refreshToken, userData };
+    } catch (error) {
+      ErrorToast(error.response?.data?.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
+    }
+  }
+);
+
 export const DeleteCertificate = createAsyncThunk(
   "/provider/certificate/delete",
   async (payload, thunkAPI) => {
@@ -448,12 +498,11 @@ const authSlice = createSlice({
       state.resetSuccess = null;
       state.resetError = null;
     },
-    clearforgetpasswordState(state){
+    clearforgetpasswordState(state) {
       state.isResendLoading = false;
       state.isResendSuccess = null;
       state.emailError = null;
-    }
-
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -475,7 +524,7 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       // GetProfile
-     
+
       // RESET PASSWORD
       .addCase(resetPassword.pending, (state) => {
         state.resetLoading = true;
@@ -531,6 +580,15 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+      .addCase(CreateService.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(CreateService.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(CreateService.rejected, (state, action) => {
+        state.isLoading = false;
+      })
       // VERIFY EMAIL
       .addCase(verifyEmail.pending, (state) => {
         state.isLoading = true;
@@ -560,5 +618,11 @@ const authSlice = createSlice({
   },
 });
 
-export const { resetError, resetAuthState,clearforgetpasswordState,resetLogoutState,clearResetState } = authSlice.actions;
+export const {
+  resetError,
+  resetAuthState,
+  clearforgetpasswordState,
+  resetLogoutState,
+  clearResetState,
+} = authSlice.actions;
 export default authSlice.reducer;

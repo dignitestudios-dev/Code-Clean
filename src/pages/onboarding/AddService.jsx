@@ -1,35 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaTrashAlt, FaPen } from "react-icons/fa";
 import AddServiceModal from "../../components/onboarding/AddServiceModal";
 import { deleteIcon, EditIcon } from "../../assets/export";
 import EditServiceModal from "../../components/Serviceprovider/profile/EditServiceModal";
 import DeleteProServices from "../../components/Serviceprovider/profile/DeleteProServices";
+import { useDispatch, useSelector } from "react-redux";
+import { getServices } from "../../redux/slices/provider.slice";
 
 export default function AddServicesForm({ handleNext }) {
-  const [services, setServices] = useState([
-    {
-      title: "Service Title",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-      price: "$50",
-    },
-    {
-      title: "Service Title",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-      price: "$50",
-    },
-  ]);
   const [actionType, setActionType] = useState(false);
   const [showModal, setShowModal] = useState(false);
-
-  const handleAddService = (newService) => {
-    setServices((prev) => [...prev, newService]);
-  };
+  const dispatch = useDispatch();
+  const { services } = useSelector((state) => state?.provider);
+  const [selectedItem, setSelectedItem] = useState();
   const handleDelete = (index) => {
-    setServices((prev) => prev.filter((_, i) => i !== index));
+    return null;
   };
 
+  useEffect(() => {
+    dispatch(getServices());
+  }, []);
+
+  console.log(services, "services");
   return (
     <div className="w-full max-w-lg mx-auto py-6">
       <h2 className="text-[32px] font-bold text-[#181818] text-center">
@@ -43,8 +35,8 @@ export default function AddServicesForm({ handleNext }) {
         <div className="flex justify-center items-center h-[100%] w-full  border rounded-[8px] border-dashed border-[#27A8E2] ">
           <button
             onClick={() => {
-              setActionType("add")
-              setShowModal(true)
+              setActionType("add");
+              setShowModal(true);
             }}
             className="bg-gradient-to-r from-[#00034A] border-b border-[#00034A] to-[#27A8E2] bg-clip-text text-transparent"
           >
@@ -54,14 +46,11 @@ export default function AddServicesForm({ handleNext }) {
       </div>
 
       {showModal && actionType == "add" && (
-        <AddServiceModal
-          onClose={() => setShowModal(false)}
-          onAdd={handleAddService}
-        />
+        <AddServiceModal onClose={() => setShowModal(false)} />
       )}
       {/* Services List */}
       <div className="mt-10 h-[200px] overflow-auto flex flex-col gap-4">
-        {services.map((service, index) => (
+        {services?.map((service, index) => (
           <div
             key={index}
             className="border rounded-[10px] p-4 bg-white shadow-sm relative"
@@ -71,6 +60,7 @@ export default function AddServicesForm({ handleNext }) {
                 src={EditIcon}
                 onClick={() => {
                   setShowModal(true);
+                  setSelectedItem(service);
                   setActionType("edit");
                 }}
                 className="w-[20px] cursor-pointer h-[20px]"
@@ -80,26 +70,24 @@ export default function AddServicesForm({ handleNext }) {
                 src={deleteIcon}
                 onClick={() => {
                   setShowModal(true);
+                  setSelectedItem(service);
                   setActionType("delete");
                 }}
                 className="w-[20px] cursor-pointer h-[20px]"
                 alt=""
               />
             </div>
-            <h4 className="font-[600] text-[12px]">{service.title}</h4>
+            <h4 className="font-[600] text-[12px]">{service?.title}</h4>
             <p className="text-[#727272] font-[400] text-[12px] mt-1">
-              {service.description}
+              {service?.description}
             </p>
-            <p className="font-[600] text-[12px] mt-2">${service.price}</p>
+            <p className="font-[600] text-[12px] mt-2">${service?.amount}</p>
           </div>
         ))}
       </div>
 
       {showModal && actionType == "edit" && (
-        <EditServiceModal
-          onClose={() => setShowModal(false)}
-          onAdd={handleAddService}
-        />
+        <EditServiceModal selectedItem={selectedItem} onClose={() => setShowModal(false)} />
       )}
       {showModal && actionType == "delete" && (
         <DeleteProServices
@@ -107,6 +95,8 @@ export default function AddServicesForm({ handleNext }) {
             title: "Delete Service",
             bio: "Are you sure you want to delete this service?",
           }}
+          delete="service"
+          selectedItem={selectedItem}
           setIsOpen={setShowModal}
           isOpen={showModal}
         />

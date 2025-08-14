@@ -1,76 +1,74 @@
 import axios from "axios";
-import { ErrorToast } from "./components/global/Toaster"; // Import your toaster functions
+import { ErrorToast } from "./components/global/Toaster";
 import Cookies from "js-cookie";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
-
-// Set the base URL
+ 
 export const baseUrl = "https://closing-neatly-doberman.ngrok-free.app/api";
-
-// Function to get the device fingerprint asynchronously
+ 
 async function getDeviceFingerprint() {
   const fp = await FingerprintJS.load();
   const result = await fp.get();
-  return result.visitorId; // Unique device ID
+  return result.visitorId;
 }
-
-// Create axios instance
+ 
 const instance = axios.create({
   baseURL: baseUrl,
-  timeout: 10000, // Timeout set to 10 seconds
+  timeout: 10000,
+  // If your API uses cookies (not just Bearer), enable this:
+  // withCredentials: true,
 });
-
-// Request interceptor
+ 
+// ✅ Add this header globally (works for Ngrok warning page)
+instance.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
+ 
 instance.interceptors.request.use(
   async (request) => {
-    const token = Cookies.get("token");
-
+    const token = Cookies.get("access_token");
+ console.log(token)
     if (!navigator.onLine) {
-      // No internet connection
-      ErrorToast(
-        "No internet connection. Please check your network and try again."
-      );
+      ErrorToast("No internet connection. Please check your network and try again.");
       return Promise.reject(new Error("No internet connection"));
     }
-
-    // Get device fingerprint asynchronously
+ 
     const fingerprint = await getDeviceFingerprint();
-
-    // Merge existing headers with token and fingerprint
+ 
     request.headers = {
-      ...request.headers, // Keep existing headers
+      ...request.headers,
       Accept: "application/json, text/plain, */*",
       devicemodel: fingerprint,
       deviceuniqueid: fingerprint,
-      ...(token && { Authorization: `Bearer ${token}` }), // Add Authorization header only if token exists
+      ...(token && { Authorization: `Bearer ${token}` }),
+      // (Optional) keep header here too in case something overwrites defaults:
+      "ngrok-skip-browser-warning": "true",
     };
-
+ 
     return request;
   },
-  (error) => {
-    // Handle request error
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
-
-// Response interceptor
+ 
 instance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // (Optional) safety net: ensure we actually got JSON, not the Ngrok HTML
+    const ct = response.headers?.["content-type"] || "";
+    if (!ct.includes("application/json")) {
+      // This helps you catch silent 200/HTML cases
+      return Promise.reject(new Error("Unexpected response from tunnel (HTML instead of JSON)."));
+    }
+    return response;
+  },
   (error) => {
     if (error.code === "ECONNABORTED") {
-      // Slow internet or request timeout
       ErrorToast("Your internet connection is slow. Please try again.");
     }
-
-    if (error.response && error.response.status === 401) {
-      // Unauthorized error (401)
+    if (error.response?.status === 401) {
       Cookies.remove("token");
       Cookies.remove("user");
       ErrorToast("Session expired. Please relogin");
       // window.location.href = "/";
     }
-
     return Promise.reject(error);
   }
 );
-
+ 
 export default instance;
