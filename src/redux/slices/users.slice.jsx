@@ -1,6 +1,6 @@
 // src/store/slices/user.slice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "../../axios"; // Adjust according to where your axios instance is located
+import axios from "../../axios";
 import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
 
 // ================= INITIAL STATE =================
@@ -9,21 +9,50 @@ const initialState = {
   userProfile: null,
   error: null,
   success: null,
+  updateLoading: false,
+  updateError: null,
+  updateSuccess: null,
 };
 
 // ================= THUNKS =================
 
 // Fetch user profile
 export const fetchUserProfile = createAsyncThunk(
-  "/user/profile", // The action type
+  "/user/profile",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("/user/profile"); // API request to fetch the profile
-      return response.data; // Assuming the API returns the user profile data
+      const res = await axios.get("/user/profile");
+      return res.data;
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to fetch profile";
-      ErrorToast(msg); // Show error toast
-      return thunkAPI.rejectWithValue(msg); // Handle rejection
+      return thunkAPI.rejectWithValue("Failed to fetch profile");
+    }
+  }
+);
+
+// Update user profile and fetch updated profile
+export const updateUserProfile = createAsyncThunk(
+  "/user/updateProfile",
+  async (payload, thunkAPI) => {
+    try {
+      const isFormData = typeof FormData !== "undefined" && payload instanceof FormData;
+
+      const res = await axios.post("/user/profile", payload, {
+        headers: isFormData ? { "Content-Type": "multipart/form-data" } : undefined,
+      });
+
+      // After updating, fetch the updated profile data
+      thunkAPI.dispatch(fetchUserProfile());
+
+      return res.data;
+    } catch (error) {
+      const serverData = error?.response?.data;
+      const msg =
+        serverData?.message ||
+        (Array.isArray(serverData?.errors)
+          ? serverData.errors.join(", ")
+          : "Failed to update profile");
+      ErrorToast(msg);
+      return thunkAPI.rejectWithValue(msg);
     }
   }
 );
@@ -33,32 +62,54 @@ const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    // Optional: You can add other actions to update state directly if needed
     resetUserState(state) {
       state.error = null;
       state.success = null;
+      state.updateError = null;
+      state.updateSuccess = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      // Fetch user profile
+      // ----- fetch profile -----
       .addCase(fetchUserProfile.pending, (state) => {
         state.isLoading = true;
         state.error = null;
+        state.success = null;
       })
       .addCase(fetchUserProfile.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.userProfile = action.payload; // Set user profile data
-        state.success = "Profile fetched successfully"; // Optional: success message
-        SuccessToast(state.success); // Show success toast
+        state.userProfile = action.payload;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload; // Handle error
+        state.error = action.payload;
+      })
+
+      // ----- update profile -----
+      .addCase(updateUserProfile.pending, (state) => {
+        state.updateLoading = true;
+        state.updateError = null;
+        state.updateSuccess = null;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.updateLoading = false;
+
+        // Merge updated fields into userProfile
+        state.userProfile = {
+          ...(state.userProfile || {}),
+          ...(action.payload || {}),
+        };
+
+        state.updateSuccess = "Profile updated successfully";
+        SuccessToast(state.updateSuccess);
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.updateLoading = false;
+        state.updateError = action.payload;
       });
   },
 });
 
-// Export actions and reducer
 export const { resetUserState } = userSlice.actions;
 export default userSlice.reducer;

@@ -524,7 +524,6 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       // GetProfile
-
       // RESET PASSWORD
       .addCase(resetPassword.pending, (state) => {
         state.resetLoading = true;

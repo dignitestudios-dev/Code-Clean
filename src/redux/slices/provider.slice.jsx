@@ -10,6 +10,7 @@ const initialState = {
   provider_data: null,
   services:null,
   plans: null,
+  getprofileloading: false,
 };
 // ================= THUNKS =================
 
@@ -92,17 +93,17 @@ const providerSlice = createSlice({
     builder
       // Provide Profile
       .addCase(getProfile.pending, (state) => {
-        state.isLoading = true;
+        state.getprofileloading = true;
         state.error = null;
         state.success = null;
       })
       .addCase(getProfile.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.provider_data = action.payload.user;
+        state.getprofileloading = false;
+        state.provider_data = action.payload;
         state.success = action.payload.message;
       })
       .addCase(getProfile.rejected, (state, action) => {
-        state.isLoading = false;
+        state.getprofileloading = false;
         state.error = action.payload;
       })
       // Provider Plans
