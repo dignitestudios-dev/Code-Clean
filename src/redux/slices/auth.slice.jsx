@@ -130,6 +130,33 @@ export const logout = createAsyncThunk("/user/logout", async (_, thunkAPI) => {
   }
 });
 
+export const getProfile = createAsyncThunk(
+  "/user/profile",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get("/user/profile");
+      return response.data; // Return entire API response
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Verification failed"
+      );
+    }
+  }
+);
+export const getProviderProfile = createAsyncThunk(
+  "/provider/profile",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get("/provider/profile");
+      return response.data; // Return entire API response
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Verification failed"
+      );
+    }
+  }
+);
+
 // REGISTER
 export const Register = createAsyncThunk(
   "/register",
@@ -332,7 +359,7 @@ export const UpdateCertificate = createAsyncThunk(
     try {
       console.log(payload, "payload");
       const response = await axios.post(
-        `/services/${payload?.id}`,
+        `provider/certificate/${payload?.id}`,
         payload?.data
       );
 
@@ -348,7 +375,7 @@ export const UpdateCertificate = createAsyncThunk(
         }
       }
 
-      SuccessToast("Service Update Successfully");
+      SuccessToast("Certificate Update Successfully");
       return { accessToken, refreshToken, userData };
     } catch (error) {
       ErrorToast(error.response?.data?.message);
@@ -360,35 +387,11 @@ export const UpdateCertificate = createAsyncThunk(
 );
 
 export const DeleteCertificate = createAsyncThunk(
-  "/provider/certificate/delete",
+  "/provider/certificate/",
   async (payload, thunkAPI) => {
     try {
-      // Get token from localStorage or Redux
-      const token = thunkAPI.getState().auth.token;
-      console.log(token);
-      if (!token) {
-        return thunkAPI.rejectWithValue("No token found, please login again");
-      }
-      const response = await axios.post(`/provider/certificate/${payload.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const { accessToken, refreshToken, userData } = response.data;
-
-      if (typeof window !== "undefined") {
-        if (accessToken) {
-          document.cookie = `access_token=${accessToken}; path=/; max-age=86400; secure; samesite=strict`;
-          localStorage.setItem("access_token", accessToken);
-        }
-        if (refreshToken) {
-          localStorage.setItem("refresh_token", refreshToken);
-        }
-      }
-
-      SuccessToast(response?.data?.message);
-      return { accessToken, refreshToken, user_data };
+      const response = await axios.delete(`/provider/certificate/${payload}`);
+      SuccessToast("Delete Certificate Successfully");
     } catch (error) {
       ErrorToast(error.response?.data?.message);
       return thunkAPI.rejectWithValue(
@@ -397,6 +400,8 @@ export const DeleteCertificate = createAsyncThunk(
     }
   }
 );
+
+
 
 export const CreateVerification = createAsyncThunk(
   "/provider/verification",
@@ -524,6 +529,35 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       // GetProfile
+      .addCase(getProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user_data = action.payload.user;
+        state.success = action.payload.message;
+      })
+      .addCase(getProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // Get Provider Profile
+      .addCase(getProviderProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getProviderProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user_data = action.payload;
+        state.success = action.payload.message;
+      })
+      .addCase(getProviderProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       // RESET PASSWORD
       .addCase(resetPassword.pending, (state) => {
         state.resetLoading = true;

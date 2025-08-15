@@ -63,7 +63,7 @@ export default function AddCertification({ handleNext }) {
             bio: "Are you sure you want to delete this certification?",
           }}
           setIsOpen={setShowModal}
-          delete="certificate"
+          dell="certificate"
           isOpen={showModal}
         />
       )}

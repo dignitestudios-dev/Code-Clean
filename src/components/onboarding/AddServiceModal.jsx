@@ -33,8 +33,8 @@ export default function AddServiceModal({ onClose, onAdd }) {
           description: values.description,
         };
         await dispatch(CreateService(data)).unwrap();
-        dispatch(getServices());
-        // Optionally reset form
+        dispatch(getServices());        
+        // Optionally reset form        
         action.resetForm();
         onClose();
       } catch (error) {

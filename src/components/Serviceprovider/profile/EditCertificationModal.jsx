@@ -1,102 +1,128 @@
 import { useFormik } from "formik";
-import { useState } from "react";
 import Input from "../../global/Input";
+import { certificationSchema } from "../../../schema/authentication/AuthSchema";
+import { Button } from "../../global/GlobalButton";
+import { ErrorToast } from "../../global/Toaster";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getProviderProfile,
+  UpdateCertificate,
+} from "../../../redux/slices/auth.slice";
 
-export default function EditCertificateModal({ onClose,selectedItem, }) {
-    const [form, setForm] = useState({ title: "", price: "", description: "" });
+export default function EditCertificateModal({ onClose, selectedItem }) {
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.auth);
 
-    const formik = useFormik({
-        initialValues: "",
-        validationSchema: "",
-        validateOnChange: true,
-        validateOnBlur: true,
-        onSubmit: async (values) => {
-            const formData = new FormData();
-            onClose()
-            // postData("/your-api-endpoint", false, null, formData, callbackFn);
-        },
+  const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
+    useFormik({
+      initialValues: {
+        certificationName: selectedItem?.name || "",
+        institution: selectedItem?.institution || "",
+        completionDate: selectedItem?.date_of_completion || "",
+        description: selectedItem?.description || "",
+      },
+      validationSchema: certificationSchema,
+      validateOnChange: true,
+      validateOnBlur: true,
+      enableReinitialize: true, // important for pre-filled values
+      onSubmit: async (values) => {
+        try {
+          const Certificatedata = {
+            id: selectedItem?.id,
+            data: {
+              name: values?.certificationName,
+              institution: values?.institution,
+              date_of_completion: values?.completionDate,
+              description: values?.description,
+            },
+          };
+          await dispatch(UpdateCertificate(Certificatedata)).unwrap();
+          dispatch(getProviderProfile());
+          onClose();
+        } catch (error) {
+          ErrorToast("Failed to update certification");
+        }
+      },
     });
+  console.log(errors, "errors");
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white rounded-[16px] p-6 w-full max-w-md shadow-lg relative">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-xl font-bold"
+        >
+          &times;
+        </button>
 
-    const {
-        values,
-        handleBlur,
-        handleChange,
-        handleSubmit,
-        setFieldValue,
-        errors,
-        touched,
-    } = formik;
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-[16px] p-6 w-full max-w-md shadow-lg relative">
-                {/* Close Button */}
-                <button onClick={onClose} className="absolute top-4 right-4 text-xl font-bold">
-                    &times;
-                </button>
+        <h2 className="text-[20px] font-bold mb-6 text-center">
+          Edit Certification
+        </h2>
 
-                <h2 className="text-[20px] font-bold mb-6">Edit Certification</h2>
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        handleSubmit(e);
-                    }}
-                    className="w-full mx-auto flex flex-col gap-2  mt-5 gap-4"
-                >
-                    <Input
-                        text="Certification Name"
-                        name="name"
-                        type="text"
-                        holder="Enter Certification Name"
-                        value={values.name}
-                        handleBlur={handleBlur}
-                        handleChange={handleChange}
-                        error={errors.name}
-                        touched={touched.name}
-                    />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit(e);
+          }}
+          className="flex flex-col gap-4"
+        >
+          <Input
+            text="Certification Name"
+            name="certificationName"
+            type="text"
+            holder="Enter Certification Name"
+            value={values.certificationName}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            error={errors.certificationName}
+            touched={touched.certificationName}
+          />
 
-                    <Input
-                        text="Institution"
-                        name="institution"
-                        type="text"
-                        holder="Enter Institution"
-                        value={values.institution}
-                        handleBlur={handleBlur}
-                        handleChange={handleChange}
-                        error={errors.institution}
-                        touched={touched.institution}
-                    />
-                    <Input
-                        text="Date of Completion"
-                        name="date_of_completion"
-                        type="text"
-                        holder="Enter Date"
-                        value={values.date_of_completion}
-                        handleBlur={handleBlur}
-                        handleChange={handleChange}
-                        error={errors.date_of_completion}
-                        touched={touched.date_of_completion}
-                    />
+          <Input
+            text="Institution"
+            name="institution"
+            type="text"
+            holder="Enter Institution"
+            value={values.institution}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            error={errors.institution}
+            touched={touched.institution}
+          />
 
-                    <div className="flex flex-col gap-1 mt-3 mb-3" >
-                        <label htmlFor="description">Description</label>
-                        <textarea name="description" id="" rows={5} className="border border-[#BEBEBE] p-2 rounded-[8px]  text-[#727272]" >Briefly explain the certification</textarea>
-                    </div>
-                    {/* Add Button */}
-                    <button
-                        type="submit"
-                        className="w-full py-2 rounded-lg text-white font-semibold"
-                        style={{
-                            background: "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",
-                        }}
-                    >
-                        Save
-                    </button>
-                </form>
+          <Input
+            text="Date of Completion"
+            name="completionDate"
+            type="text"
+            holder="Enter Date"
+            value={values.completionDate}
+            handleBlur={handleBlur}
+            handleChange={handleChange}
+            error={errors.completionDate}
+            touched={touched.completionDate}
+          />
 
+          <div>
+            <label className="block text-sm font-semibold mb-1">
+              Description
+            </label>
+            <textarea
+              name="description"
+              placeholder="Briefly explain the certification"
+              className="w-full border border-[#BEBEBE] rounded-md px-3 py-2 text-sm outline-none min-h-[80px] resize-none"
+              value={values.description}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
+            {errors.description && touched.description && (
+              <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+            )}
+          </div>
 
-
-
-            </div>
-        </div>
-    );
+          <Button text="Save" type="submit" loading={isLoading} />
+        </form>
+      </div>
+    </div>
+  );
 }

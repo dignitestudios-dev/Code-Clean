@@ -1,9 +1,19 @@
 import Modal from "react-modal";
 import { HiOutlineXMark } from "react-icons/hi2";
 import { useDispatch } from "react-redux";
-import { DeleteService } from "../../../redux/slices/auth.slice";
+import {
+  DeleteCertificate,
+  DeleteService,
+  getProviderProfile,
+} from "../../../redux/slices/auth.slice";
 import { getServices } from "../../../redux/slices/provider.slice";
-const DeleteProServices = ({ isOpen, setIsOpen, detail, selectedItem }) => {
+const DeleteProServices = ({
+  isOpen,
+  setIsOpen,
+  detail,
+  selectedItem,
+  dell,
+}) => {
   const dispatch = useDispatch();
 
   return (
@@ -36,9 +46,15 @@ const DeleteProServices = ({ isOpen, setIsOpen, detail, selectedItem }) => {
             <button
               className="bg-[#EE3131] text-[white] rounded-[8px] p-3"
               onClick={async () => {
-                await dispatch(DeleteService(selectedItem?.id)).unwrap();
-                dispatch(getServices);
-                setIsOpen(!isOpen)
+                if (dell == "service") {
+                  await dispatch(DeleteService(selectedItem?.id)).unwrap();
+                  dispatch(getServices());
+                  setIsOpen(!isOpen);
+                } else {
+                  await dispatch(DeleteCertificate(selectedItem?.id)).unwrap();
+                  dispatch(getProviderProfile());
+                  setIsOpen(!isOpen);
+                }
               }}
             >
               Delete now
