@@ -4,7 +4,7 @@ import { PendingIcon, RejectIcon, SuccessIcon } from "../../assets/export";
 import { useDispatch, useSelector } from "react-redux";
 import { CreateVerification } from "../../redux/slices/auth.slice";
 import { ErrorToast } from "../../components/global/Toaster";
-import { getProfile } from "../../redux/slices/provider.slice";
+import { getProviderProfile } from "../../redux/slices/auth.slice";
 
 // Status Icon Component
 const StatusIcon = ({ status }) => {
@@ -116,7 +116,7 @@ export default function IdentityVerification({ handleNext }) {
 
   // Fetch profile on mount
   useEffect(() => {
-    dispatch(getProfile());
+    dispatch(getProviderProfile());
   }, [dispatch]);
 
   const handleSubmit = async () => {
@@ -130,7 +130,7 @@ export default function IdentityVerification({ handleNext }) {
         national_id_back: backFile,
       })
     ).unwrap();
-    dispatch(getProfile()); // refresh status from API
+    dispatch(getProviderProfile()); // refresh status from API
   };
 
   return (
@@ -289,7 +289,7 @@ export default function IdentityVerification({ handleNext }) {
         isOpen={showModal}
         handleNext={() => {
           setShowModal(false);
-          dispatch(getProfile()); // Refresh after modal close
+          dispatch(getProviderProfile()); // Refresh after modal close
         }}
         setIsOpen={setShowModal}
       />

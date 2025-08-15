@@ -3,7 +3,7 @@ import { ErrorToast } from "./components/global/Toaster";
 import Cookies from "js-cookie";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
  
-export const baseUrl = "http://18.217.87.144/api";
+export const baseUrl = "https://api.codecleanpros.com/api";
  
 async function getDeviceFingerprint() {
   const fp = await FingerprintJS.load();
