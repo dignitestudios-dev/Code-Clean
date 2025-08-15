@@ -95,7 +95,7 @@ export default function AddServicesForm({ handleNext }) {
             title: "Delete Service",
             bio: "Are you sure you want to delete this service?",
           }}
-          delete="service"
+          dell="service"
           selectedItem={selectedItem}
           setIsOpen={setShowModal}
           isOpen={showModal}
