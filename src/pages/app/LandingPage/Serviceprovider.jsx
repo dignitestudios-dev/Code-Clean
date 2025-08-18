@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaArrowLeft, FaCalendarAlt, FaCheck, FaMapMarkerAlt, FaRegCalendarAlt, FaRegHeart, FaStar } from 'react-icons/fa';
 import { SlTarget } from "react-icons/sl";
 import { LuPen, LuPenLine } from "react-icons/lu"
@@ -14,8 +14,11 @@ import { RiEditLine } from "react-icons/ri";
 import { MdDelete } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router';
 import { RxCross2 } from "react-icons/rx";
+import { fetchallservices } from '../../../redux/slices/users.slice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Serviceprovider = () => {
+    const dispatch = useDispatch();
     const [servicetype, setServicetype] = useState(false);
     const [requestservice, setRequestservice] = useState(false);
     const [requestservicetwo, setRequestservicetwo] = useState(false);
@@ -23,11 +26,12 @@ const Serviceprovider = () => {
     const [requestservicefour, setRequestservicefour] = useState(false);
     const [requestservicefive, setRequestservicefive] = useState(false);
     const [bookingconfirm, setBookingconfirm] = useState(false);
-    const [date, setDate] = useState(new Date());
     const [dateRange, setDateRange] = useState([new Date(), new Date()]);
     const [bookrequestsend, setBookrequestsend] = useState(false);
+    const [data, setData] = useState([]);
     const navigate = useNavigate("");
     const location = useLocation();
+    const { id } = location.state || {};
     const fromViewProfile = location.state?.fromViewProfile || false;
     const [showrating, setShowrating] = useState(false);
     const [custombooking, setCustombooking] = useState(false);
@@ -41,6 +45,32 @@ const Serviceprovider = () => {
     });
     const [custombookingtwo, setCustombookingtwo] = useState(false);
     const [custombookingthree, setCustombookingthree] = useState(false);
+    const { allservices } = useSelector((s) => s.user);
+
+
+    console.log(id, "userid")
+
+
+    useEffect(() => {
+        dispatch(fetchallservices());
+    }, [dispatch]);
+
+
+    useEffect(() => {
+        if (allservices && id) {
+            // Step 1: Find the provider jiska id match kare
+            const provider = allservices.find(item => item.id === id);
+
+            // Step 2: Agar mila to uske services ko state me set karo
+            if (provider) {
+                setData(provider || []);
+            }
+        }
+    }, [allservices, id]);
+
+
+    console.log(data, "filtered services data");
+
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
@@ -117,7 +147,6 @@ const Serviceprovider = () => {
         setRequestservicefive(true);
         setRequestservicefour(false);
     }
-
     return (
         <>
             <Navbar />
@@ -128,7 +157,7 @@ const Serviceprovider = () => {
                 }}
             >
                 <div className='flex items-center gap-3 ml-[11em]'>
-                    <button type="button"  onClick={() => navigate(-1)} >
+                    <button type="button" onClick={() => navigate(-1)} >
                         <FaArrowLeft color='white' size={20} />
                     </button>
                     <h2 className="text-white text-[30px] mt-0 font-bold leading-[48px] capitalize">
@@ -141,39 +170,50 @@ const Serviceprovider = () => {
                 <div className="flex flex-col md:flex-row gap-8">
                     <div className="w-[18em]">
                         <img
-                            src={usertwo}
-                            alt="John Doe"
+                            src={data?.avatar ? `http://family-phys-ed-s3.s3.amazonaws.com/${data.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
+                            alt="Profile"
                             className="w-80 h-100 rounded-xl object-cover"
                         />
+
                         {/* Certificates */}
                         <div className="mt-4 border-t-2 pt-3">
                             <h3 className="font-semibold text-lg mb-2">Certificates</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-                                <div className='space-y-1'>
-                                    <h4 className="font-medium">Certification Title</h4>
-                                    <p className="text-sm text-blue-600">Institution Name</p>
-                                    <p className='text-sm text-gray-600'>Lorem ipsum dolore consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore magna aliqua.</p>
-                                    <p className="text-sm text-gray-400 mt-1">20/Oct/2021</p>
-                                </div>
-                                <div className='space-y-1 border-t-2 pt-3'>
-                                    <h4 className="font-medium">Certification Title</h4>
-                                    <p className="text-sm text-blue-600">Institution Name</p>
-                                    <p className='text-sm text-gray-600'>Lorem ipsum dolore consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore magna aliqua.</p>
-                                    <p className="text-sm text-gray-400 mt-1">20/Oct/2021</p>
-                                </div>
+                            <div className="grid grid-cols-1 md:grid-cols-1 gap-6 max-h-[400px] overflow-y-auto">
+                                {data?.certificates?.map((certificate, i) => (
+                                    <div key={i} className="space-y-1 border-t-2 pt-3">
+                                        <h4 className="font-medium">{certificate.name}</h4>
+                                        <p className="text-sm text-blue-600">{certificate.institution}</p>
+                                        <p className="text-sm text-gray-600">{certificate.description}</p>
+                                        <p className="text-sm text-gray-400 mt-1">{certificate.date_of_completion}</p>
+                                    </div>
+                                ))}
                             </div>
                         </div>
+
+
                     </div>
 
                     <div className="flex-1">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h2 className="text-2xl font-semibold">John Doe</h2>
-                                <p className="text-gray-500">5+ Years Experience</p>
+                                <h2 className="text-2xl font-semibold capitalize">{data.name}</h2>
+                                <p className="text-gray-500">{data.experience || "0 Year Experience"} + Years Experience</p>
                                 <div className="flex items-center text-yellow-500 mt-1">
-                                    {[...Array(7)].map((_, i) => <FaStar key={i} />)}
-                                    <span className="ml-2 text-gray-700 font-medium">4.5</span>
+                                    {[...Array(5)].map((_, i) => (
+                                        <FaStar
+                                            key={i}
+                                            className={
+                                                i < Math.max(1, Math.round(Number(data?.rating || 0)))
+                                                    ? "text-yellow-500"
+                                                    : "text-gray-300"
+                                            }
+                                        />
+                                    ))}
+                                    <span className="ml-2 text-gray-700 font-medium">
+                                        {data?.rating ? data.rating : "0"}
+                                    </span>
                                 </div>
+
                             </div>
                             <div className='space-y-4 text-right'>
                                 <FaRegHeart size={20} className="ml-auto" /> {/* This will push the heart icon to the right */}
@@ -188,20 +228,21 @@ const Serviceprovider = () => {
                         <div className="mt-4 text-sm text-gray-700 border-t-2 pt-3">
                             <h3 className="font-semibold mb-1 text-black">Biography</h3>
                             <p className='pt-1 text-sm'>
-                                The standard Lorem Ipsum passage, m ipsum dolor sit amet, cectetur adipiscing elit, sed do eiusmThe standard Lorem Ipsum passage, used since the 1500s Lorem ipsum dolor sit amet, cectetur adipiscing elit, sed do eiusmThe standard Lorem Ipsum passage.
+                                {data.biography || "No Biography"}
                             </p>
                             <div className="mt-4 grid grid-cols-3 gap-4 text-sm text-gray-600 border-t-2 pt-3">
                                 <div>
                                     <span className="font-semibold">Location</span><br />
-                                    Florida, United States
+                                    {data.city} {data.country}
                                 </div>
                                 <div>
                                     <span className="font-semibold">Distance</span><br />
-                                    20 miles
+                                    {data?.distance && data.distance > 0 ? data.distance : "0"}
                                 </div>
                                 <div>
                                     <span className="font-semibold">Completed Job</span><br />
-                                    45+ Job Success
+                                    {data.complete_jobs | "No complete_jobs"}
+                                    + Job Success
                                 </div>
                             </div>
                         </div>
@@ -210,44 +251,51 @@ const Serviceprovider = () => {
                         <div className="mt-6 border-t-2 pt-3">
                             <h3 className="font-semibold text-lg mb-4">Service Details and Pricing</h3>
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                {[
-                                    { title: 'Bathroom Cleaning', desc: ['Deep cleaning of sinks, tubs, and showers', 'Disinfection of toilets and faucets', 'Mirror and glass polishing', 'Floor scrubbing and mopping'], price: '$120' },
-                                    { title: 'Bedroom Cleaning', desc: ['Dusting and wiping surfaces', 'Bed making and linen changing', 'Floor vacuuming and mopping', 'Closet and furniture cleaning'], price: '$100' },
-                                    { title: 'Kitchen Cleaning', desc: ['Deep cleaning of sinks, tubs, and showers', 'Disinfection of toilets and faucets', 'Mirror and glass polishing', 'Floor scrubbing and mopping'], price: '$150' },
-                                    { title: 'Full Home Deep Cleaning', desc: ['Includes all rooms', 'Sanitization of high-touch areas', 'Custom add-ons available'], price: '$120' },
-                                ].map((service, i) => (
-                                    <div key={i} className="bg-gray-50 p-3 rounded-md border flex flex-col justify-between h-[250px]"> {/* Added flex and height */}
+                                {data?.services?.map((service, i) => (
+                                    <div key={i} className="bg-gray-50 p-3 rounded-md border flex flex-col justify-between h-[250px]">
                                         <div>
-                                            <h4 className="font-semibold text-[12px] mb-2">{service.title}</h4>
+                                            <h4 className="font-semibold capitalize text-[12px] mb-2">{service.title}</h4>
                                             <ul className="list-disc list-inside text-[11px] text-gray-600 space-y-1">
-                                                {service.desc.map((line, j) => <li key={j}>{line}</li>)}
+                                                <li>{service.description}</li>
+                                                {/* If service has multiple descriptions, map over them */}
+                                                {Array.isArray(service.description) && service.description.map((line, j) => <li key={j}>{line}</li>)}
                                             </ul>
                                         </div>
-                                        <div className="text-blue-600 font-bold text-lg mt-auto">{service.price}</div> {/* Fixed price at the bottom */}
+                                        <div className="text-blue-600 font-bold text-sm mt-auto">${service.amount}</div> {/* Fixed price at the bottom */}
                                     </div>
                                 ))}
                             </div>
-
                         </div>
                         {/* Reviews */}
                         <div className="mt-4 border-t-2 pt-3">
                             <div className='flex justify-between items-center'>
                                 <h3 className="font-semibold text-lg mb-2">Rating & Reviews</h3>
-                                <span className='text-blue-600 underline text-[13px] cursor-pointer' onClick={() => {
-                                    setShowrating(true);
-                                }}>View More</span>
+                                {data?.reviews?.length > 1 && (
+                                    <span className='text-blue-600 underline text-[13px] cursor-pointer' onClick={() => setShowrating(true)}>View More</span>
+                                )}
                             </div>
-                            <div className="bg-gray-50 p-4 rounded-md border">
-                                <p className="font-medium">Mike Smith</p>
-                                <div className="flex items-center text-yellow-500 mb-1">
-                                    {[...Array(4)].map((_, i) => <FaStar key={i} />)}
-                                    <span className="ml-2 text-gray-700 font-medium">4.5</span>
-                                </div>
-                                <p className="text-sm text-gray-600">
-                                    The standard Lorem Ipsum passage, used since the Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                                </p>
+                            <div className="">
+                                {data?.reviews?.length > 0 ? (
+                                    data.reviews.map((review, i) => (
+                                        <div key={i} className="mb-4 bg-gray-50 p-4 rounded-md border">
+                                            <p className="font-medium">{review.name || 'Anonymous'}</p>
+                                            <div className="flex items-center text-yellow-500 mb-1">
+                                                {[...Array(Math.round(Number(review.rating || 0)))].map((_, i) => (
+                                                    <FaStar key={i} />
+                                                ))}
+                                                <span className="ml-2 text-gray-700 font-medium">{review.rating || '0'}</span>
+                                            </div>
+                                            <p className="text-sm text-gray-600">
+                                                {review.text || 'No review content provided.'}
+                                            </p>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-gray-600">No reviews yet.</p>
+                                )}
                             </div>
                         </div>
+
                     </div>
 
                 </div>
@@ -324,7 +372,7 @@ const Serviceprovider = () => {
                                     <Calendar
                                         selectRange={true}
                                         onChange={setDateRange}
-                                        value={dateRange}
+                                        value={dateRange} s
                                         tileDisabled={({ date }) => date < startOfToday}
                                         tileClassName={({ date: d, view }) => {
                                             if (view === 'month') {
@@ -857,23 +905,27 @@ const Serviceprovider = () => {
 
                         {/* Content */}
                         <div className="overflow-y-auto px-4 py-2 space-y-6 h-[60vh]">
-                            {reviews.map((review, index) => (
-                                <div key={index} className="border-b pb-4">
-                                    <p className="font-semibold">{review.name}</p>
-                                    <div className="flex items-center space-x-1 mt-1">
-                                        {Array.from({ length: 5 }).map((_, i) => (
-                                            <FaStar
-                                                key={i}
-                                                className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
-                                                    }`}
-                                            />
-                                        ))}
-                                        <span className="ml-1 font-medium text-sm">{review.rating}</span>
+                            {data?.reviews?.length > 0 ? (
+                                data.reviews.map((review, index) => (
+                                    <div key={index} className="border-b pb-4">
+                                        <p className="font-semibold">{review.name || "Anonymous"}</p>
+                                        <div className="flex items-center space-x-1 mt-1">
+                                            {Array.from({ length: 5 }).map((_, i) => (
+                                                <FaStar
+                                                    key={i}
+                                                    className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"}`}
+                                                />
+                                            ))}
+                                            <span className="ml-1 font-medium text-sm">{review.rating || "0"}</span>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-2">{review.text || "No review content provided."}</p>
                                     </div>
-                                    <p className="text-sm text-gray-600 mt-2">{review.text}</p>
-                                </div>
-                            ))}
+                                ))
+                            ) : (
+                                <p className="text-sm text-gray-600">No reviews yet.</p>
+                            )}
                         </div>
+
                     </div>
                 </div>
             )}
@@ -1210,8 +1262,8 @@ const Serviceprovider = () => {
                                             setBookrequestsend(false);
                                             setBookingconfirm(true);
                                             setInterval(() => {
-                                            navigate("/custom-booking-details");
-                                                
+                                                navigate("/custom-booking-details");
+
                                             }, 2000);
                                         }, 3000);
                                     }}

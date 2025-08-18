@@ -232,7 +232,7 @@ const Navbar = () => {
                   className="block font-[400] py-1 text-sm border-b  border-[#E4E4E4] cursor-pointer"
                   onClick={() =>
                     navigate(
-                      role === "provider" ? "/provider-profile" : "/app/profile"
+                      role == "service_provider" ? "/provider-profile" : "/app/profile"
                     )
                   }
                 >
