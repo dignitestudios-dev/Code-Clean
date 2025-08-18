@@ -21,8 +21,11 @@ import { MdDelete } from "react-icons/md";
 import ProviderEditProfile from "../../../components/Serviceprovider/profile/ProviderEditProfile";
 import ProviderEditServices from "../../../components/Serviceprovider/profile/EditServicesDetail";
 import ProviderEditCertificate from "../../../components/Serviceprovider/profile/EditCertificateDetail";
+import { useSelector } from "react-redux";
+import { formatDate } from "../../../hooks/utils/Utils";
 
 const ServiceproviderProfile = () => {
+  const { user_data } = useSelector((state) => state.auth);
   const [servicetype, setServicetype] = useState(false);
   const [requestservice, setRequestservice] = useState(false);
   const [requestservicetwo, setRequestservicetwo] = useState(false);
@@ -130,6 +133,7 @@ const ServiceproviderProfile = () => {
     setRequestservicefive(true);
     setRequestservicefour(false);
   };
+  console.log(user_data, "userData");
 
   return (
     <>
@@ -181,28 +185,18 @@ const ServiceproviderProfile = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-                  <div className="space-y-1">
-                    <h4 className="font-medium text-gradient">
-                      Certification Title
-                    </h4>
-                    <p className="text-sm text-[#919191]">Institution Name</p>
-                    <p className="text-sm text-gray-600">
-                      Lorem ipsum dolore consectetur adipiscing elit, sed do
-                      eiusmod tempor incididunt ut labore magna aliqua.
-                    </p>
-                    <p className="text-sm text-gray-400 mt-1">20/Oct/2021</p>
-                  </div>
-                  <div className="space-y-1 border-t-2 pt-3">
-                    <h4 className="font-medium text-gradient">
-                      Certification Title
-                    </h4>
-                    <p className="text-sm text-[#919191]">Institution Name</p>
-                    <p className="text-sm text-gray-600">
-                      Lorem ipsum dolore consectetur adipiscing elit, sed do
-                      eiusmod tempor incididunt ut labore magna aliqua.
-                    </p>
-                    <p className="text-sm text-gray-400 mt-1">20/Oct/2021</p>
-                  </div>
+                  {user_data?.certificates?.slice(0,2).map((item, i) => (
+                    <div key={i} className="space-y-1">
+                      <h4 className="font-medium text-gradient">
+                       {item?.name}
+                      </h4>
+                      <p className="text-sm text-[#919191]">{item?.institution}</p>
+                      <p className="text-sm text-gray-600">
+                       {item?.description}
+                      </p>
+                      <p className="text-sm text-gray-400 mt-1">{formatDate(item?.date_of_completion)}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -210,8 +204,10 @@ const ServiceproviderProfile = () => {
             <div className="flex-1">
               <div className="flex items-start justify-between">
                 <div>
-                  <h2 className="text-2xl font-semibold">John Doe</h2>
-                  <p className="text-gray-500">5+ Years Experience</p>
+                  <h2 className="text-2xl font-semibold">{user_data?.name}</h2>
+                  <p className="text-gray-500">
+                    {user_data?.experience}+ Years Experience
+                  </p>
                   <div className="flex items-center text-yellow-500 mt-1">
                     {[...Array(7)].map((_, i) => (
                       <FaStar key={i} />
@@ -245,20 +241,14 @@ const ServiceproviderProfile = () => {
               {/* Bio */}
               <div className="mt-4 text-sm text-gray-700 border-t-2 pt-3">
                 <h3 className="font-semibold mb-1 text-black">Biography</h3>
-                <p className="pt-1 text-sm">
-                  The standard Lorem Ipsum passage, m ipsum dolor sit amet,
-                  cectetur adipiscing elit, sed do eiusmThe standard Lorem Ipsum
-                  passage, used since the 1500s Lorem ipsum dolor sit amet,
-                  cectetur adipiscing elit, sed do eiusmThe standard Lorem Ipsum
-                  passage.
-                </p>
+                <p className="pt-1 text-sm">{user_data?.bio}</p>
                 <div className="mt-4 grid grid-cols-5 gap-5 text-sm text-[#787878] border-t-2 pt-3">
                   <div>
                     <span className="font-semibold">Location</span>
                     <br />
                     <span className="text-[#181818] font-[500]">
                       {" "}
-                      Florida, United States{" "}
+                      {user_data?.state}, {user_data?.country}{" "}
                     </span>
                   </div>
                   <div>
