@@ -21,9 +21,8 @@ const Serviceprovider = () => {
     const [requestservicetwo, setRequestservicetwo] = useState(false);
     const [requestservicethree, setRequestservicethree] = useState(false);
     const [requestservicefour, setRequestservicefour] = useState(false);
-    const [requestservicefive, setRequestservicefive] = useState(false);
-    const [bookingconfirm, setBookingconfirm] = useState(false);
-    const [date, setDate] = useState(new Date());
+    const [requestservicefive, setRequestservicefive] = useState(false);    
+    const [bookingconfirm, setBookingconfirm] = useState(false);    
     const [dateRange, setDateRange] = useState([new Date(), new Date()]);
     const [bookrequestsend, setBookrequestsend] = useState(false);
     const navigate = useNavigate("");
@@ -117,7 +116,6 @@ const Serviceprovider = () => {
         setRequestservicefive(true);
         setRequestservicefour(false);
     }
-
     return (
         <>
             <Navbar />
