@@ -41,7 +41,6 @@ export default function ProviderEditCertificate({ isOpen, setIsOpen }) {
   const handleDelete = (index) => {
     setServices((prev) => prev.filter((_, i) => i !== index));
   };
-
   return (
     <>
       <Modal
@@ -99,6 +98,7 @@ export default function ProviderEditCertificate({ isOpen, setIsOpen }) {
                 title: "Delete Certification",
                 bio: "Are you sure you want to delete this certification?",
               }}
+              dell={"certificate"}
               setIsOpen={setShowModal}
               isOpen={showModal}
             />
@@ -115,7 +115,7 @@ export default function ProviderEditCertificate({ isOpen, setIsOpen }) {
                     src={EditIcon}
                     onClick={() => {
                       setShowModal(true);
-                      selectedItem(service);
+                      setSelectedItem(service);
                       setActionType("edit");
                     }}
                     className="w-4 cursor-pointer"
@@ -125,7 +125,7 @@ export default function ProviderEditCertificate({ isOpen, setIsOpen }) {
                     className="text-red-500 cursor-pointer"
                     onClick={() => {
                       setShowModal(true);
-                      selectedItem(service);
+                      setSelectedItem(service);
                       setActionType("delete");
                     }}
                   />
