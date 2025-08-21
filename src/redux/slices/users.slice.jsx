@@ -7,11 +7,15 @@ import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
 const initialState = {
   isLoading: false,
   userProfile: null,
+  allservices: null,
   error: null,
   success: null,
   updateLoading: false,
   updateError: null,
   updateSuccess: null,
+  allservicesloading: false,
+  allserviceserror: null,
+  allservicessuccess: null,
 };
 
 // ================= THUNKS =================
@@ -28,6 +32,21 @@ export const fetchUserProfile = createAsyncThunk(
     }
   }
 );
+
+
+export const fetchallservices = createAsyncThunk(
+  "/users/providers",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.get("/users/providers");
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch services");
+    }
+  }
+);
+
+
 
 // Update user profile and fetch updated profile
 export const updateUserProfile = createAsyncThunk(
@@ -86,6 +105,22 @@ const userSlice = createSlice({
         state.error = action.payload;
       })
 
+      // ----- fetch all services -----
+      .addCase(fetchallservices.pending, (state) => {
+        state.allservicesloading = true;
+        state.allserviceserror = null;
+        state.allservicessuccess = null;
+      })
+      .addCase(fetchallservices.fulfilled, (state, action) => {
+        state.allservicesloading = false;
+        state.allservices = action.payload;
+        state.allservicessuccess = "Successfully fetched services!";
+      })
+      .addCase(fetchallservices.rejected, (state, action) => {
+        state.allservicesloading = false;
+        state.allserviceserror = action.payload;
+      })
+      
       // ----- update profile -----
       .addCase(updateUserProfile.pending, (state) => {
         state.updateLoading = true;
