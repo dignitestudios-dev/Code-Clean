@@ -2,14 +2,7 @@ import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { useLogin } from "../../../hooks/api/Post";
 import { useFormik } from "formik";
-import {
-  personalDetailsValues,
-  providerDetailsValues,
-} from "../../../init/authentication/AuthValues";
-import {
-  personalDetailsSchema,
-  providerDetailsSchema,
-} from "../../../schema/authentication/AuthSchema";
+import { providerDetailsSchema } from "../../../schema/authentication/AuthSchema";
 import { MapImg, usertwo } from "../../../assets/export";
 import Input from "../../global/Input";
 import { FaPlus } from "react-icons/fa";
@@ -18,27 +11,54 @@ import AddAvailabilityModal from "../../onboarding/AddAvaliabilityModal";
 import { HiOutlineXMark } from "react-icons/hi2";
 import { FiTrash2 } from "react-icons/fi";
 import SuccessModal from "../../global/SuccessModal";
+import { useDispatch, useSelector } from "react-redux";
+import { UpdateProviderProfile } from "../../../redux/slices/provider.slice";
+
 export default function ProviderEditProfile({ isOpen, setIsOpen }) {
-  const { loading, postData } = useLogin();
-  const [previewImage, setPreviewImage] = useState(null); // ✅ Real preview comes later via `handleImageChange`
+  const { loading } = useLogin();
+  const [previewImage, setPreviewImage] = useState(null);
   const fallbackImage = usertwo;
   const [showModal, setShowModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
+  const [availability, setAvailability] = useState(null);
+
+  const { user_data } = useSelector((state) => state?.auth);
+  const dispatch = useDispatch();
 
   const formik = useFormik({
-    initialValues: providerDetailsValues,
+    initialValues: {
+      fullName: user_data?.name || "",
+      radius: user_data?.distance || "",
+      phone: user_data?.phone_number || "",
+      location: user_data?.address || "",
+      biography: user_data?.biography || "",
+      experience: user_data?.experience || "",
+      profilePic: null,
+    },
     validationSchema: providerDetailsSchema,
-    validateOnChange: true,
-    validateOnBlur: true,
     onSubmit: async (values) => {
-      setIsOpen(!isOpen);
-      setSuccessModal(!successModal);
-      const formData = new FormData();
-      formData.append("fullName", values.fullName);
-      formData.append("phone", values.phone);
-      formData.append("location", values.location);
-      formData.append("profilePic", values.profilePic);
-      // postData("/your-api-endpoint", false, null, formData, callbackFn);
+      const payload = {
+        name: values.fullName,
+        working_radius: values.radius,
+        phone_number: values.phone,
+        lat: 24.8607,
+        long: 67.0011,
+        city: "miami",
+        state: "Florida",
+        country: "US",
+        location: values.location,
+        experience: Number(values.experience),
+        biography: values.biography,
+        avatar: values.profilePic || null,
+        availability: availability,
+      };
+
+      try {
+        await dispatch(UpdateProviderProfile(payload)).unwrap();
+        setSuccessModal(true);
+      } catch (err) {
+        console.error("Update failed:", err);
+      }
     },
   });
 
@@ -55,9 +75,9 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFieldValue("profilePic", file); // for Formik validation
+      setFieldValue("profilePic", file);
       const imageUrl = URL.createObjectURL(file);
-      setPreviewImage(imageUrl); // for preview display
+      setPreviewImage(imageUrl);
     }
   };
 
@@ -65,77 +85,80 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
     <>
       <Modal
         isOpen={isOpen}
-        contentLabel="Page Not Found"
-        shouldCloseOnOverlayClick={false} // Prevent closing by clicking outside
+        contentLabel="Edit Profile"
+        shouldCloseOnOverlayClick={false}
         shouldCloseOnEsc={false}
-        className="flex items-center justify-center border-none outline-none z-[1000] "
-        overlayClassName="fixed inset-0 bg-[#C6C6C6] bg-opacity-50 backdrop-blur-sm z-[1000]  flex justify-center items-center"
+        className="flex items-center justify-center border-none outline-none z-[1000]"
+        overlayClassName="fixed inset-0 bg-[#C6C6C6] bg-opacity-50 backdrop-blur-sm z-[1000] flex justify-center items-center"
       >
-        <div className="bg-white rounded-[16px] shadow-lg py-4 w-auto px-4   flex flex-col justify-center gap-3 ">
-          <div className="flex justify-end w-full">
+        <div className="bg-white rounded-[16px] shadow-lg py-4 w-auto px-4 flex flex-col justify-center gap-3 overflow-auto h-[650px] ">
+          <div className="flex justify-end mt-14 w-full">
             <button onClick={() => setIsOpen(!isOpen)}>
               <HiOutlineXMark size={23} />
             </button>
           </div>
-          <div className="">
-            <h3 className="font-[600] text-center text-[28px] text-[#181818]">
-              Edit Profile
-            </h3>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit(e);
-              }}
-              className="w-full md:w-[700px] mx-auto  mt-5 gap-4"
-            >
-              <div>
-                <label htmlFor="profilePic" className="cursor-pointer">
-                  <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 relative bg-gradient-to-br from-green-300 to-green-400 rounded-full flex items-center justify-center">
-                      <img
-                        src={previewImage || fallbackImage}
-                        alt="Profile"
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                      <button className="absolute bottom-1 right-0 w-5 h-5  bg-gradient-to-r from-[#27A8E2] to-[#00034A] rounded-full flex items-center justify-center shadow-lg transition-colors">
-                        <FaPlus size={12} className="text-white" />
-                      </button>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="underline text-nowrap text-[#208BC7]">
-                        Change Profile picture
-                      </span>
-                    </div>
+
+          <h3 className="font-[600] text-center text-[28px] text-[#181818]">
+            Edit Profile
+          </h3>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+            className="w-full md:w-[700px] mx-auto mt-5 gap-4"
+          >
+            {/* Profile Picture */}
+            <div>
+              <label htmlFor="profilePic" className="cursor-pointer">
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20 relative bg-gradient-to-br from-green-300 to-green-400 rounded-full flex items-center justify-center">
+                    <img
+                      src={previewImage || fallbackImage}
+                      alt="Profile"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                    <button className="absolute bottom-1 right-0 w-5 h-5 bg-gradient-to-r from-[#27A8E2] to-[#00034A] rounded-full flex items-center justify-center shadow-lg transition-colors">
+                      <FaPlus size={12} className="text-white" />
+                    </button>
                   </div>
-                </label>
-                <input
-                  type="file"
-                  name="profilePic"
-                  id="profilePic"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  onBlur={handleBlur}
+                  <div className="flex items-center gap-3">
+                    <span className="underline text-nowrap text-[#208BC7]">
+                      Change Profile picture
+                    </span>
+                  </div>
+                </div>
+              </label>
+              <input
+                type="file"
+                name="profilePic"
+                id="profilePic"
+                className="hidden"
+                accept="image/*"
+                onChange={handleImageChange}
+                onBlur={handleBlur}
+              />
+              {errors.profilePic && touched.profilePic && (
+                <p className="text-red-500 text-sm mt-1">{errors.profilePic}</p>
+              )}
+            </div>
+
+            {/* Form Fields */}
+            <div className="grid mt-4 grid-cols-2 gap-3">
+              <div className="flex flex-col items-center gap-4">
+                <Input
+                  text="Full Name"
+                  name="fullName"
+                  type="text"
+                  holder="Enter full name"
+                  value={values.fullName}
+                  handleBlur={handleBlur}
+                  handleChange={handleChange}
+                  error={errors.fullName}
+                  touched={touched.fullName}
                 />
-                {errors.profilePic && touched.profilePic && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.profilePic}
-                  </p>
-                )}
-              </div>
-              <div className="grid mt-4  grid-cols-2 gap-4">
-                <div className="flex flex-col items-center gap-4">
-                  <Input
-                    text="Full Name"
-                    name="fullName"
-                    type="text"
-                    holder="Enter full name"
-                    value={values.fullName}
-                    handleBlur={handleBlur}
-                    handleChange={handleChange}
-                    error={errors.fullName}
-                    touched={touched.fullName}
-                  />
+                <div className="mt-6">
                   <Input
                     text="Phone Number"
                     name="phone"
@@ -145,7 +168,6 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
                     handleBlur={handleBlur}
                     handleChange={(e) => {
                       const { value } = e.target;
-                      // Allow only digits and limit to 10
                       if (/^\d*$/.test(value) && value.length <= 10) {
                         handleChange(e);
                       }
@@ -153,89 +175,128 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
                     error={errors.phone}
                     touched={touched.phone}
                   />
-                  <Input
-                    text="Location"
-                    name="location"
-                    type="text"
-                    holder="Enter address here"
-                    value={values.location}
-                    handleBlur={handleBlur}
-                    handleChange={handleChange}
-                    error={errors.location}
-                    touched={touched.location}
-                  />
-                  <img src={MapImg} alt="map.png" />
                 </div>
-                <div>
+                <Input
+                  text="Location"
+                  name="location"
+                  type="text"
+                  holder="Enter address here"
+                  value={values.location}
+                  handleBlur={handleBlur}
+                  handleChange={handleChange}
+                  error={errors.location}
+                  touched={touched.location}
+                />
+                <img src={MapImg} alt="map.png" className="mt-4" />
+              </div>
+
+              <div>
+                <Input
+                  text="Working Radius"
+                  name="radius"
+                  type="number"
+                  holder="Enter working radius"
+                  value={values.radius}
+                  handleBlur={handleBlur}
+                  handleChange={handleChange}
+                  error={errors.radius}
+                  touched={touched.radius}
+                />
+                <div className="mt-4">
                   <Input
-                    text="Working Radius"
-                    name="radius"
-                    type="text"
-                    holder="10M"
-                    value={values.radius}
+                    text="Experience (Years)"
+                    name="experience"
+                    type="number"
+                    holder="Enter years of experience"
+                    value={values.experience}
                     handleBlur={handleBlur}
                     handleChange={handleChange}
-                    error={errors.radius}
-                    touched={touched.radius}
+                    error={errors.experience}
+                    touched={touched.experience}
                   />
-                  <div className="w-full mt-4 h-auto flex flex-col justify-start items-start gap-1">
-                    <label
-                      htmlFor=""
-                      className="font-[700] capitalize text-[12px]"
-                    >
-                      Set Availability
-                    </label>
-                    <div
-                      className={`h-[49px] flex items-center cursor-pointer justify-between bg-[#FFFFFF] w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px] `}
-                    >
+                </div>
+
+                {/* Availability */}
+                <div className="w-full mt-4 flex flex-col gap-1">
+                  <label className="font-[700] capitalize text-[12px]">
+                    Set Availability
+                  </label>
+                  <div className="h-[49px] flex items-center justify-between bg-[#FFFFFF] w-full border-[0.8px] border-[#D9D9D9] rounded-[8px]">
+                    {availability ? (
                       <div className="bg-[#F1F1F1D1] flex gap-2 items-center p-2 h-[38px] rounded-[8px] ml-1">
                         <p className="text-[14px]">
-                          09:00 AM - 08:00 PM (Mon - Fri)
+                          {availability.startTime} - {availability.endTime} (
+                          {availability.days})
                         </p>
-                        <FiTrash2 color={"#F01A1A"} size={14} />
+                        <button
+                          type="button"
+                          onClick={() => setAvailability(null)}
+                        >
+                          <FiTrash2 color={"#F01A1A"} size={14} />
+                        </button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowModal(true)}
-                        style={{
-                          background:
-                            "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",
-                        }}
-                        className="w-[13%] mt-1 rounded-[8px] h-[38px]   mr-2 bg-transparent text-md text-[#959393] flex items-center justify-center"
-                      >
-                        <FaPlus color="white" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <label
-                      htmlFor=""
-                      className="font-[700] capitalize text-[12px]"
+                    ) : (
+                      <p className="ml-2 text-sm text-gray-400">
+                        No availability set
+                      </p>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(true)}
+                      style={{
+                        background:
+                          "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",
+                      }}
+                      className="w-[13%] mt-1 rounded-[8px] h-[38px] mr-2 flex items-center justify-center"
                     >
-                      Biography
-                    </label>
-                    <textarea
-                      name=""
-                      rows={8}
-                      className="flex px-2 py-2 resize-none justify-start bg-[#FFFFFF] items-start w-full relative border-[0.8px]  border-[#D9D9D9] rounded-[8px]"
-                      id=""
-                    ></textarea>
+                      <FaPlus color="white" />
+                    </button>
                   </div>
                 </div>
+
+                {/* Biography */}
+                <div className="mt-3">
+                  <label className="font-[700] capitalize text-[12px]">
+                    Biography
+                  </label>
+                  <textarea
+                    name="biography"
+                    rows={4}
+                    value={values.biography}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    className="flex px-2 py-2 resize-none justify-start bg-[#FFFFFF] items-start w-full border-[0.8px] border-[#D9D9D9] rounded-[8px]"
+                  />
+                  {errors.biography && touched.biography && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.biography}
+                    </p>
+                  )}
+                </div>
               </div>
-              <div className="mt-3 w-[360px] mx-auto">
-                <Button text="Update" type={"submit"} loading={loading} />
-              </div>
-            </form>
-            {showModal && (
-              <AddAvailabilityModal
-                onClose={() => setShowModal(false)}
-                edit={true}
-              />
-            )}
-          </div>
+            </div>
+
+            <div className="mt-3 w-[360px] mx-auto">
+              <Button text="Update" type={"submit"} loading={loading} />
+            </div>
+          </form>
+
+          {/* Availability Modal */}
+          {showModal && (
+            <AddAvailabilityModal
+              onClose={() => setShowModal(false)}
+              edit={true}
+              onSave={(data) => {
+                setAvailability(data);
+                setShowModal(false);
+              }}
+            />
+          )}
         </div>
       </Modal>
+
+      {/* Success Modal */}
       <SuccessModal
         isOpen={successModal}
         setIsOpen={setSuccessModal}
