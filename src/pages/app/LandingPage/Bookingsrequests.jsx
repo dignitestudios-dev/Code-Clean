@@ -1,312 +1,181 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { FaArrowLeft } from "react-icons/fa";
 import { HeroBg } from "../../../assets/export";
 import Navbar from "../../../components/layout/Navbar";
 import Footer from "../../../components/layout/Footer";
 import { CiSearch } from "react-icons/ci";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCurrentBooking } from "../../../redux/slices/users.slice";
+
+const PLACEHOLDER_AVATAR = "https://via.placeholder.com/40";
+
+// Tiny spinner for headers/buttons
+const Spinner = () => (
+  <span
+    className="inline-block h-4 w-4 ml-2 align-middle animate-spin rounded-full border-2 border-gray-300 border-t-transparent"
+    aria-label="Loading"
+  />
+);
+
+// Table skeleton rows (shimmer)
+const SkeletonRows = ({ count = 6 }) => (
+  <>
+    {Array.from({ length: count }).map((_, i) => (
+      <tr key={i} className="animate-pulse border-t">
+        <td className="px-6 py-4">
+          <div className="h-4 w-6 bg-gray-200 rounded" />
+        </td>
+        <td className="px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-gray-200" />
+            <div className="h-4 w-32 bg-gray-200 rounded" />
+          </div>
+        </td>
+        <td className="px-6 py-4">
+          <div className="h-4 w-28 bg-gray-200 rounded" />
+        </td>
+        <td className="px-6 py-4">
+          <div className="h-4 w-20 bg-gray-200 rounded" />
+        </td>
+        <td className="px-6 py-4">
+          <div className="h-4 w-16 bg-gray-200 rounded" />
+        </td>
+        <td className="px-6 py-4">
+          <div className="h-4 w-28 bg-gray-200 rounded" />
+        </td>
+        <td className="px-6 py-4">
+          <div className="h-4 w-4 bg-gray-200 rounded" />
+        </td>
+      </tr>
+    ))}
+  </>
+);
 
 const Bookingsrequests = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("Current Bookings");
   const [statusFilter, setStatusFilter] = useState("All");
-  //   // Sample booking data
-  //   const bookings = [
-  //     {
-  //       id: 1,
-  //       name: "Justin Cruz",
-  //       date: "16-January-2025",
-  //       time: "10:00 Am",
-  //       duration: "4hrs",
-  //       status: "Waiting",
-  //       avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-  //     },
-  //     {
-  //       id: 2,
-  //       name: "John Doe",
-  //       date: "16-January-2025",
-  //       time: "10:00 Am",
-  //       duration: "4hrs",
-  //       status: "Rejected",
-  //       avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-  //     },
-  //     {
-  //       id: 2,
-  //       name: "John Doe",
-  //       date: "16-January-2025",
-  //       time: "10:00 Am",
-  //       duration: "4hrs",
-  //       status: "In Progress",
-  //       avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-  //     },
-  //     {
-  //       id: 3,
-  //       name: "Emily Johnson",
-  //       date: "16-January-2025",
-  //       time: "10:00 Am",
-  //       duration: "4hrs",
-  //       status: "Accepted",
-  //       avatar: "https://randomuser.me/api/portraits/women/3.jpg",
-  //     },
-  //     {
-  //       id: 4,
-  //       name: "Sarah Williams",
-  //       date: "17-January-2025",
-  //       time: "2:00 Pm",
-  //       duration: "3hrs",
-  //       status: "Completed",
-  //       avatar: "https://randomuser.me/api/portraits/women/4.jpg",
-  //     },
-  //     {
-  //       id: 5,
-  //       name: "Mark Thompson",
-  //       date: "18-January-2025",
-  //       time: "11:00 Am",
-  //       duration: "2hrs",
-  //       status: "Cancelled",
-  //       avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-  //     },
-  //     {
-  //       id: 6,
-  //       name: "Ava Martinez",
-  //       date: "19-January-2025",
-  //       time: "9:00 Am",
-  //       duration: "1.5hrs",
-  //       status: "Waiting",
-  //       avatar: "https://randomuser.me/api/portraits/women/6.jpg",
-  //     },
-  //     {
-  //       id: 7,
-  //       name: "Liam Anderson",
-  //       date: "20-January-2025",
-  //       time: "3:30 Pm",
-  //       duration: "5hrs",
-  //       status: "Accepted",
-  //       avatar: "https://randomuser.me/api/portraits/men/7.jpg",
-  //     },
-  //     {
-  //       id: 8,
-  //       name: "Olivia Garcia",
-  //       date: "21-January-2025",
-  //       time: "12:00 Pm",
-  //       duration: "3hrs",
-  //       status: "Completed",
-  //       avatar: "https://randomuser.me/api/portraits/women/8.jpg",
-  //     },
-  //   ];
 
-  const bookings = [
-    {
-      id: 1,
-      name: "Justin Cruz",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "Upcoming Jobs",
-      avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-      id: 2,
-      name: "John Doe",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "In Progress Jobs",
-      avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-    },
-    {
-      id: 3,
-      name: "John Doe",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "Pending",
-      avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-    },
-    {
-      id: 3,
-      name: "John Doe",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "Completed Jobs",
-      avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-    },
-    {
-      id: 4,
-      name: "Emily Johnson",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "Accepted",
-      avatar: "https://randomuser.me/api/portraits/women/3.jpg",
-    },
-    {
-      id: 5,
-      name: "Sarah Williams",
-      date: "17-January-2025",
-      time: "2:00 Pm",
-      duration: "3hrs",
-      status: "Completed",
-      avatar: "https://randomuser.me/api/portraits/women/4.jpg",
-    },
-    {
-      id: 6,
-      name: "Mark Thompson",
-      date: "18-January-2025",
-      time: "11:00 Am",
-      duration: "2hrs",
-      status: "Canceled Jobs",
-      avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-    },
-    {
-      id: 7,
-      name: "Ava Martinez",
-      date: "19-January-2025",
-      time: "9:00 Am",
-      duration: "1.5hrs",
-      status: "Waiting",
-      avatar: "https://randomuser.me/api/portraits/women/6.jpg",
-    },
-    {
-      id: 8,
-      name: "Liam Anderson",
-      date: "20-January-2025",
-      time: "3:30 Pm",
-      duration: "5hrs",
-      status: "Accepted",
-      avatar: "https://randomuser.me/api/portraits/men/7.jpg",
-    },
-    {
-      id: 9,
-      name: "Olivia Garcia",
-      date: "21-January-2025",
-      time: "12:00 Pm",
-      duration: "3hrs",
-      status: "Completed",
-      avatar: "https://randomuser.me/api/portraits/women/8.jpg",
-    },
-    {
-      id: 10,
-      name: "Noah Evans",
-      date: "22-January-2025",
-      time: "1:00 Pm",
-      duration: "2.5hrs",
-      status: "Rejected",
-      avatar: "https://randomuser.me/api/portraits/men/9.jpg",
-    },
-    {
-      id: 11,
-      name: "Sophia Clark",
-      date: "23-January-2025",
-      time: "4:00 Pm",
-      duration: "3hrs",
-      status: "Waiting",
-      avatar: "https://randomuser.me/api/portraits/women/9.jpg",
-    },
-    {
-      id: 12,
-      name: "James Allen",
-      date: "24-January-2025",
-      time: "10:30 Am",
-      duration: "1hr",
-      status: "Completed",
-      avatar: "https://randomuser.me/api/portraits/men/10.jpg",
-    },
-    {
-      id: 13,
-      name: "Mia Scott",
-      date: "25-January-2025",
-      time: "9:00 Am",
-      duration: "2hrs",
-      status: "Completed",
-      avatar: "https://randomuser.me/api/portraits/women/10.jpg",
-    },
-    {
-      id: 14,
-      name: "Benjamin Lee",
-      date: "26-January-2025",
-      time: "2:30 Pm",
-      duration: "4hrs",
-      status: "Accepted",
-      avatar: "https://randomuser.me/api/portraits/men/11.jpg",
-    },
-    {
-      id: 15,
-      name: "Chloe Young",
-      date: "27-January-2025",
-      time: "11:45 Am",
-      duration: "2.5hrs",
-      status: "Approved",
-      avatar: "https://randomuser.me/api/portraits/women/11.jpg",
-    },
-    {
-      id: 16,
-      name: "Jackson White",
-      date: "28-January-2025",
-      time: "8:15 Am",
-      duration: "5hrs",
-      status: "Approved",
-      avatar: "https://randomuser.me/api/portraits/men/12.jpg",
-    },
-    {
-      id: 17,
-      name: "Isabella Walker",
-      date: "29-January-2025",
-      time: "1:30 Pm",
-      duration: "1.5hrs",
-      status: "In Progress",
-      avatar: "https://randomuser.me/api/portraits/women/12.jpg",
-    },
-    {
-      id: 18,
-      name: "Lucas Harris",
-      date: "30-January-2025",
-      time: "5:00 Pm",
-      duration: "3hrs",
-      status: "Rejected",
-      avatar: "https://randomuser.me/api/portraits/men/13.jpg",
-    },
-  ];
+  const { currentbookingdata, currentbookingLoading } = useSelector((s) => s.user);
+  const loading = !!currentbookingLoading;
 
-  // Filtered bookings based on search query
-  const filteredBookings = bookings
-    .filter(
-      (booking) =>
-        booking.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        booking.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        booking.status.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .filter((booking) => {
-      if (activeTab != "Current Bookings") {
-        return (
-          booking.status === "Pending" ||
-          booking.status === "Approved" ||
-          booking.status === "Rejected"
-        );
-      } else if (activeTab === "Booking Request") {
-        return (
-          booking.status === "Upcoming Jobs" ||
-          booking.status === "In Progress Jobs" ||
-          booking.status === "Completed Jobs" ||
-          booking.status === "Canceled Jobs"
-        );
-      }
-      return true;
+  useEffect(() => {
+    dispatch(fetchCurrentBooking());
+  }, [dispatch]);
+
+  const isCurrent = activeTab === "Current Bookings";
+
+  // ---- helpers ----
+  const toUiStatus = (raw) => {
+    const s = String(raw || "")
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/_/g, "");
+    if (s === "inprogress") return "In Progress Jobs";
+    if (s === "completed") return "Completed Jobs";
+    if (s === "cancelled" || s === "canceled") return "Canceled Jobs";
+    if (["accepted", "approved", "pending"].includes(s)) return "Upcoming Jobs";
+    return "Upcoming Jobs";
+  };
+
+  const statusColor = (statusUi) => {
+    const s = (statusUi || "").toLowerCase();
+    if (s.includes("completed") || s.includes("approved")) return "text-[#00C853]";
+    if (s.includes("upcoming") || s.includes("pending")) return "text-[#EC8325]";
+    if (s.includes("progress")) return "text-[#208BC7]";
+    return "text-[#EE3131]";
+  };
+
+  const fmtIsoDate = (iso) => (iso ? new Date(iso).toLocaleDateString() : "");
+  const fmtIsoTime = (iso) =>
+    iso ? new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+
+  // ---- normalize API payload (supports {data:[...]} OR [...] OR {...}) ----
+  const apiList = useMemo(() => {
+    const payload = currentbookingdata;
+    if (!payload) return [];
+    if (Array.isArray(payload?.data)) return payload.data; // paginated shape
+    if (Array.isArray(payload)) return payload; // array
+    return [payload]; // single object
+  }, [currentbookingdata]);
+
+  // ---- static for Booking Request tab (optional) ----
+  const bookings = useMemo(() => [], []);
+
+  // ---- unify into UI rows ----
+  const uiRows = useMemo(() => {
+    if (isCurrent) {
+      return apiList.map((item) => {
+        // New API shape
+        const providerNew = item?.service_provider;
+        // Old shape fallback
+        const sr = item?.service_request;
+        const providerOld = sr?.provider;
+
+        const id = item?.booking_id ?? item?.id ?? "-";
+        const name = providerNew?.name || providerOld?.name || "Unknown";
+        const avatar = providerNew?.avatar || providerOld?.avatar || PLACEHOLDER_AVATAR;
+
+        // Prefer new strings, else ISO fallback
+        const dateStr = item?.date || fmtIsoDate(sr?.date) || "";
+        const timeStr = item?.time || fmtIsoTime(sr?.time) || "";
+
+        const durationStr =
+          (item?.duration ? `${item.duration} hrs` : null) ||
+          (sr?.duration ? `${sr.duration} hrs` : "-");
+
+        const statusRaw = item?.status || sr?.status || "";
+        const statusUi = toUiStatus(statusRaw);
+
+        return {
+          id,
+          name,
+          avatar,
+          dateStr,
+          timeStr,
+          durationStr,
+          statusUi,
+          statusRaw,
+        };
+      });
+    } else {
+      // Booking Request tab (static)
+      return bookings.map((b) => ({
+        id: b.id,
+        name: b.name,
+        avatar: b.avatar || PLACEHOLDER_AVATAR,
+        dateStr: b.date || "",
+        timeStr: b.time || "",
+        durationStr: b.duration || "-",
+        statusUi: b.status || "",
+        statusRaw: b.status || "",
+      }));
+    }
+  }, [isCurrent, apiList, bookings]);
+
+  const statusOptions = isCurrent
+    ? ["All", "Upcoming Jobs", "In Progress Jobs", "Completed Jobs", "Canceled Jobs"]
+    : ["All", "Pending", "Approved", "Rejected"];
+
+  const q = searchQuery.trim().toLowerCase();
+
+  const filteredRows = uiRows
+    .filter((row) => {
+      if (!q) return true;
+      return (
+        row.name?.toLowerCase().includes(q) ||
+        row.dateStr?.toLowerCase().includes(q) ||
+        row.statusUi?.toLowerCase().includes(q)
+      );
     })
-    .filter((booking) => {
+    .filter((row) => {
       if (statusFilter === "All") return true;
-      return booking.status === statusFilter;
+      return row.statusUi === statusFilter;
     });
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  const handleTabClick = (tab) => {
-    setActiveTab(tab);
-  };
 
   return (
     <div>
@@ -325,9 +194,8 @@ const Bookingsrequests = () => {
               <FaArrowLeft color="white" size={20} />
             </button>
             <h2 className="text-white text-[28px] font-bold leading-[48px] capitalize">
-              {activeTab === "Current Bookings"
-                ? "Current Bookings"
-                : "Booking Requests"}
+              {isCurrent ? "Current Bookings" : "Booking Requests"}
+              {loading && <Spinner />}
             </h2>
           </div>
 
@@ -341,25 +209,30 @@ const Bookingsrequests = () => {
               <input
                 type="text"
                 value={searchQuery}
-                onChange={handleSearchChange}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for bookings"
-                className="w-[260px] py-3 pl-10 pr-5  rounded-lg border !text-white border-[#ccc] bg-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF]"
+                disabled={loading}
+                className={`w-[260px] py-3 pl-10 pr-5 rounded-lg border !text-white border-[#ccc] bg-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF] ${
+                  loading ? "opacity-60 cursor-not-allowed" : ""
+                }`}
               />
             </div>
 
-            {/* Tab Section */}
+            {/* Tab Switch */}
             <div className="flex gap-4 bg-white rounded-xl p-[6px] text-sm">
               {["Current Bookings", "Booking Request"].map((tab) => (
                 <button
                   key={tab}
+                  disabled={loading}
                   onClick={() => {
-                    setStatusFilter("All")
-                    handleTabClick(tab)}}
+                    setStatusFilter("All");
+                    setActiveTab(tab);
+                  }}
                   className={`px-4 py-2 rounded-lg ${
                     activeTab === tab
                       ? "bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white"
                       : "bg-white text-text-[#181818]"
-                  }`}
+                  } ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
                 >
                   {tab}
                 </button>
@@ -372,44 +245,23 @@ const Bookingsrequests = () => {
       {/* Booking Table Section */}
       <div className="px-[10em] py-[4em] bg-[#f5f8fb00] -mt-[16em] relative mb-10">
         <div className="bg-white rounded-xl shadow-md overflow-x-auto">
-          {/* Tabs for Filter */}
+          {/* Status Filter Row */}
           <div className="flex border-b px-6 pt-6">
-            {activeTab != "Current Bookings"
-              ? ["All", "Pending", "Approved", "Rejected"].map(
-                  (status, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setStatusFilter(status)}
-                      className={`px-4 py-2 text-sm font-medium text-[#000000] hover:text-[#00AEEF] focus:outline-none border-b-2 ${
-                        statusFilter === status
-                          ? "border-[#00AEEF] text-gradient"
-                          : "border-transparent"
-                      }`}
-                    >
-                      {status === "Waiting" ? "Waiting Requests" : status}
-                    </button>
-                  )
-                )
-              : [
-                  "All",
-                  "Upcoming Jobs",
-                  "In Progress Jobs",
-                  "Completed Jobs",
-                  "Canceled Jobs",
-                ].map((status, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setStatusFilter(status)}
-                    className={`px-4 py-2 text-sm font-medium text-[#3F3F3F] hover:text-[#00AEEF] focus:outline-none border-b-2 ${
-                      statusFilter === status
-                        ? "border-[#00AEEF] text-gradient"
-                        : "border-transparent"
-                    }`}
-                  >
-                    {status === "Waiting" ? "Waiting Requests" : status}
-                  </button>
-                ))}
+            {statusOptions.map((status, index) => (
+              <button
+                key={index}
+                onClick={() => setStatusFilter(status)}
+                className={`px-4 py-2 text-sm font-medium hover:text-[#00AEEF] focus:outline-none border-b-2 ${
+                  statusFilter === status
+                    ? "border-[#00AEEF] text-gradient"
+                    : "border-transparent text-[#3F3F3F]"
+                }`}
+              >
+                {status}
+              </button>
+            ))}
           </div>
+
           {/* Table */}
           <table className="w-full text-left mt-4">
             <thead>
@@ -423,56 +275,61 @@ const Bookingsrequests = () => {
                 <th className="px-6 py-3">Action</th>
               </tr>
             </thead>
-            <tbody className="text-sm text-[#3F3F3F]">
-              {filteredBookings.map((row, index) => (
-                <tr
-                  key={index}
-                  className="border-t cursor-pointer"
-                  onClick={() =>
-                    navigate(
-                      `/booking-details?id=${row.id}&status=${row.status}`
-                    )
-                  }
-                >
-                  <td className="px-6 py-4">{row.id}</td>
-                  <td className="px-6 py-4 flex items-center gap-3">
-                    <img
-                      src={row.avatar}
-                      alt={row.name}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                    {row.name}
-                  </td>
-                  <td className="px-6 py-4">{row.date}</td>
-                  <td className="px-6 py-4">{row.time}</td>
-                  <td className="px-6 py-4">{row.duration}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`font-semibold ${
-                        row.status === "Approved" ||
-                        row.status == "Completed Jobs"
-                          ? "text-[#00C853]"
-                          : row.status === "Pending" ||
-                            row.status == "Upcoming Jobs"
-                          ? "text-[#EC8325]"
-                          : row.status === "In Progress" ||
-                            row.status == "In Progress Jobs"
-                          ? "text-[#208BC7]"
-                          : "text-[#EE3131]"
-                      }`}
+
+            <tbody className="text-sm text-[#3F3F3F]" aria-busy={loading}>
+              {loading ? (
+                <SkeletonRows count={6} />
+              ) : (
+                <>
+                  {filteredRows.map((row, index) => (
+                    <tr
+                      key={row.id ?? index}
+                      className="border-t cursor-pointer"
+                      onClick={() =>
+                        navigate(`/booking-details?id=${row.id}&status=${row.statusUi}`)
+                      }
                     >
-                      {row.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-[#00AEEF] cursor-pointer">
-                    <span>&gt;</span>
-                  </td>
-                </tr>
-              ))}
+                      <td className="px-6 py-4">{row.id}</td>
+                      <td className="px-6 py-4 flex items-center gap-3">
+                        <img
+                          src={
+                            row?.avatar
+                              ? `https://family-phys-ed-s3.s3.amazonaws.com/${row?.avatar}`
+                              : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"
+                          }
+                          alt={row.name}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                        {row.name}
+                      </td>
+                      <td className="px-6 py-4">{row.dateStr}</td>
+                      <td className="px-6 py-4">{row.timeStr}</td>
+                      <td className="px-6 py-4">{row.durationStr}</td>
+                      <td className="px-6 py-4">
+                        <span className={`font-semibold ${statusColor(row.statusUi)}`}>
+                          {row.statusUi}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-[#00AEEF] cursor-pointer">
+                        <span>&gt;</span>
+                      </td>
+                    </tr>
+                  ))}
+
+                  {filteredRows.length === 0 && (
+                    <tr>
+                      <td className="px-6 py-10 text-center text-[#888]" colSpan={7}>
+                        No bookings found.
+                      </td>
+                    </tr>
+                  )}
+                </>
+              )}
             </tbody>
           </table>
         </div>
       </div>
+
       <Footer />
     </div>
   );

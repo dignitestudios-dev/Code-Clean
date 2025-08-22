@@ -1,22 +1,18 @@
 import { useState } from "react";
 import Modal from "react-modal";
-import { useLogin } from "../../../hooks/api/Post";
-import { useFormik } from "formik";
-import Input from "../../global/Input";
-import { Button } from "../../global/GlobalButton";
-import AddAvailabilityModal from "../../onboarding/AddAvaliabilityModal";
 import { HiOutlineXMark } from "react-icons/hi2";
-import { FiTrash2 } from "react-icons/fi";
 import SuccessModal from "../../global/SuccessModal";
 import AddServiceModal from "../../onboarding/AddServiceModal";
 import { FaTrashAlt } from "react-icons/fa";
 import { EditIcon } from "../../../assets/export";
 import EditServiceModal from "./EditServiceModal";
 import DeleteProServices from "./DeleteProServices";
+import { useSelector } from "react-redux";
 export default function ProviderEditServices({ isOpen, setIsOpen }) {
   const [showModal, setShowModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
   const [actionType, setActionType] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [services, setServices] = useState([
     {
       title: "Service Title",
@@ -31,7 +27,7 @@ export default function ProviderEditServices({ isOpen, setIsOpen }) {
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
     },
   ]);
-
+  const { user_data } = useSelector((state) => state.auth);
   const handleAddService = (newService) => {
     setServices((prev) => [...prev, newService]);
   };
@@ -89,6 +85,7 @@ export default function ProviderEditServices({ isOpen, setIsOpen }) {
               <EditServiceModal
                 onClose={() => setShowModal(false)}
                 onAdd={handleAddService}
+                selectedItem={selectedItem}
               />
             )}
             {showModal && actionType == "delete" && (
@@ -97,13 +94,15 @@ export default function ProviderEditServices({ isOpen, setIsOpen }) {
                   title: "Delete Service",
                   bio: "Are you sure you want to delete this service?",
                 }}
+                dell={"service"}
+                selectedItem={selectedItem}
                 setIsOpen={setShowModal}
                 isOpen={showModal}
               />
             )}
             {/* Services List */}
             <div className="mt-16 flex flex-col h-[240px] overflow-auto gap-4">
-              {services.map((service, index) => (
+              {user_data?.services?.map((service, index) => (
                 <div
                   key={index}
                   className="border rounded-[10px] p-4 bg-white shadow-sm relative"
@@ -115,6 +114,7 @@ export default function ProviderEditServices({ isOpen, setIsOpen }) {
                       onClick={() => {
                         setShowModal(true);
                         setActionType("edit");
+                        setSelectedItem(service);
                       }}
                       alt=""
                     />
@@ -123,6 +123,7 @@ export default function ProviderEditServices({ isOpen, setIsOpen }) {
                       onClick={() => {
                         setShowModal(true);
                         setActionType("delete");
+                        setSelectedItem(service);
                       }}
                     />
                   </div>
@@ -131,7 +132,7 @@ export default function ProviderEditServices({ isOpen, setIsOpen }) {
                     {service.description}
                   </p>
                   <p className="font-[600] text-[12px] mt-2">
-                    ${service.price}
+                    ${service.amount}
                   </p>
                 </div>
               ))}
