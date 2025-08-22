@@ -307,47 +307,7 @@ const ServiceproviderProfile = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {[
-                    {
-                      title: "Bathroom Cleaning",
-                      desc: [
-                        "Deep cleaning of sinks, tubs, and showers",
-                        "Disinfection of toilets and faucets",
-                        "Mirror and glass polishing",
-                        "Floor scrubbing and mopping",
-                      ],
-                      price: "$120",
-                    },
-                    {
-                      title: "Bedroom Cleaning",
-                      desc: [
-                        "Dusting and wiping surfaces",
-                        "Bed making and linen changing",
-                        "Floor vacuuming and mopping",
-                        "Closet and furniture cleaning",
-                      ],
-                      price: "$100",
-                    },
-                    {
-                      title: "Kitchen Cleaning",
-                      desc: [
-                        "Deep cleaning of sinks, tubs, and showers",
-                        "Disinfection of toilets and faucets",
-                        "Mirror and glass polishing",
-                        "Floor scrubbing and mopping",
-                      ],
-                      price: "$150",
-                    },
-                    {
-                      title: "Full Home Deep Cleaning",
-                      desc: [
-                        "Includes all rooms",
-                        "Sanitization of high-touch areas",
-                        "Custom add-ons available",
-                      ],
-                      price: "$120",
-                    },
-                  ].map((service, i) => (
+                  {user_data?.services?.slice(0,4)?.map((service, i) => (
                     <div
                       key={i}
                       className="bg-gray-50 p-3 rounded-md border flex flex-col justify-between h-[250px]"
@@ -356,16 +316,14 @@ const ServiceproviderProfile = () => {
                       {/* Added flex and height */}
                       <div>
                         <h4 className="font-semibold text-[12px] mb-2">
-                          {service.title}
+                          {service?.title}
                         </h4>
                         <ul className="list-disc list-inside text-[11px] text-gray-600 space-y-1">
-                          {service.desc.map((line, j) => (
-                            <li key={j}>{line}</li>
-                          ))}
+                          {service?.description}
                         </ul>
                       </div>
                       <div className="text-[#27A8E2] font-bold text-lg mt-auto">
-                        {service.price}
+                        {service.amount}
                       </div>{" "}
                       {/* Fixed price at the bottom */}
                     </div>

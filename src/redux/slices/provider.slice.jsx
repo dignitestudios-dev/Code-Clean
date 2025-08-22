@@ -75,6 +75,26 @@ export const AddCard = createAsyncThunk(
   }
 );
 
+export const UpdateProviderProfile = createAsyncThunk(
+  "/provider/profile",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.post(
+        `/provider/profile}`,
+        payload?.data
+      );
+
+      SuccessToast("Profile Update Successfully");
+      console.log(response?.data?.data);
+      // return response?.data;
+    } catch (error) {
+      ErrorToast(error.response?.data?.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
+    }
+  }
+);
 // ================= SLICE =================
 const providerSlice = createSlice({
   name: "provider",

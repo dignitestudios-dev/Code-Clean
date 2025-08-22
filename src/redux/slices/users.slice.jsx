@@ -8,6 +8,7 @@ const initialState = {
   isLoading: false,
   userProfile: null,
   allservices: null,
+  currentbookingdata: null,
   error: null,
   success: null,
   updateLoading: false,
@@ -16,8 +17,10 @@ const initialState = {
   allservicesloading: false,
   allserviceserror: null,
   allservicessuccess: null,
+  currentbookingSucess: null,
+  currentbookingerror: null,
+  currentbookingLoading: false,
 };
-
 // ================= THUNKS =================
 
 // Fetch user profile
@@ -33,6 +36,18 @@ export const fetchUserProfile = createAsyncThunk(
   }
 );
 
+//Fetch Current Booking
+export const fetchCurrentBooking = createAsyncThunk(
+  "/user/current-bookings",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.get("/user/current-bookings");
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch profile");
+    }
+  }
+);
 
 export const fetchallservices = createAsyncThunk(
   "/users/providers",
@@ -45,8 +60,6 @@ export const fetchallservices = createAsyncThunk(
     }
   }
 );
-
-
 
 // Update user profile and fetch updated profile
 export const updateUserProfile = createAsyncThunk(
@@ -119,6 +132,22 @@ const userSlice = createSlice({
       .addCase(fetchallservices.rejected, (state, action) => {
         state.allservicesloading = false;
         state.allserviceserror = action.payload;
+      })
+
+      // ----- Fetch all Current Booking -----
+      .addCase(fetchCurrentBooking.pending, (state) => {
+        state.currentbookingLoading = true;
+        state.currentbookingerror = null;
+        state.currentbookingSucess = null;
+      })
+      .addCase(fetchCurrentBooking.fulfilled, (state, action) => {
+        state.currentbookingLoading = false;
+        state.currentbookingdata = action.payload;
+        state.currentbookingSucess = "Successfully fetched Current Booking!";
+      })
+      .addCase(fetchCurrentBooking.rejected, (state, action) => {
+        state.currentbookingLoading = false;
+        state.currentbookingerror = action.payload;
       })
       
       // ----- update profile -----
