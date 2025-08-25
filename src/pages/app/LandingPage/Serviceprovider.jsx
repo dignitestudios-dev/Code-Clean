@@ -274,10 +274,10 @@ const Serviceprovider = () => {
                                     <span className='text-blue-600 underline text-[13px] cursor-pointer' onClick={() => setShowrating(true)}>View More</span>
                                 )}
                             </div>
-                            <div className="bg-gray-50 p-4 rounded-md border">
+                            <div className="">
                                 {data?.reviews?.length > 0 ? (
                                     data.reviews.map((review, i) => (
-                                        <div key={i} className="mb-4">
+                                        <div key={i} className="mb-4 bg-gray-50 p-4 rounded-md border">
                                             <p className="font-medium">{review.name || 'Anonymous'}</p>
                                             <div className="flex items-center text-yellow-500 mb-1">
                                                 {[...Array(Math.round(Number(review.rating || 0)))].map((_, i) => (
@@ -286,7 +286,7 @@ const Serviceprovider = () => {
                                                 <span className="ml-2 text-gray-700 font-medium">{review.rating || '0'}</span>
                                             </div>
                                             <p className="text-sm text-gray-600">
-                                                {review.comment || 'No review content provided.'}
+                                                {review.text || 'No review content provided.'}
                                             </p>
                                         </div>
                                     ))
