@@ -1,226 +1,76 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { FaArrowLeft, FaCheck } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa";
 import { HeroBg } from "../../../assets/export";
 import Navbar from "../../../components/layout/Navbar";
 import Footer from "../../../components/layout/Footer";
 import { CiSearch } from "react-icons/ci";
 import { TiWarning } from "react-icons/ti";
 import Pagination from "../../../components/global/Pagination";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  AcceptBookingRequest,
+  getBookingRequest,
+} from "../../../redux/slices/provider.slice";
+import { Button } from "../../../components/global/GlobalButton";
+import { ErrorToast } from "../../../components/global/Toaster";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("Current Bookings");
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [activeTab, setActiveTab] = useState("Booking Request");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [rejectedpopup, setRejectedpopup] = useState(false);
   const [rejectedreasons, setRejectedreasons] = useState(false);
   const [reason, setReason] = useState("");
   const [rejectedreqcomplete, setRejectedreqcomplete] = useState(false);
-
-  const bookings = [
-    {
-      id: 1,
-      name: "Justin Cruz",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "Upcoming Jobs",
-      avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-      id: 2,
-      name: "John Doe",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "In Progress Jobs",
-      avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-    },
-    {
-      id: 3,
-      name: "John Doe",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "Pending",
-      avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-    },
-    {
-      id: 3,
-      name: "John Doe",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "Completed Jobs",
-      avatar: "https://randomuser.me/api/portraits/men/2.jpg",
-    },
-    {
-      id: 4,
-      name: "Emily Johnson",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "Accepted",
-      avatar: "https://randomuser.me/api/portraits/women/3.jpg",
-    },
-    {
-      id: 5,
-      name: "Sarah Williams",
-      date: "17-January-2025",
-      time: "2:00 Pm",
-      duration: "3hrs",
-      status: "Completed",
-      avatar: "https://randomuser.me/api/portraits/women/4.jpg",
-    },
-    {
-      id: 6,
-      name: "Mark Thompson",
-      date: "18-January-2025",
-      time: "11:00 Am",
-      duration: "2hrs",
-      status: "Canceled Jobs",
-      avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-    },
-    {
-      id: 7,
-      name: "Ava Martinez",
-      date: "19-January-2025",
-      time: "9:00 Am",
-      duration: "1.5hrs",
-      status: "Waiting",
-      avatar: "https://randomuser.me/api/portraits/women/6.jpg",
-    },
-    {
-      id: 8,
-      name: "Liam Anderson",
-      date: "20-January-2025",
-      time: "3:30 Pm",
-      duration: "5hrs",
-      status: "Accepted",
-      avatar: "https://randomuser.me/api/portraits/men/7.jpg",
-    },
-    {
-      id: 9,
-      name: "Olivia Garcia",
-      date: "21-January-2025",
-      time: "12:00 Pm",
-      duration: "3hrs",
-      status: "Completed",
-      avatar: "https://randomuser.me/api/portraits/women/8.jpg",
-    },
-    {
-      id: 10,
-      name: "Noah Evans",
-      date: "22-January-2025",
-      time: "1:00 Pm",
-      duration: "2.5hrs",
-      status: "Rejected",
-      avatar: "https://randomuser.me/api/portraits/men/9.jpg",
-    },
-    {
-      id: 11,
-      name: "Sophia Clark",
-      date: "23-January-2025",
-      time: "4:00 Pm",
-      duration: "3hrs",
-      status: "Waiting",
-      avatar: "https://randomuser.me/api/portraits/women/9.jpg",
-    },
-    {
-      id: 12,
-      name: "James Allen",
-      date: "24-January-2025",
-      time: "10:30 Am",
-      duration: "1hr",
-      status: "Completed",
-      avatar: "https://randomuser.me/api/portraits/men/10.jpg",
-    },
-    {
-      id: 13,
-      name: "Mia Scott",
-      date: "25-January-2025",
-      time: "9:00 Am",
-      duration: "2hrs",
-      status: "Completed",
-      avatar: "https://randomuser.me/api/portraits/women/10.jpg",
-    },
-    {
-      id: 14,
-      name: "Benjamin Lee",
-      date: "26-January-2025",
-      time: "2:30 Pm",
-      duration: "4hrs",
-      status: "Accepted",
-      avatar: "https://randomuser.me/api/portraits/men/11.jpg",
-    },
-    {
-      id: 15,
-      name: "Chloe Young",
-      date: "27-January-2025",
-      time: "11:45 Am",
-      duration: "2.5hrs",
-      status: "Approved",
-      avatar: "https://randomuser.me/api/portraits/women/11.jpg",
-    },
-    {
-      id: 16,
-      name: "Jackson White",
-      date: "28-January-2025",
-      time: "8:15 Am",
-      duration: "5hrs",
-      status: "Approved",
-      avatar: "https://randomuser.me/api/portraits/men/12.jpg",
-    },
-    {
-      id: 17,
-      name: "Isabella Walker",
-      date: "29-January-2025",
-      time: "1:30 Pm",
-      duration: "1.5hrs",
-      status: "In Progress",
-      avatar: "https://randomuser.me/api/portraits/women/12.jpg",
-    },
-    {
-      id: 18,
-      name: "Lucas Harris",
-      date: "30-January-2025",
-      time: "5:00 Pm",
-      duration: "3hrs",
-      status: "Rejected",
-      avatar: "https://randomuser.me/api/portraits/men/13.jpg",
-    },
-  ];
+  const [selectedItem, setSelectedItem] = useState(null);
+  const dispatch = useDispatch();
+  const { bookingRequest, bookingRequestLoader } = useSelector(
+    (state) => state.provider
+  );
+  useEffect(() => {
+    if (activeTab == "Booking Request") {
+      dispatch(getBookingRequest("provider/booking/requests"));
+    } else {
+      dispatch(getBookingRequest("provider/current-bookings"));
+    }
+  }, [dispatch, activeTab]);
+  console.log(bookingRequest, "booking request ");
 
   // Filtered bookings based on search query
-  const filteredBookings = bookings
-    .filter(
-      (booking) =>
-        booking.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        booking.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        booking.status.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .filter((booking) => {
-      if (activeTab === "Current Bookings") {
-        return (
-          booking.status === "Pending" ||
-          booking.status === "Approved" ||
-          booking.status === "Rejected"
-        );
-      } else if (activeTab === "Booking Request") {
-        return (
-          booking.status === "Upcoming Jobs" ||
-          booking.status === "In Progress Jobs" ||
-          booking.status === "Completed Jobs" ||
-          booking.status === "Canceled Jobs"
-        );
-      }
-      return true;
-    })
-    .filter((booking) => {
-      if (statusFilter === "All") return true;
-      return booking.status === statusFilter;
-    });
+  const filteredBookings = Array.isArray(bookingRequest)
+    ? bookingRequest
+        .filter(
+          (booking) =>
+            booking?.user?.name
+              ?.toLowerCase()
+              .includes(searchQuery.toLowerCase()) ||
+            booking?.date?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            booking?.status?.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        .filter((booking) => {
+          if (activeTab === "Booking Request") {
+            return (
+              booking.status === "pending" ||
+              booking.status === "accepted" ||
+              booking.status === "rejected"
+            );
+          } else if (activeTab === "Current Bookings") {
+            return (
+              booking.status === "Upcoming Jobs" ||
+              booking.status === "inprogress" ||
+              booking.status === "Completed Jobs" ||
+              booking.status === "Canceled Jobs"
+            );
+          }
+          return true;
+        })
+        .filter((booking) => {
+          if (statusFilter === "all") return true;
+          return booking.status === statusFilter;
+        })
+    : [];
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -228,6 +78,19 @@ const Dashboard = () => {
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
+  };
+  const HandleRejectRequest = async () => {
+    if (!reason) return ErrorToast("Reason is required");
+    const data = {
+      requestId: selectedItem,
+      reason: reason,
+    };
+
+    await dispatch(AcceptBookingRequest(data)).unwrap();
+    setRejectedpopup(false); // Close warning popup
+    setRejectedreasons(false); // Close reason popup
+    setRejectedreqcomplete(true); // Show success modal
+    dispatch(getBookingRequest());
   };
 
   return (
@@ -241,7 +104,7 @@ const Dashboard = () => {
           backgroundImage: `linear-gradient(234.85deg, rgba(39, 168, 226, 1) -20.45%, rgba(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
         }}
       >
-        <div className="flex justify-between items-center gap-3 ml-[11em] w-[74em] -mb-10">
+        <div className="flex justify-between items-center gap-3 px-4 md:px-28 w-full -mb-10">
           <div className="flex gap-3 items-center">
             <h2 className="text-white text-[28px] font-bold leading-[48px] capitalize">
               Dashboard
@@ -266,7 +129,7 @@ const Dashboard = () => {
 
             {/* Tab Section */}
             <div className="flex gap-4 bg-white rounded-xl p-[6px] text-sm">
-              {["Current Bookings", "Booking Request"].map((tab) => (
+              {["Booking Request", "Current Bookings"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => handleTabClick(tab)}
@@ -285,18 +148,20 @@ const Dashboard = () => {
       </div>
 
       {/* Booking Table Section */}
-      <div className="pl-[10em] pr-[10em] pt-0  py-[em] bg-[#f5f8fb00] -mt-[14em] relative mb-10">
+      <div className="px-4 md:px-28 pt-0  py-[em] bg-[#f5f8fb00] -mt-[14em] relative mb-10">
         <div className="bg-white rounded-xl shadow-md overflow-x-auto">
           {/* Tabs for Filter */}
           <div className="flex border-b px-6 pt-6">
-            {activeTab == "Current Bookings"
-              ? ["All", "Pending", "Approved", "Rejected"].map(
+            {activeTab == "Booking Request"
+              ? ["All", "Pending", "Accepted", "Rejected"]?.map(
                   (status, index) => (
                     <button
                       key={index}
-                      onClick={() => setStatusFilter(status)}
+                      onClick={() =>
+                        setStatusFilter(status.toLocaleLowerCase())
+                      }
                       className={`px-4 py-2 text-sm font-medium text-[#3F3F3F] hover:text-[#00AEEF] focus:outline-none border-b-2 ${
-                        statusFilter === status
+                        statusFilter === status.toLocaleLowerCase()
                           ? "border-[#00AEEF] text-gradient"
                           : "border-transparent"
                       }`}
@@ -307,21 +172,26 @@ const Dashboard = () => {
                 )
               : [
                   "All",
-                  "Upcoming Jobs",
-                  "In Progress Jobs",
-                  "Completed Jobs",
-                  "Canceled Jobs",
-                ].map((status, index) => (
+                  "Upcoming",
+                  "In Progress",
+                  "Completed",
+                  "Canceled",
+                ]?.map((status, index) => (
                   <button
                     key={index}
-                    onClick={() => setStatusFilter(status)}
+                    onClick={() =>
+                      setStatusFilter(status.replaceAll(" ", "").toLowerCase())
+                    }
                     className={`px-4 py-2 text-sm font-medium text-[#3F3F3F] hover:text-[#00AEEF] focus:outline-none border-b-2 ${
-                      statusFilter === status
+                      statusFilter.replaceAll(" ", "").toLowerCase() ==
+                      status.replaceAll(" ", "").toLowerCase()
                         ? "border-[#00AEEF] text-gradient"
                         : "border-transparent"
                     }`}
                   >
-                    {status === "Waiting" ? "Waiting Requests" : status}
+                    {status === "Waiting"
+                      ? "Waiting Requests"
+                      : status + " " + "Jobs"}
                   </button>
                 ))}
           </div>
@@ -340,7 +210,7 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className="text-sm text-[#3F3F3F]">
-              {filteredBookings.map((row, index) => (
+              {filteredBookings?.map((row, index) => (
                 <tr
                   key={index}
                   className="border-t cursor-pointer"
@@ -348,14 +218,14 @@ const Dashboard = () => {
                     navigate(`/job-details?id=${row.id}&status=${row.status}`)
                   }
                 >
-                  <td className="px-6 py-4">{row.id}</td>
+                  <td className="px-6 py-4">{index + 1}</td>
                   <td className="px-6 py-4 flex items-center gap-3">
                     <img
-                      src={row.avatar}
-                      alt={row.name}
+                      src={`http://family-phys-ed-s3.s3.amazonaws.com/${row?.user?.avatar}`}
+                      alt={row?.user?.name}
                       className="w-8 h-8 rounded-full object-cover"
                     />
-                    {row.name}
+                    {row?.user?.name}
                   </td>
                   <td className="px-6 py-4">{row.date}</td>
                   <td className="px-6 py-4">{row.time}</td>
@@ -363,13 +233,13 @@ const Dashboard = () => {
                   <td className="px-6 py-4">
                     <span
                       className={`font-semibold ${
-                        row.status === "Approved" ||
+                        row.status === "accepted" ||
                         row.status == "Completed Jobs"
                           ? "text-[#00C853]"
-                          : row.status === "Pending" ||
+                          : row.status === "pending" ||
                             row.status == "Upcoming Jobs"
                           ? "text-[#EC8325]"
-                          : row.status === "In Progress" ||
+                          : row.status === "inprogress" ||
                             row.status == "In Progress Jobs"
                           ? "text-[#208BC7]"
                           : "text-[#EE3131]"
@@ -379,11 +249,12 @@ const Dashboard = () => {
                     </span>
                   </td>
                   <td className="px-6 py-2 text-[#00AEEF] cursor-pointer text-center">
-                    {row.status === "Pending" ? (
+                    {row.status === "pending" ? (
                       <div className="flex gap-3">
                         <button
                           className="bg-[#EE3131] text-white px-6 py-3 rounded-xl"
                           onClick={(e) => {
+                            setSelectedItem(row?.request_id);
                             e.stopPropagation();
                             setRejectedpopup(true);
                           }}
@@ -450,27 +321,17 @@ const Dashboard = () => {
                                 rows={4}
                                 value={reason}
                                 onChange={(e) => setReason(e.target.value)}
+                                required
                                 placeholder="Type your reason here..."
                                 className="w-full border border-gray-300 rounded-xl px-4 py-3 placeholder-gray-400 text-black resize-none focus:outline-none focus:ring-2 focus:ring-black"
                               />
 
                               <div className="flex justify-between gap-4 mt-6">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setRejectedpopup(false); // Close warning popup
-                                    setRejectedreasons(false); // Close reason popup
-                                    setRejectedreqcomplete(true); // Show success modal
-                                    setTimeout(() => {
-                                      navigate(
-                                        "/job-details?id=3&status=Rejected"
-                                      );
-                                    }, 2000);
-                                  }}
-                                  className="w-full py-3 rounded-xl bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white font-semibold hover:bg-red-600 transition"
-                                >
-                                  Submit
-                                </button>
+                                <Button
+                                  onClick={HandleRejectRequest}
+                                  text={"Submit"}
+                                  loading={bookingRequestLoader}
+                                />
                               </div>
                             </div>
                           </div>
@@ -498,15 +359,18 @@ const Dashboard = () => {
                           </div>
                         )}
 
-                        <button
-                          className="bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white px-6 py-2 rounded-xl"
+                        <Button
+                          text={"Accept"}
                           onClick={(e) => {
+                            setSelectedItem(index);
                             e.stopPropagation();
-                            navigate("/job-details?id=3&status=Accepted");
+                            dispatch(AcceptBookingRequest(row.id));
+                            dispatch(getBookingRequest());
                           }}
-                        >
-                          Accept
-                        </button>
+                          loading={
+                            selectedItem == index && bookingRequestLoader
+                          }
+                        />
                       </div>
                     ) : (
                       <span>&gt;</span>

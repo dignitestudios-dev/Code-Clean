@@ -42,7 +42,7 @@ const Jobdetails = () => {
           backgroundImage: `linear-gradient(234.85deg, rgb(39, 168, 226, 1) -20.45%, rgb(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
         }}
       >
-        <div className="flex items-center gap-3 ml-[12em]">
+        <div className="flex items-center gap-3 px-28">
           <button type="button" onClick={() => navigate(-1)}>
             <FaArrowLeft color="white" size={20} />
           </button>

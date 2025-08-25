@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
 import { useFormik } from "formik";
 import {
-  personalDetailsValues,
   providerDetailsValues,
 } from "../../init/authentication/AuthValues";
 import {
-  personalDetailsSchema,
   providerDetailsSchema,
 } from "../../schema/authentication/AuthSchema";
 import { MapImg } from "../../assets/export";

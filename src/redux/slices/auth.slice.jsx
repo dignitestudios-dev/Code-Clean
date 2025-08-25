@@ -182,10 +182,10 @@ export const Register = createAsyncThunk(
 
 // COMPLETE PROFILE
 export const CompleteUserProfile = createAsyncThunk(
-  "/user/profile",
+  "/user/complete-profile",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.post("/user/profile", payload);
+      const response = await axios.post("/user/complete-profile", payload);
 
       const { accessToken, refreshToken, user_data } = response.data;
 
@@ -210,6 +210,31 @@ export const CompleteUserProfile = createAsyncThunk(
     }
   }
 );
+
+
+export const UpdateProviderProfile = createAsyncThunk(
+  "/provider/update-profile",
+  async (payload, thunkAPI) => {
+    try {
+       console.log(payload,"update ProfileRecord");
+      const response = await axios.post(
+        `/provider/profile`,payload
+      );
+
+      SuccessToast("Profile Update Successfully");
+     
+
+      return response?.data?.user;
+    } catch (error) {
+      ErrorToast(error.response?.data?.message);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
+    }
+  }
+);
+
+
 // COMPLETE Provider PROFILE
 export const CompleteProviderProfile = createAsyncThunk(
   "/provider/complete-profile",
@@ -540,6 +565,21 @@ const authSlice = createSlice({
         state.success = action.payload.message;
       })
       .addCase(getProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      //Update Profile
+      .addCase(UpdateProviderProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(UpdateProviderProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.success = "Profile Update Successfully";
+        state.user_data=action.payload
+      })
+      .addCase(UpdateProviderProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })

@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Modal from "react-modal";
 import { useLogin } from "../../../hooks/api/Post";
 import { useFormik } from "formik";
-import { providerDetailsSchema } from "../../../schema/authentication/AuthSchema";
+import { updateProviderDetailsSchema } from "../../../schema/authentication/AuthSchema";
 import { MapImg, usertwo } from "../../../assets/export";
 import Input from "../../global/Input";
 import { FaPlus } from "react-icons/fa";
@@ -12,49 +12,67 @@ import { HiOutlineXMark } from "react-icons/hi2";
 import { FiTrash2 } from "react-icons/fi";
 import SuccessModal from "../../global/SuccessModal";
 import { useDispatch, useSelector } from "react-redux";
-import { UpdateProviderProfile } from "../../../redux/slices/provider.slice";
+import { UpdateProviderProfile } from "../../../redux/slices/auth.slice";
 
 export default function ProviderEditProfile({ isOpen, setIsOpen }) {
   const { loading } = useLogin();
-  const [previewImage, setPreviewImage] = useState(null);
+  const { user_data } = useSelector((state) => state?.auth);
+  const [previewImage, setPreviewImage] = useState(
+    `http://family-phys-ed-s3.s3.amazonaws.com/${user_data?.avatar}`
+  );
   const fallbackImage = usertwo;
   const [showModal, setShowModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
   const [availability, setAvailability] = useState(null);
 
-  const { user_data } = useSelector((state) => state?.auth);
   const dispatch = useDispatch();
 
   const formik = useFormik({
     initialValues: {
       fullName: user_data?.name || "",
-      radius: user_data?.distance || "",
+      radius: user_data?.working_radius || "",
       phone: user_data?.phone_number || "",
       location: user_data?.address || "",
       biography: user_data?.biography || "",
       experience: user_data?.experience || "",
-      profilePic: null,
+      profilePic: user_data?.avatar,
     },
-    validationSchema: providerDetailsSchema,
+    validationSchema: updateProviderDetailsSchema,
     onSubmit: async (values) => {
-      const payload = {
-        name: values.fullName,
-        working_radius: values.radius,
-        phone_number: values.phone,
-        lat: 24.8607,
-        long: 67.0011,
-        city: "miami",
-        state: "Florida",
-        country: "US",
-        location: values.location,
-        experience: Number(values.experience),
-        biography: values.biography,
-        avatar: values.profilePic || null,
-        availability: availability,
-      };
-
       try {
-        await dispatch(UpdateProviderProfile(payload)).unwrap();
+        const formData = new FormData();
+
+        formData.append("name", values.fullName);
+        formData.append("working_radius", values.radius);
+        formData.append("phone_number", values.phone);
+        formData.append("lat", 39.7508948);
+        formData.append("long", -104.9331132);
+        formData.append("city", "Denver");
+        formData.append("state", "Colorado");
+        formData.append("country", "United States");
+        formData.append("location", values.location);
+        formData.append("working_radius", values.radius);
+        formData.append("experience", values.experience);
+        formData.append("biography", values.biography);
+
+        if (values.profilePic && typeof values.profilePic != "string") {
+          formData.append("avatar", values.profilePic);
+        }
+
+        // ✅ Proper array style for availability
+        if (availability) {
+          formData.append(
+            "availability[0][start_time]",
+            availability.start_time
+          );
+          formData.append("availability[0][end_time]", availability.end_time);
+
+          availability.days.forEach((day, index) => {
+            formData.append(`availability[0][days][${index}]`, day);
+          });
+        }
+        await dispatch(UpdateProviderProfile(formData)).unwrap();
+        setIsOpen(!isOpen);
         setSuccessModal(true);
       } catch (err) {
         console.error("Update failed:", err);
@@ -80,6 +98,7 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
       setPreviewImage(imageUrl);
     }
   };
+  console.log(errors, "erros");
 
   return (
     <>
@@ -158,7 +177,7 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
                   error={errors.fullName}
                   touched={touched.fullName}
                 />
-                <div className="mt-6">
+                <div className="mt-2">
                   <Input
                     text="Phone Number"
                     name="phone"
@@ -202,7 +221,7 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
                   error={errors.radius}
                   touched={touched.radius}
                 />
-                <div className="mt-4">
+                <div className="mt-6">
                   <Input
                     text="Experience (Years)"
                     name="experience"
@@ -225,8 +244,8 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
                     {availability ? (
                       <div className="bg-[#F1F1F1D1] flex gap-2 items-center p-2 h-[38px] rounded-[8px] ml-1">
                         <p className="text-[14px]">
-                          {availability.startTime} - {availability.endTime} (
-                          {availability.days})
+                          {availability.start_time} - {availability.end_time} (
+                          {availability.days.join(", ")?.slice(0, 15)},...)
                         </p>
                         <button
                           type="button"

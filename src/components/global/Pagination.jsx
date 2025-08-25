@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 export default function Pagination({ filteredBookings }) {
-  const itemsPerPage = 6;
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isFilter, setIsFilter] = useState(false);
-  const totalPages = Math.ceil(filteredBookings.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentProfessionals = filteredBookings?.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+const itemsPerPage = 6;
+const [currentPage, setCurrentPage] = useState(1);
+const totalPages = Math.max(1, Math.ceil((filteredBookings?.length || 0) / itemsPerPage));
+const startIndex = (currentPage - 1) * itemsPerPage;
+const currentProfessionals = filteredBookings?.slice(
+  startIndex,
+  startIndex + itemsPerPage
+);
+
   return (
     <div>
       {" "}
@@ -25,7 +25,7 @@ export default function Pagination({ filteredBookings }) {
             Previous
           </button>
 
-          {[...Array(totalPages)].map((_, i) => (
+          {[...Array(totalPages)]?.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentPage(i + 1)}

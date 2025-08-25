@@ -34,7 +34,6 @@ const ServiceproviderProfile = () => {
   const [requestservicefive, setRequestservicefive] = useState(false);
   const [editProfile, setEditProfile] = useState(false);
   const [bookingconfirm, setBookingconfirm] = useState(false);
-  const [date, setDate] = useState(new Date());
   const [dateRange, setDateRange] = useState([new Date(), new Date()]);
   const [bookrequestsend, setBookrequestsend] = useState(false);
   const navigate = useNavigate("");
@@ -159,7 +158,7 @@ const ServiceproviderProfile = () => {
           <div className="flex flex-col md:flex-row gap-8">
             <div className="md:w-[18em]">
               <img
-                src={usertwo}
+                src={`http://family-phys-ed-s3.s3.amazonaws.com/${user_data?.avatar}`}
                 alt="John Doe"
                 className="w-80 h-100 rounded-xl object-cover"
               />
@@ -185,16 +184,20 @@ const ServiceproviderProfile = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-                  {user_data?.certificates?.slice(0,2).map((item, i) => (
+                  {user_data?.certificates?.slice(0, 2).map((item, i) => (
                     <div key={i} className="space-y-1">
                       <h4 className="font-medium text-gradient">
-                       {item?.name}
+                        {item?.name}
                       </h4>
-                      <p className="text-sm text-[#919191]">{item?.institution}</p>
-                      <p className="text-sm text-gray-600">
-                       {item?.description}
+                      <p className="text-sm text-[#919191]">
+                        {item?.institution}
                       </p>
-                      <p className="text-sm text-gray-400 mt-1">{formatDate(item?.date_of_completion)}</p>
+                      <p className="text-sm text-gray-600">
+                        {item?.description}
+                      </p>
+                      <p className="text-sm text-gray-400 mt-1">
+                        {formatDate(item?.date_of_completion)}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -254,14 +257,14 @@ const ServiceproviderProfile = () => {
                   <div>
                     <span className="font-semibold">Working Radius</span>
                     <br />
-                    <span className="text-[#181818] font-[500]"> 20 miles</span>
+                    <span className="text-[#181818] font-[500]"> {user_data?.working_radius} miles</span>
                   </div>
                   <div>
                     <span className="font-semibold">Completed Job</span>
                     <br />
                     <span className="text-[#181818] font-[500]">
                       {" "}
-                      45+ Job Success
+                      {user_data?.complete_jobs}+ Job Success
                     </span>
                   </div>
                   <div>
@@ -307,7 +310,7 @@ const ServiceproviderProfile = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {user_data?.services?.slice(0,4)?.map((service, i) => (
+                  {user_data?.services?.slice(0, 4)?.map((service, i) => (
                     <div
                       key={i}
                       className="bg-gray-50 p-3 rounded-md border flex flex-col justify-between h-[250px]"
@@ -336,29 +339,41 @@ const ServiceproviderProfile = () => {
                   <h3 className="font-semibold text-lg mb-2">
                     Rating & Reviews
                   </h3>
-                  <span
-                    className="text-gradient underline text-[13px] cursor-pointer"
-                    onClick={() => {
-                      setShowrating(true);
-                    }}
-                  >
-                    View More
-                  </span>
+                  {user_data?.reviews?.length > 1 && (
+                    <span
+                      className="text-blue-600 underline text-[13px] cursor-pointer"
+                      onClick={() => setShowrating(true)}
+                    >
+                      View More
+                    </span>
+                  )}
                 </div>
-                <div className="bg-gray-50 p-4 rounded-md border">
-                  <p className="font-medium">Mike Smith</p>
-                  <div className="flex items-center text-yellow-500 mb-1">
-                    {[...Array(4)].map((_, i) => (
-                      <FaStar key={i} />
-                    ))}
-                    <span className="ml-2 text-gray-700 font-medium">4.5</span>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    The standard Lorem Ipsum passage, used since the Lorem ipsum
-                    dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua.
-                  </p>
-                </div>
+                {user_data?.reviews?.length > 0 ? (
+                  user_data.reviews.slice(0,1).map((review, i) => (
+                    <div key={i}  className="bg-gray-50 p-4 mt-4 rounded-md border">
+                      <div className="mb-4">
+                        <p className="font-medium">
+                          {review.name || "Anonymous"}
+                        </p>
+                        <div className="flex items-center text-yellow-500 mb-1">
+                          {[
+                            ...Array(Math.round(Number(review.rating || 0))),
+                          ].map((_, i) => (
+                            <FaStar key={i} />
+                          ))}
+                          <span className="ml-2 text-gray-700 font-medium">
+                            {review.rating || "0"}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          {review.text || "No review content provided."}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-600">No reviews yet.</p>
+                )}
               </div>
             </div>
           </div>
@@ -1144,9 +1159,9 @@ const ServiceproviderProfile = () => {
 
             {/* Content */}
             <div className="overflow-y-auto px-4 py-2 space-y-6 h-[60vh]">
-              {reviews.map((review, index) => (
+              {user_data?.reviews.map((review, index) => (
                 <div key={index} className="border-b pb-4">
-                  <p className="font-semibold">{review.name}</p>
+                  <p className="font-semibold">{review.user_name}</p>
                   <div className="flex items-center space-x-1 mt-1">
                     {Array.from({ length: 5 }).map((_, i) => (
                       <FaStar

@@ -97,6 +97,25 @@ export const personalDetailsSchema = Yup.object({
       );
     }),
 });
+export const updateProviderDetailsSchema = Yup.object({
+  fullName: Yup.string().required("Full name is required"),
+  phone: Yup.string()
+    .matches(/^[0-9]{10}$/, "Enter a valid phone number")
+    .required("Phone number is required"),
+  radius: Yup.string().required("Radius is required"),
+  experience: Yup.string().required("Experience is required"),
+  biography: Yup.string().required("Biography is required"),
+  location: Yup.string().required("Location is required"),
+  profilePic: Yup.mixed().test(
+    "fileType",
+    "Only image files are allowed",
+    (value) => {
+      if (!value) return true; // ✅ allow empty (means no update)
+      if (typeof value === "string") return true; // ✅ existing image (avatar url from DB)
+      return ["image/jpeg", "image/png", "image/jpg"].includes(value.type);
+    }
+  ),
+});
 export const providerDetailsSchema = Yup.object({
   fullName: Yup.string().required("Full name is required"),
   phone: Yup.string()
@@ -111,7 +130,8 @@ export const providerDetailsSchema = Yup.object({
     .required("Profile picture is required")
     .test("fileType", "Only image files are allowed", (value) => {
       return (
-        value && ["image/jpeg", "image/png", "image/jpg"].includes(value.type)
+        value &&
+        ["image/jpeg", "image/png", "image/jpg", "string"].includes(value.type)
       );
     }),
 });
