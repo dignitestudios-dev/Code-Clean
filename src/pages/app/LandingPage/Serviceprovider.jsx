@@ -14,8 +14,9 @@ import { RiEditLine } from "react-icons/ri";
 import { MdDelete } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router';
 import { RxCross2 } from "react-icons/rx";
-import { fetchallservices } from '../../../redux/slices/users.slice';
+import { fetchallservices, HireServiceProvider } from '../../../redux/slices/users.slice';
 import { useDispatch, useSelector } from 'react-redux';
+import { GoogleMap, LoadScript, Autocomplete } from '@react-google-maps/api';
 
 const Serviceprovider = () => {
     const dispatch = useDispatch();
@@ -26,6 +27,7 @@ const Serviceprovider = () => {
     const [requestservicefour, setRequestservicefour] = useState(false);
     const [requestservicefive, setRequestservicefive] = useState(false);
     const [bookingconfirm, setBookingconfirm] = useState(false);
+    const [autocomplete, setAutocomplete] = useState(null);
     const [dateRange, setDateRange] = useState([new Date(), new Date()]);
     const [bookrequestsend, setBookrequestsend] = useState(false);
     const [data, setData] = useState([]);
@@ -43,9 +45,23 @@ const Serviceprovider = () => {
         price: "",
         file: null,
     });
+
+
     const [custombookingtwo, setCustombookingtwo] = useState(false);
     const [custombookingthree, setCustombookingthree] = useState(false);
     const { allservices } = useSelector((s) => s.user);
+
+
+    const handleOnLoad = (autocomplete) => {
+        setAutocomplete(autocomplete);
+    };
+
+    const handlePlaceChanged = () => {
+        if (autocomplete) {
+            const place = autocomplete.getPlace();
+            setLocations(place.formatted_address); // Set the location with the formatted address
+        }
+    };
 
 
     console.log(id, "userid")
@@ -55,18 +71,20 @@ const Serviceprovider = () => {
         dispatch(fetchallservices());
     }, [dispatch]);
 
+    const alldata = allservices?.data;
+
 
     useEffect(() => {
-        if (allservices && id) {
+        if (alldata && id) {
             // Step 1: Find the provider jiska id match kare
-            const provider = allservices.find(item => item.id === id);
+            const provider = alldata.find(item => item.id === id);
 
             // Step 2: Agar mila to uske services ko state me set karo
             if (provider) {
                 setData(provider || []);
             }
         }
-    }, [allservices, id]);
+    }, [alldata, id]);
 
 
     console.log(data, "filtered services data");
@@ -88,6 +106,7 @@ const Serviceprovider = () => {
         setServicetype(!servicetype);
     };
 
+    const [duration, setDuration] = useState('');
     const [locations, setLocations] = useState('');
     const [description, setDescription] = useState('');
     const [file, setFile] = useState(null);
@@ -98,19 +117,53 @@ const Serviceprovider = () => {
         }
     };
 
-    const [services, setServices] = useState({
-        bathroom: 2,
-        bedroom: 4,
-        kitchen: 1,
-        fullHome: 0,
-    });
+    const [services, setServices] = useState({});
+
+    useEffect(() => {
+        // Initialize the services with quantity 0
+        const initialServices = data?.services?.reduce((acc, service) => {
+            acc[service.id] = 0; // or any default quantity you prefer
+            return acc;
+        }, {});
+        setServices(initialServices);
+    }, [data?.services]);
+
+    const [selectedTime, setSelectedTime] = useState(null);
+
+    const times = [
+        "09:00AM",
+        "10:00AM",
+        "11:00AM",
+        "12:00PM",
+        "01:00PM",
+        "02:00PM",
+        "03:00PM",
+        "04:00PM",
+    ];
+
+    const [selectedDate, setSelectedDate] = useState(null);
+
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+    };
+
+    const handleSelect = (time) => {
+        // Agar jo time select ho, wo already selected hai toh remove karne ki jagah select karenge
+        setSelectedTime(time);
+    };
 
     const handleIncrement = (service) => {
-        setServices((prev) => ({ ...prev, [service]: prev[service] + 1 }));
+        setServices((prev) => ({
+            ...prev,
+            [service.id]: prev[service.id] < 10 ? prev[service.id] + 1 : 10, // Increase quantity by 1
+        }));
     };
 
     const handleDecrement = (service) => {
-        setServices((prev) => ({ ...prev, [service]: prev[service] - 1 }));
+        setServices((prev) => ({
+            ...prev,
+            [service.id]: prev[service.id] > 0 ? prev[service.id] - 1 : 1, // Ensure quantity doesn't go below 0
+        }));
     };
 
     const reviews = new Array(5).fill({
@@ -147,6 +200,98 @@ const Serviceprovider = () => {
         setRequestservicefive(true);
         setRequestservicefour(false);
     }
+
+
+    // const handleHireNow = () => {
+    //     const providerData = {
+    //         title: "Service Request",
+    //         date: dateRange[0].toISOString().split('T')[0],  // Formatting the date
+    //         time: "10:00AM",  // Assuming a fixed time or get it from the user input
+    //         location: locations,
+    //         description: description,
+    //         payment_method_id: paymentMethodId,
+    //         services: [
+    //             { service_id: 1, quantity: services.bathroom },
+    //             { service_id: 2, quantity: services.bedroom },
+    //             { service_id: 3, quantity: services.kitchen },
+    //             { service_id: 4, quantity: services.fullHome },
+    //         ],
+    //     };
+
+    //     // Dispatch HireServiceProvider with userId and providerData
+    //     const payload = {
+    //         userId: id,  // Assuming the userId is available
+    //         providerData,
+    //     };
+    //     dispatch(HireServiceProvider(payload));
+    // };
+
+    const formatDate = (date) => {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = (d.getMonth() + 1).toString().padStart(2, '0');  // Get month and pad with zero if less than 10
+        const day = d.getDate().toString().padStart(2, '0');  // Get day and pad with zero if less than 10
+        return `${year}-${month}-${day}`;
+    };
+
+
+    const formatTime = (time) => {
+        // Extract hour and minute parts from the time string
+        const [hours, minutes] = time.split(':');
+        const period = time.slice(-2).toUpperCase(); // AM/PM part
+
+        let formattedHours = parseInt(hours);
+
+        // Convert PM time to 24-hour format, except for 12 PM which remains as 12
+        if (period === 'PM' && formattedHours !== 12) {
+            formattedHours += 12;
+        }
+        // Convert 12 AM to 00 for 24-hour format
+        else if (period === 'AM' && formattedHours === 12) {
+            formattedHours = 0;
+        }
+
+        // Return time in 24-hour format (HH:mm), no AM/PM suffix
+        return `${formattedHours.toString().padStart(2, '0')}:${minutes.slice(0, 2)}`;
+    };
+
+
+    const handleHireNow = () => {
+        const formattedDate = formatDate(selectedDate);
+        const formattedTime = formatTime(selectedTime);
+
+        const serviceData = data?.services?.map((service) => ({
+            service_id: service.id,
+            quantity: services[service.id] || 0,  // Use the current quantity from your services state
+        }));
+
+        const providerData = {
+            title: "Service Request",
+            date: formattedDate,  // Formatting the date
+            time: formattedTime,  // You can replace this with selectedTime if you're using it
+            location: locations,
+            duration: duration,
+            city: "Denver",
+            state: "Colorado",
+            country: "United State",
+            lat: 39.7508948,
+            long: -104.9331132,
+            description: description,
+            payment_method_id: "pm_1S1SIzRu13l5i5sUSTMQoAl6", // Ensure this is set correctly
+            services: serviceData,
+        };
+
+        const payload = {
+            userId: id,  // Ensure userId is available from the location or state
+            providerData,
+        };
+
+        console.log(payload); // Log payload to check if it's correct
+
+        dispatch(HireServiceProvider(payload));  // Dispatch the action
+    };
+
+
     return (
         <>
             <Navbar />
@@ -370,23 +515,17 @@ const Serviceprovider = () => {
                                 {/* You can use a calendar component like react-calendar here */}
                                 <div className="bg-white text-center py-0 rounded-lg text-black  flex justify-center">
                                     <Calendar
-                                        selectRange={true}
-                                        onChange={setDateRange}
-                                        value={dateRange} s
-                                        tileDisabled={({ date }) => date < startOfToday}
+                                        selectRange={false}
+                                        onChange={handleDateChange}
+                                        value={selectedDate}
+                                        tileDisabled={({ date }) => date < new Date().setHours(0, 0, 0, 0)}
                                         tileClassName={({ date: d, view }) => {
                                             if (view === 'month') {
-                                                const [start, end] = dateRange;
                                                 const today = new Date();
-                                                const isPast = d < new Date().setHours(0, 0, 0, 0);
-                                                const isInRange = start && end && d >= start && d <= end;
-                                                const isSelected = d.toDateString() === start?.toDateString() || d.toDateString() === end?.toDateString();
-
-                                                if (isSelected) return 'bg-[#00034A] text-white rounded-lg';
-                                                if (isInRange) return 'bg-[#dbeafe] text-black rounded-lg';
-                                                if (isPast) return 'text-gray-400';
+                                                const isSelected = selectedDate && d.toDateString() === selectedDate.toDateString();
+                                                if (isSelected) return 'bg-[#00034A] text-white rounded-lg';  // Styling for selected date
                                             }
-                                            return 'hover:bg-blue-100 rounded-lg';
+                                            return 'hover:bg-blue-100 rounded-lg';  // Default hover style
                                         }}
                                         className="w-full !border-0 text-1xl [&_.react-calendar__tile]:py-2 [&_.react-calendar__tile]:rounded-lg"
                                     />
@@ -398,19 +537,34 @@ const Serviceprovider = () => {
                         <div className="mb-6">
                             <h3 className="text-lg font-semibold mb-2">Select Time</h3>
                             <div className="grid grid-cols-4 gap-3">
-                                {['09:00AM', '10:00AM', '11:00AM', '12:00PM', '01:00PM', '02:00PM', '03:00PM', '04:00PM'].map((time, idx) => (
+                                {times.map((time, idx) => (
                                     <button
                                         key={idx}
-                                        className={`px-4 py-2 rounded-lg border text-sm ${idx === 0
-                                            ? 'bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white'
-                                            : idx % 2 === 0
-                                                ? 'bg-pink-100 text-gray-800'
-                                                : 'bg-white'
+                                        onClick={() => handleSelect(time)}
+                                        className={`px-4 py-2 rounded-lg border text-sm transition 
+                                         ${selectedTime === time
+                                                ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
+                                                : "bg-white text-gray-800"
                                             }`}
                                     >
                                         {time}
                                     </button>
                                 ))}
+                            </div>
+                        </div>
+
+
+                        {/* Duration */}
+                        <div className="mb-6">
+                            <h3 className="text-lg font-semibold mb-2">Select Duration</h3>
+                            <div className="w-full">
+                                <input
+                                    type="text"
+                                    value={duration}
+                                    onChange={(e) => setDuration(e.target.value)}
+                                    placeholder="0"
+                                    className="w-full border rounded-lg px-4 py-2 pr-10"
+                                />
                             </div>
                         </div>
 
@@ -451,16 +605,19 @@ const Serviceprovider = () => {
                             <div>
                                 <label className="font-semibold">Job Location</label>
                                 <div className="relative mt-1">
-                                    <input
-                                        type="text"
-                                        value={locations}
-                                        onChange={(e) => setLocations(e.target.value)}
-                                        placeholder="Abc, suite CN"
-                                        className="w-full border rounded-lg px-4 py-2 pr-10"
-                                    />
+                                    <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API} libraries={['places']}>
+                                        <Autocomplete onLoad={handleOnLoad} onPlaceChanged={handlePlaceChanged}>
+                                            <input
+                                                type="text"
+                                                value={locations}
+                                                onChange={(e) => setLocations(e.target.value)}
+                                                placeholder="Abc, suite CN"
+                                                className="w-full border rounded-lg px-4 py-2 pr-10"
+                                            />
+                                        </Autocomplete>
+                                    </LoadScript>
                                     <span className="absolute right-3 top-2.5 text-blue-500">
                                         <IoLocationOutline size={20} />
-
                                     </span>
                                 </div>
                             </div>
@@ -528,9 +685,9 @@ const Serviceprovider = () => {
                         <div className="space-y-8">
                             <h3 className="font-semibold text-gray-700">Select Services You Want</h3>
                             <div className='space-y-4'>
-                                {['bathroom', 'bedroom', 'kitchen', 'fullHome'].map((service, index) => (
+                                {data?.services?.map((service, index) => (
                                     <div key={index} className="flex justify-between items-center">
-                                        <span className="text-gray-800 capitalize">{service.replace(/([A-Z])/g, ' $1')}</span>
+                                        <span className="text-gray-800 capitalize">{service.title}</span>
                                         <div className="flex items-center space-x-4">
                                             <button
                                                 onClick={() => handleDecrement(service)}
@@ -538,7 +695,7 @@ const Serviceprovider = () => {
                                             >
                                                 -
                                             </button>
-                                            <span>{services[service]}</span>
+                                            <span>{services[service.id] || 0}</span> {/* Display the current quantity */}
                                             <button
                                                 onClick={() => handleIncrement(service)}
                                                 className="text-xl text-gray-500 p-1 bg-gray-300 rounded-[6px] hover:text-gray-700"
@@ -600,10 +757,10 @@ const Serviceprovider = () => {
 
                                 <img src="https://www.w3schools.com/w3images/avatar2.png" alt="User Avatar" className="h-[3em] w-auto rounded-full" />
                                 <div>
-                                    <h3 className="font-semibold text-gray-800">{user.name}</h3>
+                                    <h3 className="font-semibold text-gray-800">{data.name}</h3>
                                     <div className="flex items-center space-x-1">
                                         <span className="text-yellow-500">★</span>
-                                        <span>{user.rating}</span>
+                                        <span>{data.rating}</span>
                                     </div>
                                 </div>
                             </div>
@@ -624,7 +781,11 @@ const Serviceprovider = () => {
                                                 />
                                             ) : (
                                                 <div className="text-gray-600 flex items-center">
-                                                    {user.date}
+                                                    {selectedDate ? (
+                                                        `${selectedDate.toLocaleDateString()}`
+                                                    ) : (
+                                                        "No date selected"
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
@@ -634,11 +795,9 @@ const Serviceprovider = () => {
                                                 <span className="font-medium text-gray-800">Time</span>
 
                                             </div>
-                                            {user.time}
+                                            <p className='text-gray-600'> {selectedTime || "No Time"}</p>
                                         </div>
                                     </div>
-
-                                    <RiEditLine size={24} onClick={() => handleEdit('date')} className='text-[#00034A] cursor-pointer' />
 
                                 </div>
                             </div>
@@ -648,20 +807,9 @@ const Serviceprovider = () => {
                                 <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
                                     <div>
                                         <span className="font-medium text-gray-800">Location</span>
-                                        {editMode ? (
-                                            <input
-                                                type="text"
-                                                value={user.locations}
-                                                onChange={(e) => setUser({ ...user, locations: e.target.value })}
-                                                className="text-gray-600"
-                                            />
-                                        ) : (
-                                            <div className="text-gray-600 flex items-center">
-                                                {user.locations}
-                                            </div>
-                                        )}
+                                        <p className="text-gray-600 mt-2 truncate max-w-xs">{locations || "No Location"}</p>
+
                                     </div>
-                                    <RiEditLine size={24} onClick={() => handleEdit('location')} className='text-[#00034A] cursor-pointer' />
 
                                 </div>
                             </div>
@@ -670,42 +818,26 @@ const Serviceprovider = () => {
                             <div className='flex justify-between border-t-[2px] pt-3 border-slate-200'>
                                 <div>
                                     <div className="font-medium text-gray-800">Description</div>
-                                    {editMode ? (
-                                        <textarea
-                                            value={user.description}
-                                            onChange={(e) => setUser({ ...user, description: e.target.value })}
-                                            className="text-gray-600 mt-2"
-                                        />
-                                    ) : (
-                                        <p className="text-gray-600 mt-2 truncate max-w-xs">{user.description}</p>
-                                    )}
+                                    <p className="text-gray-600 mt-2 truncate max-w-xs">{description || "No description"}</p>
                                 </div>
-                                <RiEditLine size={24} onClick={() => handleEdit('description')} className='text-[#00034A] cursor-pointer' />
-
                             </div>
 
                             {/* Cleaning Services */}
                             <div className=' flex justify-between border-t-[2px] pt-3 border-slate-200'>
-                                <div className=''>
+                                <div className="">
                                     <div className="font-medium text-gray-800">Cleaning Services</div>
                                     <div className="flex justify-between space-x-10 mt-2 text-sm">
-                                        <div className='text-sm border-r-2 pr-3'>
-                                            Bathroom Cleaning <br></br>
-                                            {user.services.bathroom}
-                                        </div>
-                                        <div className='border-r-2 pr-3'>
-                                            Bedroom Cleaning <br></br>
-                                            {user.services.bedroom}
-                                        </div>
-                                        <div >
-                                            Kitchen Cleaning <br></br>
-                                            {user.services.kitchen}
-                                        </div>
+                                        {data?.services?.map((service, i) => (
+                                            <div key={i} className="border-r-2 pr-3">
+                                                <div className="text-sm capitalize">
+                                                    {service.title} <br>
+                                                    </br>
+                                                    {services[service.id] || 0}
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
-
-                                <RiEditLine size={24} onClick={() => handleEdit('services')} className='text-[#00034A] cursor-pointer' />
-
                             </div>
 
                             <div className='pt-10 pb-3'>
@@ -797,11 +929,17 @@ const Serviceprovider = () => {
                                     <div className="text-gray-600 mt-2">
                                         <div className='flex justify-between'>
                                             <p>Subtotal: </p>
-                                            <p>$790</p>
+                                            $ {data?.services?.reduce((total, service) => {
+                                                // Multiply each service amount by its quantity and add to the total
+                                                return total + service.amount * (services[service.id] || 0);
+                                            }, 0)}
                                         </div>
                                         <div className='flex justify-between pt-3'>
                                             <p className='text-black font-[500]'>Total: </p>
-                                            <p className='text-black font-[500]'>$790</p>
+                                            $ {data?.services?.reduce((total, service) => {
+                                                // Multiply each service amount by its quantity and add to the total
+                                                return total + service.amount * (services[service.id] || 0);
+                                            }, 0)}
                                         </div>
                                     </div>
                                 </div>
@@ -812,16 +950,24 @@ const Serviceprovider = () => {
                                 <button
                                     className="w-full bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
                                     onClick={() => {
-                                        setBookrequestsend(true);
-                                        setRequestservicefive(false);
-                                        setInterval(() => {
-                                            setBookingconfirm(true);
-                                            setBookrequestsend(false);
-                                            setInterval(() => {
-                                                navigate("/booking-details"); // Navigate after interval
+                                        handleHireNow();
+                                        // setBookrequestsend(true);
+                                        // setRequestservicefive(false);
 
-                                            }, 2000);
-                                        }, 3000);
+                                        // setInterval(() => {
+                                        //     setBookingconfirm(true);
+                                        //     setBookrequestsend(false);
+                                        //     setInterval(() => {
+                                        //         navigate("/booking-details"); // Navigate after interval
+
+                                        //     }, 2000);
+                                        // }, 3000);
+                                        setDuration("");
+                                        setSelectedTime("");
+                                        selectedDate("");
+                                        setLocations("");
+                                        setDescription("");
+
                                     }}
                                 >
                                     Book Now

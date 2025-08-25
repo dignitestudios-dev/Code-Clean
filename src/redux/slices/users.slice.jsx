@@ -20,8 +20,39 @@ const initialState = {
   currentbookingSucess: null,
   currentbookingerror: null,
   currentbookingLoading: false,
+  bookinghistorydata: null,
+  bookinghistorysuccess: null,
+  bookinghistoryerror: null,
+  bookinghistoryLoading: false,
+  requestbookingsuccess: null,
+  requestbookingerror: null,
+  requestbookingLoading: false,
+  requestbookingdata:null,
+  hireProviderLoading: false,
+  hireProviderSuccess: null,
+  hireProviderError: null,
 };
 // ================= THUNKS =================
+
+
+// Hire Now Service Provider with dynamic user ID in the URL and data in the body
+export const HireServiceProvider = createAsyncThunk(
+  "/provider/requests/private", // Action type
+  async (payload, thunkAPI) => {
+    try {
+      const { userId, providerData } = payload;  // Destructure userId and providerData from payload
+
+      // Sending the userId in the URL and providerData in the request body
+      const res = await axios.post(`/provider/requests/private/${userId}`, providerData);
+
+      // Return the response data after submission
+      return res.data;
+    } catch (error) {
+      // Reject the promise with a custom error message
+      return thunkAPI.rejectWithValue("Failed to submit provider data");
+    }
+  }
+);
 
 // Fetch user profile
 export const fetchUserProfile = createAsyncThunk(
@@ -42,6 +73,32 @@ export const fetchCurrentBooking = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await axios.get("/user/current-bookings");
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch profile");
+    }
+  }
+);
+
+//Fetch Current Booking
+export const fetchBookingRequest = createAsyncThunk(
+  "/user/booking/requests",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.get("/user/booking/requests");
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch profile");
+    }
+  }
+);
+
+//Fetch Booking History
+export const fetchBookinghistory = createAsyncThunk(
+  "/user/booking-history",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.get("/user/booking-history");
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue("Failed to fetch profile");
@@ -148,6 +205,54 @@ const userSlice = createSlice({
       .addCase(fetchCurrentBooking.rejected, (state, action) => {
         state.currentbookingLoading = false;
         state.currentbookingerror = action.payload;
+      })
+
+      // ----- Fetch all Current Booking -----
+      .addCase(fetchBookingRequest.pending, (state) => {
+        state.requestbookingLoading = true;
+        state.requestbookingerror = null;
+        state.requestbookingsuccess = null;
+      })
+      .addCase(fetchBookingRequest.fulfilled, (state, action) => {
+        state.requestbookingLoading = false;
+        state.requestbookingdata = action.payload;
+        state.requestbookingsuccess = "Successfully fetched Booking History!";
+      })
+      .addCase(fetchBookingRequest.rejected, (state, action) => {
+        state.requestbookingLoading = false;
+        state.requestbookingerror = action.payload;
+      })
+
+      // ----- Fetch all Current Booking -----
+      .addCase(fetchBookinghistory.pending, (state) => {
+        state.bookinghistoryLoading = true;
+        state.bookinghistoryerror = null;
+        state.bookinghistorysuccess = null;
+      })
+      .addCase(fetchBookinghistory.fulfilled, (state, action) => {
+        state.bookinghistoryLoading = false;
+        state.bookinghistorydata = action.payload;
+        state.bookinghistorysuccess = "Successfully fetched Booking History!";
+      })
+      .addCase(fetchBookinghistory.rejected, (state, action) => {
+        state.bookinghistoryLoading = false;
+        state.bookinghistoryerror = action.payload;
+      })
+
+      .addCase(HireServiceProvider.pending, (state) => {
+        state.hireProviderLoading = true;
+        state.hireProviderSuccess = null;
+        state.hireProviderError = null;
+      })
+      .addCase(HireServiceProvider.fulfilled, (state, action) => {
+        state.hireProviderLoading = false;
+        state.hireProviderSuccess = "Service provider hired successfully!";
+        SuccessToast(state.hireProviderSuccess);
+      })
+      .addCase(HireServiceProvider.rejected, (state, action) => {
+        state.hireProviderLoading = false;
+        state.hireProviderError = action.payload; 
+        ErrorToast(state.hireProviderError);
       })
       
       // ----- update profile -----

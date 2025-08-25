@@ -6,7 +6,7 @@ import Navbar from "../../../components/layout/Navbar";
 import Footer from "../../../components/layout/Footer";
 import { CiSearch } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCurrentBooking } from "../../../redux/slices/users.slice";
+import { fetchBookinghistory, fetchBookingRequest, fetchCurrentBooking } from "../../../redux/slices/users.slice";
 
 const PLACEHOLDER_AVATAR = "https://via.placeholder.com/40";
 
@@ -18,7 +18,6 @@ const Spinner = () => (
   />
 );
 
-// Table skeleton rows (shimmer)
 const SkeletonRows = ({ count = 6 }) => (
   <>
     {Array.from({ length: count }).map((_, i) => (
@@ -55,13 +54,26 @@ const SkeletonRows = ({ count = 6 }) => (
 const Bookingsrequests = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const [bookingrequest, setBookingrequest] = useState();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("Current Bookings");
   const [statusFilter, setStatusFilter] = useState("All");
-
-  const { currentbookingdata, currentbookingLoading } = useSelector((s) => s.user);
+  const { currentbookingdata, currentbookingLoading, requestbookingdata } = useSelector(
+    (s) => s.user
+  );
   const loading = !!currentbookingLoading;
+
+  useEffect(() => {
+    dispatch(fetchBookingRequest());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (requestbookingdata) {
+      setBookingrequest(requestbookingdata);
+    }
+  }, [requestbookingdata]);
+
+  console.log(bookingrequest,"bookingrequest")
 
   useEffect(() => {
     dispatch(fetchCurrentBooking());
@@ -78,13 +90,16 @@ const Bookingsrequests = () => {
     if (s === "inprogress") return "In Progress Jobs";
     if (s === "completed") return "Completed Jobs";
     if (s === "cancelled" || s === "canceled") return "Canceled Jobs";
+    if (s === "accepted") return "Accepted";
+    if (s === "rejected") return "Rejected";
+    if (s === "pending") return "Pending";
     if (["accepted", "approved", "pending"].includes(s)) return "Upcoming Jobs";
     return "Upcoming Jobs";
   };
 
   const statusColor = (statusUi) => {
     const s = (statusUi || "").toLowerCase();
-    if (s.includes("completed") || s.includes("approved")) return "text-[#00C853]";
+    if (s.includes("completed") || s.includes("approved") || s.includes("accepted")) return "text-[#00C853]";
     if (s.includes("upcoming") || s.includes("pending")) return "text-[#EC8325]";
     if (s.includes("progress")) return "text-[#208BC7]";
     return "text-[#EE3131]";
@@ -104,7 +119,10 @@ const Bookingsrequests = () => {
   }, [currentbookingdata]);
 
   // ---- static for Booking Request tab (optional) ----
-  const bookings = useMemo(() => [], []);
+  const bookings = useMemo(() => {
+    if (!bookingrequest) return [];
+    return bookingrequest?.data || []; // Extract data from the response object
+  }, [bookingrequest]);
 
   // ---- unify into UI rows ----
   const uiRows = useMemo(() => {
@@ -145,13 +163,13 @@ const Bookingsrequests = () => {
     } else {
       // Booking Request tab (static)
       return bookings.map((b) => ({
-        id: b.id,
-        name: b.name,
-        avatar: b.avatar || PLACEHOLDER_AVATAR,
+        id: b.booking_id,
+        name: b.service_provider.name,
+        avatar: b.service_provider.avatar || PLACEHOLDER_AVATAR,
         dateStr: b.date || "",
         timeStr: b.time || "",
         durationStr: b.duration || "-",
-        statusUi: b.status || "",
+        statusUi: toUiStatus(b.status),
         statusRaw: b.status || "",
       }));
     }
