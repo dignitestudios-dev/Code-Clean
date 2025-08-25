@@ -58,7 +58,6 @@ const Navbar = () => {
   }, [accessToken]);
 
 
-
   const dropdownRef = useRef(null);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
