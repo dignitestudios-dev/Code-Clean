@@ -1,6 +1,4 @@
-import { Elements } from "@stripe/react-stripe-js";
 import BroadCastBookingDetail from "../../components/app/Profile/BroadCastBookingDetail";
-import CreateCard from "../../components/app/Settings/CreateCard";
 import EditCard from "../../components/app/Settings/EditCard";
 import PaymentMethod from "../../components/app/Settings/PaymentMethod";
 import Chat from "../../pages/app/Chat/Chat";
@@ -13,8 +11,8 @@ import Favorites from "../../pages/app/LandingPage/Favorites";
 import Serviceprovider from "../../pages/app/LandingPage/Serviceprovider";
 import Profile from "../../pages/app/Profile/Profile";
 import Settings from "../../pages/app/Settings/Settings";
-import { loadStripe } from "@stripe/stripe-js";
-const stripePromise = loadStripe(import.meta.env.VITE_APP_STRIPE_KEY);
+import SettingAddCard from "../../pages/app/Settings/SettingAddCard";
+
 export const appRoutes = [
   {
     url: "home",
@@ -54,11 +52,7 @@ export const appRoutes = [
   },
   {
     url: "app/create-card",
-    page: (
-      <Elements stripe={stripePromise}>
-        <CreateCard />
-      </Elements>
-    ),
+    page: <SettingAddCard />,
 
     name: "Create Card",
     isPublic: true,
