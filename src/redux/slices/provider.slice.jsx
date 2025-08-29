@@ -9,6 +9,7 @@ const initialState = {
   success: null,
   provider_data: null,
   services: null,
+  bookingRequestDetail: null,
   plans: null,
   getprofileloading: false,
   bookingRequest: null,
@@ -73,6 +74,20 @@ export const getBookingRequest = createAsyncThunk(
     }
   }
 );
+export const getRequestDetail = createAsyncThunk(
+  "/provider/requests/4/details",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get(`/${_}`);
+      console.log(response, "data-item");
+      return response?.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Verification failed"
+      );
+    }
+  }
+);
 // RESEND OTP
 export const AddCard = createAsyncThunk(
   "/provider/payment-methods",
@@ -89,7 +104,7 @@ export const AddCard = createAsyncThunk(
     }
   }
 );
-export const AcceptBookingRequest = createAsyncThunk(
+export const RejectBookingRequest = createAsyncThunk(
   "/services/requests/{request_id}/reject",
   async (payload, thunkAPI) => {
     try {
@@ -111,11 +126,28 @@ export const AcceptBookingRequest = createAsyncThunk(
     }
   }
 );
-export const RejectBookingRequest = createAsyncThunk(
+export const AcceptBookingRequest = createAsyncThunk(
   "/services/requests/1/accept",
   async (payload, thunkAPI) => {
     try {
       const response = await axios.post(`/services/requests/${payload}/accept`);
+      SuccessToast(response?.data?.message);
+      return { success: true, message: response?.data?.message };
+    } catch (error) {
+      ErrorToast(
+        error.response?.data?.message || "Booking Request Accept failed"
+      );
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Booking Request Accept failed"
+      );
+    }
+  }
+);
+export const MarkStartJob = createAsyncThunk(
+  "/bookings/1/action",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.post(`/bookings/${payload?.id}/action`,{action:payload?.action});
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {
@@ -205,6 +237,21 @@ const providerSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+      .addCase(getRequestDetail.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getRequestDetail.fulfilled, (state, action) => {
+        console.log(action.payload,"payload")
+        state.isLoading = false;
+        state.bookingRequestDetail = action.payload;
+        state.success = "Booking Request Detail Get Successfully";
+      })
+      .addCase(getRequestDetail.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       //Add Card
       .addCase(AddCard.pending, (state) => {
         state.isLoading = true;
@@ -231,6 +278,19 @@ const providerSlice = createSlice({
       })
       .addCase(AcceptBookingRequest.rejected, (state, action) => {
         state.bookingRequestLoader = false;
+        state.error = action.payload;
+      })
+      .addCase(MarkStartJob.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(MarkStartJob.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.success = "Job Start Successfully";
+      })
+      .addCase(MarkStartJob.rejected, (state, action) => {
+        state.isLoading = false;
         state.error = action.payload;
       })
       //Accept Booking Req
