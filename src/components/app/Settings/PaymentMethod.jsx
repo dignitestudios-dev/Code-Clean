@@ -5,6 +5,7 @@ import { RiEdit2Fill } from "react-icons/ri";
 import { LuTrash2 } from "react-icons/lu";
 import { HeroBg, stripe } from "../../../assets/export";
 import { useNavigate } from "react-router";
+import { Button } from "../../global/GlobalButton";
 
 export default function PaymentMethod() {
   const navigate = useNavigate("");
@@ -19,15 +20,27 @@ export default function PaymentMethod() {
       ></div>
       <div className="h-full px-10 lg:px-40   -mt-60 bottom-0 items-center gap-3 ">
         <div className="flex items-center gap-2 mb-6">
-          <button type="button" onClick={() => navigate("/app/settings")}>
-            <FaArrowLeft color="white" size={16} />
-          </button>
-          <h1 className="text-[32px] font-semibold text-white">Payment Method</h1>
+          <div>
+            <button type="button" onClick={() => navigate("/app/settings")}>
+              <FaArrowLeft color="white" size={16} />
+            </button>
+            <h1 className="text-[32px] font-semibold text-white">
+              Payment Method
+            </h1>
+          </div>
         </div>
         <div className="bg-[#F9FAFA] shadow-lg flex h-[300px] flex-col gap-3 mb-48 rounded-[8px] p-10 mt-3">
-          <h1 className="text-3xl font-normal text-gray-900 mb-4">
-            Credit/debit card
-          </h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-3xl font-normal text-gray-900 mb-4">
+              Credit/debit card
+            </h1>
+            <div>
+              <Button
+                text={"Add Card"}
+                onClick={() => navigate("/app/create-card")}
+              />
+            </div>
+          </div>
           <p className="text-[16px] text-[#212935] mb-1">Attached Stripe</p>
           <div className="bg-[#FFFFFF] p-4 rounded-lg">
             <div className="flex items-center justify-between">
