@@ -15,11 +15,17 @@ import Footer from "../../../components/layout/Footer";
 import Cookies from "js-cookie";
 import Feedback from "../../../components/global/FeedBack";
 import ReportUser from "../../../components/Serviceprovider/Reportuser";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getRequestDetail,
+  MarkStartJob,
+} from "../../../redux/slices/provider.slice";
+import { Button } from "../../../components/global/GlobalButton";
 const Jobdetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const status = queryParams.get("status");
+ 
   const [rating, setRating] = useState(false);
   const [inProgressModal, setInProgressModal] = useState(false);
   const [cancelbooking, setCancelbooking] = useState(false);
@@ -30,9 +36,25 @@ const Jobdetails = () => {
   const [rejectedreqcomplete, setRejectedreqcomplete] = useState(false);
   const [reportUser, setReportUser] = useState(false);
   const [role, SetRole] = useState("");
+  const dispatch = useDispatch("");
+  const { bookingRequestDetail, isLoading } = useSelector(
+    (state) => state.provider
+  );
+   const status =bookingRequestDetail?.status;
   useEffect(() => {
+    dispatch(getRequestDetail(queryParams.get("type")));
     SetRole(Cookies.get("role"));
   }, []);
+
+  const handleJob = async (id,sts) => {
+    const data = {
+      id: id,
+      action: sts,
+    };
+    await dispatch(MarkStartJob(data)).unwrap();
+    dispatch(getRequestDetail(queryParams.get("type")));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar type="serviceprovider" />
@@ -61,21 +83,18 @@ const Jobdetails = () => {
               <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                 <h3 className="text-xl font-bold mb-4">Job Description</h3>
                 <p className="text-gray-600 mb-6">
-                  The standard Lorem Ipsum passage, m ipsum dolor sit amet,
-                  consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                  ut labore et dolore magna aliqua. The standard Lorem Ipsum
-                  passage.
+                  {bookingRequestDetail?.description}
                 </p>
 
                 {/* Date and Time */}
                 <div className="flex items-center gap-8 mb-6 border-t-[1px] pt-6">
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Date</p>
-                    <p className="font-medium">26 Dec, 2024</p>
+                    <p className="font-medium"> {bookingRequestDetail?.date}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Time</p>
-                    <p className="font-medium">08:00pm</p>
+                    <p className="font-medium"> {bookingRequestDetail?.time}</p>
                   </div>
                 </div>
 
@@ -84,7 +103,11 @@ const Jobdetails = () => {
                   <p className="text-sm text-gray-500 mb-1">Location</p>
                   <div className="flex items-center space-x-2">
                     <FaMapMarkerAlt className="text-[#353adf]" />
-                    <p className="font-medium">Downtown, Los Angeles</p>
+                    <p className="font-medium">
+                      {" "}
+                      {bookingRequestDetail?.city},{" "}
+                      {bookingRequestDetail?.state}
+                    </p>
                   </div>
                 </div>
 
@@ -94,20 +117,21 @@ const Jobdetails = () => {
                     Cleaning Services
                   </h4>
                   <div className="grid grid-cols-3 gap-4">
-                    <div className="text-left border-r-2">
-                      <p className="text-1xl text-gray-500">
-                        Bathroom Cleaning
-                      </p>
-                      <p className="text-sm font-bold">02</p>
-                    </div>
-                    <div className="text-left border-r-2">
+                    {bookingRequestDetail?.cleaning_services?.map((item, i) => (
+                      <div key={i} className="text-left border-r-2">
+                        <p className="text-1xl text-gray-500">{item?.title}</p>
+                        <p className="text-sm font-bold">{item?.quantity}</p>
+                      </div>
+                    ))}
+
+                    {/* <div className="text-left border-r-2">
                       <p className="text-1xl text-gray-500">Bedroom Cleaning</p>
                       <p className="text-sm font-bold">04</p>
                     </div>
                     <div className="text-left">
                       <p className="text-1xl text-gray-500">Kitchen Cleaning</p>
                       <p className="text-sm font-bold">01</p>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 
@@ -119,18 +143,30 @@ const Jobdetails = () => {
                   <div className="flex items-center justify-between border-t-[1px] pt-6">
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <img src={user} alt="" />
+                        <img
+                          src={
+                            "http://family-phys-ed-s3.s3.amazonaws.com/" +
+                            bookingRequestDetail?.user?.avatar
+                          }
+                          className="rounded-full h-full w-full"
+                          alt=""
+                        />
                       </div>
                       <div>
-                        <p className="font-medium">John Doe</p>
+                        <p className="font-medium">
+                          {bookingRequestDetail?.user?.name}
+                        </p>
                         <p className="text-yellow-500 text-sm">⭐ 4.9</p>
                       </div>
                     </div>
                     <button
                       onClick={() => {
-                        navigate("/user-provider", {
-                          state: { fromViewProfile: true },
-                        });
+                        navigate(
+                          `/user-provider/${bookingRequestDetail?.user?.id}`,
+                          {
+                            state: { fromViewProfile: true },
+                          }
+                        );
                       }}
                       className="text-blue-600 text-sm underline hover:text-blue-800 font-medium"
                     >
@@ -146,47 +182,39 @@ const Jobdetails = () => {
               <div className="bg-white  rounded-lg shadow-md pb-[1em] pl-[2em] pr-[2em] pt-[1.3em]">
                 {/* Status and Timer */}
                 <div className="text-center mb-2 flex gap-3">
-                  <div
-                    onClick={() => {
-                      if (status === "In Progress") {
-                        setInProgressModal(true);
-                        setTimeout(() => {
-                          navigate("/home");
-                        }, 2000);
-                      }
-                    }}
+                  <div                   
                     className={`inline-block cursor-pointer px-6 pt-3 rounded-[8px] h-[44px]  text-[16px] font-medium mb-2 w-full text-center 
                                       ${
-                                        status === "Pending"
+                                        status === "pending"
                                           ? "bg-[#EC832533] text-[#EC8325]"
-                                          : status === "Upcoming Jobs"
+                                          : status === "waiting"
                                           ? "bg-[#EC832533] text-[#EC8325]"
-                                          : status === "Rejected"
+                                          : status === "rejected"
                                           ? "bg-[#EE313133] text-[#EE3131]"
                                           : status === "Canceled Jobs"
                                           ? "bg-[#EE313133] text-[#EE3131]"
-                                          : status === "Accepted"
+                                          : status === "accepted"
                                           ? "bg-green-100 text-green-600"
-                                          : status === "Completed"
+                                          : status == "completed"
                                           ? "bg-[#00C85333] text-[#00C853]"
-                                          : status === "In Progress Jobs"
+                                          : status === "inprogress"
                                           ? "bg-[#00B0FF33] text-[#00B0FF]"
                                           : "bg-[#00C85333] text-[#00C853]"
                                       }
     `}
                   >
-                    {status === "Pending"
+                    {status === "pending"
                       ? "Pending"
-                      : status === "In Progress Jobs"
+                      : status === "inprogress"
                       ? "Inprogress"
                       : status === "Upcoming Jobs"
                       ? "Waiting"
-                      : status === "Canceled Jobs"
+                      : status === "cancelled"
                       ? "Cancelled"
-                      : status}
+                      : status[0].toUpperCase() + status.slice(1)}
                   </div>
 
-                  {status !== "Completed Jobs" && status !== "Pending" && (
+                  {status !== "completed" && status !== "Pending" && (
                     <div className="inline-block text-[#808080] h-[44px] border-2 px-10 pt-2 rounded-[8px] text-[20px] font-bold mb-2 w-full text-center">
                       00:00:00
                     </div>
@@ -194,10 +222,10 @@ const Jobdetails = () => {
                 </div>
 
                 {/* Message Button */}
-                {status !== "Completed Jobs" &&
-                  status !== "Rejected" &&
+                {status !== "completed" &&
+                  status !== "rejected" &&
                   status !== "Canceled Jobs" &&
-                  status !== "Pending" && (
+                  status !== "pending" && (
                     <button
                       onClick={() => {
                         navigate("/messages");
@@ -216,7 +244,7 @@ const Jobdetails = () => {
                       <span className="mt-1">Message</span>
                     </button>
                   )}
-                {status == "Pending" && (
+                {status == "pending" && (
                   <>
                     <div className="flex justify-center mb-4  gap-3">
                       <button
@@ -349,36 +377,49 @@ const Jobdetails = () => {
                   </>
                 )}
 
-                {status == "Upcoming Jobs" && (
-                  <button className="w-full capitalize bg-gradient text-white py-3 mb-6 rounded-lg font-medium hover:bg-red-600">
-                    start job
-                  </button>
+                {status == "waiting" && (
+                  <Button
+                    text={"Start Job"}
+                    loading={isLoading}
+                    onClick={() => handleJob(bookingRequestDetail?.booking_id,"start")}
+                  />
                 )}
-                {status == "In Progress Jobs" && (
-                  <button className="w-full bg-gradient text-white py-3 mb-6 rounded-lg font-medium hover:bg-red-600">
-                    Mark Job completed
-                  </button>
+                {status == "inprogress" && (
+                  <Button
+                    text={"Mark Job Completed"}
+                    loading={isLoading}
+                  
+                    onClick={() => handleJob(bookingRequestDetail?.booking_id,"end")}
+                  />
                 )}
 
                 {/* Job Details */}
-                <div className="mb-6">
+                <div className="mt-4">
                   <h4 className="text-lg font-semibold mb-4">Job Detail</h4>
                   <div className="space-y-3">
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
                       <span className="text-gray-500">ID</span>
-                      <span className="font-medium">A1512121</span>
+                      <span className="font-medium">
+                        {bookingRequestDetail?.request_id}
+                      </span>
                     </div>
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3 ">
                       <span className="text-gray-500">Date</span>
-                      <span className="font-medium">12/01/2025</span>
+                      <span className="font-medium">
+                        {bookingRequestDetail?.date}
+                      </span>
                     </div>
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
                       <span className="text-gray-500">Time</span>
-                      <span className="font-medium">10 AM</span>
+                      <span className="font-medium">
+                        {bookingRequestDetail?.time}
+                      </span>
                     </div>
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
                       <span className="text-gray-500">Total Duration</span>
-                      <span className="font-medium">2 hr</span>
+                      <span className="font-medium">
+                        {bookingRequestDetail?.duration} hr
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -389,25 +430,27 @@ const Jobdetails = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
                       <span className="text-gray-500">Subtotal</span>
-                      <span className="font-medium">$790</span>
+                      <span className="font-medium">
+                        ${bookingRequestDetail?.total_payment}
+                      </span>
                     </div>
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3 font-semibold">
                       <span>Total</span>
-                      <span>$790</span>
+                      <span>${bookingRequestDetail?.total_payment}</span>
                     </div>
                   </div>
                 </div>
 
-                {status == "Completed Jobs" && (
+                {status == "completed" && (
                   <Feedback setReportUser={setReportUser} />
                 )}
 
                 {/* Cancel Button */}
-                {status !== "Accepted" &&
-                  status !== "Completed Jobs" &&
-                  status !== "Pending" &&
-                  status !== "Canceled Jobs" &&
-                  status !== "Rejected" && (
+                {status !== "accepted" &&
+                  status !== "completed" &&
+                  status !== "pending" &&
+                  status !== "canceled" &&
+                  status !== "rejected" && (
                     <button
                       className="w-full bg-[#EE3131] text-white py-3 rounded-lg font-medium hover:bg-red-600"
                       onClick={() => {
@@ -418,7 +461,7 @@ const Jobdetails = () => {
                     </button>
                   )}
 
-                {status === "Rejected" && (
+                {status === "rejected" && (
                   <div>
                     <h1>Rejection Reason </h1>
                     <p className="bg-[#F6F6F6] p-3 text-sm rounded-2xl mt-1">
@@ -429,7 +472,7 @@ const Jobdetails = () => {
                   </div>
                 )}
 
-                {status === "Completed" && (
+                {status === "completed" && (
                   <div className="space-y-3">
                     <button
                       className="w-full bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-3 rounded-lg font-medium hover:bg-red-600"

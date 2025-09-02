@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   AcceptBookingRequest,
   getBookingRequest,
+  RejectBookingRequest,
 } from "../../../redux/slices/provider.slice";
 import { Button } from "../../../components/global/GlobalButton";
 import { ErrorToast } from "../../../components/global/Toaster";
@@ -36,7 +37,7 @@ const Dashboard = () => {
       dispatch(getBookingRequest("provider/current-bookings"));
     }
   }, [dispatch, activeTab]);
-  console.log(bookingRequest, "booking request ");
+  console.log(statusFilter, "booking request ");
 
   // Filtered bookings based on search query
   const filteredBookings = Array.isArray(bookingRequest)
@@ -58,16 +59,17 @@ const Dashboard = () => {
             );
           } else if (activeTab === "Current Bookings") {
             return (
-              booking.status === "Upcoming Jobs" ||
               booking.status === "inprogress" ||
-              booking.status === "Completed Jobs" ||
-              booking.status === "Canceled Jobs"
+              booking.status === "waiting" ||
+              booking.status === "completed" || // fixed
+              booking.status === "canceled" // fixed
             );
           }
+
           return true;
         })
         .filter((booking) => {
-          if (statusFilter === "all") return true;
+          if (statusFilter == "all") return true;
           return booking.status === statusFilter;
         })
     : [];
@@ -86,7 +88,7 @@ const Dashboard = () => {
       reason: reason,
     };
 
-    await dispatch(AcceptBookingRequest(data)).unwrap();
+    await dispatch(RejectBookingRequest(data)).unwrap();
     setRejectedpopup(false); // Close warning popup
     setRejectedreasons(false); // Close reason popup
     setRejectedreqcomplete(true); // Show success modal
@@ -170,30 +172,32 @@ const Dashboard = () => {
                     </button>
                   )
                 )
-              : [
-                  "All",
-                  "Upcoming",
-                  "In Progress",
-                  "Completed",
-                  "Canceled",
-                ]?.map((status, index) => (
-                  <button
-                    key={index}
-                    onClick={() =>
-                      setStatusFilter(status.replaceAll(" ", "").toLowerCase())
-                    }
-                    className={`px-4 py-2 text-sm font-medium text-[#3F3F3F] hover:text-[#00AEEF] focus:outline-none border-b-2 ${
-                      statusFilter.replaceAll(" ", "").toLowerCase() ==
-                      status.replaceAll(" ", "").toLowerCase()
-                        ? "border-[#00AEEF] text-gradient"
-                        : "border-transparent"
-                    }`}
-                  >
-                    {status === "Waiting"
-                      ? "Waiting Requests"
-                      : status + " " + "Jobs"}
-                  </button>
-                ))}
+              : ["All", "Upcoming", "In Progress", "Completed", "Canceled"].map(
+                  (status, index) => (
+                    <button
+                      key={index}
+                      onClick={() =>
+                        setStatusFilter(
+                          status === "Upcoming"
+                            ? "waiting"
+                            : status.replaceAll(" ", "").toLowerCase()
+                        )
+                      }
+                      className={`px-4 py-2 text-sm font-medium text-[#3F3F3F] hover:text-[#00AEEF] focus:outline-none border-b-2 ${
+                        statusFilter.replaceAll(" ", "").toLowerCase() ===
+                          status.replaceAll(" ", "").toLowerCase() ||
+                        statusFilter === status ||
+                        (status === "Upcoming" && statusFilter === "waiting") // ✅ special case
+                          ? "border-[#00AEEF] text-gradient"
+                          : "border-transparent"
+                      }`}
+                    >
+                      {status === "waiting"
+                        ? "Waiting Requests"
+                        : status + " Jobs"}
+                    </button>
+                  )
+                )}
           </div>
 
           {/* Table */}
@@ -215,7 +219,15 @@ const Dashboard = () => {
                   key={index}
                   className="border-t cursor-pointer"
                   onClick={() =>
-                    navigate(`/job-details?id=${row.id}&status=${row.status}`)
+                    navigate(
+                      `/job-details?id=${row?.request_id}&status=${
+                        row?.status
+                      }&type=${
+                        activeTab == "Booking Request"
+                          ? `provider/requests/${row?.request_id}/details`
+                          : `provider/bookings/${row?.booking_id}/details`
+                      }`
+                    )
                   }
                 >
                   <td className="px-6 py-4">{index + 1}</td>
@@ -234,10 +246,10 @@ const Dashboard = () => {
                     <span
                       className={`font-semibold ${
                         row.status === "accepted" ||
-                        row.status == "Completed Jobs"
+                        row.status == "completed"
                           ? "text-[#00C853]"
                           : row.status === "pending" ||
-                            row.status == "Upcoming Jobs"
+                            row.status == "waiting"
                           ? "text-[#EC8325]"
                           : row.status === "inprogress" ||
                             row.status == "In Progress Jobs"
@@ -364,8 +376,11 @@ const Dashboard = () => {
                           onClick={(e) => {
                             setSelectedItem(index);
                             e.stopPropagation();
-                            dispatch(AcceptBookingRequest(row.id));
-                            dispatch(getBookingRequest());
+                            console.log(row, "RowsId");
+                            dispatch(AcceptBookingRequest(row.request_id));
+                            dispatch(
+                              getBookingRequest("provider/booking/requests")
+                            );
                           }}
                           loading={
                             selectedItem == index && bookingRequestLoader
