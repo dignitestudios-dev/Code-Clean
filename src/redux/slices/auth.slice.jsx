@@ -109,7 +109,7 @@ export const logout = createAsyncThunk("/user/logout", async (_, thunkAPI) => {
     state.auth?.accessToken || localStorage.getItem("access_token") || null;
 
   try {
-    await axios.get("/logout", {
+    await axios.get("/user/logout", {
       headers: existingToken
         ? { Authorization: `Bearer ${existingToken}` }
         : {},

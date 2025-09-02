@@ -31,6 +31,10 @@ const initialState = {
   hireProviderLoading: false,
   hireProviderSuccess: null,
   hireProviderError: null,
+  CustomserviceproviderLoading:false,
+  CustomserviceproviderError:null,
+  CustomserviceproviderSuccess:null,
+  paymentMethoduser:null,
 };
 // ================= THUNKS =================
 
@@ -50,6 +54,40 @@ export const HireServiceProvider = createAsyncThunk(
     } catch (error) {
       // Reject the promise with a custom error message
       return thunkAPI.rejectWithValue("Failed to submit provider data");
+    }
+  }
+);
+
+
+// Hire Now Service Provider with dynamic user ID in the URL and data in the body
+export const RequestCustomService = createAsyncThunk(
+  "/provider/requests/custom", // Action type
+  async (payload, thunkAPI) => {
+    try {
+      const {customserviceData} = payload;  // Destructure userId and providerData from payload
+      // Sending the userId in the URL and providerData in the request body
+      const res = await axios.post(`/provider/requests/custom`, customserviceData);
+      // Return the response data after submission
+      return res.data;
+    } catch (error) {
+      // Reject the promise with a custom error message
+      return thunkAPI.rejectWithValue("Failed to submit provider data");
+    }
+  }
+);
+
+
+//Get Payment Method
+export const getPaymentMethoduser = createAsyncThunk(
+  "/user/payment-methods", // The action type
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get("/user/payment-methods"); // API request to fetch the profile
+      return response.data; // Assuming the API returns the user profile data
+    } catch (error) {
+      const msg = error?.response?.data?.message || "Failed to Get Payment Method of User";
+      ErrorToast(msg); // Show error toast
+      return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
   }
 );
@@ -207,6 +245,22 @@ const userSlice = createSlice({
         state.currentbookingerror = action.payload;
       })
 
+      //Get payment Method for user
+       .addCase(getPaymentMethoduser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getPaymentMethoduser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.paymentMethoduser = action.payload;
+        state.success = "Payment Method Get Successfully";
+      })
+      .addCase(getPaymentMethoduser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
       // ----- Fetch all Current Booking -----
       .addCase(fetchBookingRequest.pending, (state) => {
         state.requestbookingLoading = true;
@@ -253,6 +307,23 @@ const userSlice = createSlice({
         state.hireProviderLoading = false;
         state.hireProviderError = action.payload; 
         ErrorToast(state.hireProviderError);
+      })
+
+      //Custom Service Data
+      .addCase(RequestCustomService.pending, (state) => {
+        state.CustomserviceproviderLoading = true;
+        state.CustomserviceproviderSuccess = null;
+        state.CustomserviceproviderError = null;
+      })
+      .addCase(RequestCustomService.fulfilled, (state, action) => {
+        state.CustomserviceproviderLoading = false;
+        state.CustomserviceproviderSuccess = "Custom Service provider hired successfully!";
+        SuccessToast(state.CustomserviceproviderSuccess);
+      })
+      .addCase(RequestCustomService.rejected, (state, action) => {
+        state.CustomserviceproviderLoading = false;
+        state.CustomserviceproviderError = action.payload; 
+        ErrorToast(state.CustomserviceproviderError);
       })
       
       // ----- update profile -----

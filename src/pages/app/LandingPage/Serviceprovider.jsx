@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FaArrowLeft, FaCalendarAlt, FaCheck, FaMapMarkerAlt, FaRegCalendarAlt, FaRegHeart, FaStar } from 'react-icons/fa';
 import { SlTarget } from "react-icons/sl";
 import { LuPen, LuPenLine } from "react-icons/lu"
@@ -14,9 +14,10 @@ import { RiEditLine } from "react-icons/ri";
 import { MdDelete } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router';
 import { RxCross2 } from "react-icons/rx";
-import { fetchallservices, HireServiceProvider } from '../../../redux/slices/users.slice';
+import { fetchallservices, getPaymentMethoduser, HireServiceProvider, RequestCustomService } from '../../../redux/slices/users.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { GoogleMap, LoadScript, Autocomplete } from '@react-google-maps/api';
+import { ErrorToast } from '../../../components/global/Toaster';
 
 const Serviceprovider = () => {
     const dispatch = useDispatch();
@@ -34,27 +35,156 @@ const Serviceprovider = () => {
     const navigate = useNavigate("");
     const location = useLocation();
     const { id } = location.state || {};
+    const [paymentmethoduser, setPaymentmethoduser] = useState("");
+    const [selectedCard, setSelectedCard] = useState(null); // New state for selected card
+    const [filePreview, setFilePreview] = useState(null); // State to hold the file preview
+    const [fileName, setFileName] = useState("");
+
+    const handleCardSelect = (card) => {
+        setSelectedCard(card); // Set the selected card
+    };
+
     const fromViewProfile = location.state?.fromViewProfile || false;
     const [showrating, setShowrating] = useState(false);
     const [custombooking, setCustombooking] = useState(false);
     const [formData, setFormData] = useState({
-        description: "",
+        title: "",
         date: "",
         time: "",
+        duration: "",
+        lat: "",
+        long: "",
+        city: "",
+        state: "",
+        country: "",
         location: "",
-        price: "",
-        file: null,
+        description: "",
+        payment_method_id: "",
+        price: 0,
+        images: []
     });
+
+    // Function to handle place change
+    const handlePlaceChangeds = () => {
+        if (autocomplete) {
+            const place = autocomplete.getPlace();
+            setLocations(place.formatted_address); // Set the location with the formatted address
+            // Geocoding to get lat, long, city, state, country
+            const geocoder = new window.google.maps.Geocoder();
+            geocoder.geocode({ address: place.formatted_address }, (results, status) => {
+                if (status === 'OK' && results[0]) {
+                    const addressComponents = results[0].address_components;
+                    const lat = results[0].geometry.location.lat();
+                    const lng = results[0].geometry.location.lng();
+
+                    // Extract city, state, country
+                    let city = '';
+                    let state = '';
+                    let country = '';
+
+                    for (let i = 0; i < addressComponents.length; i++) {
+                        const component = addressComponents[i];
+                        if (component.types.includes('locality')) {
+                            city = component.long_name;
+                        } else if (component.types.includes('administrative_area_level_1')) {
+                            state = component.long_name;
+                        } else if (component.types.includes('country')) {
+                            country = component.long_name;
+                        }
+                    }
+                    setFormData(prev => ({
+                        ...prev,
+                        lat,
+                        long: lng,
+                        city,
+                        state,
+                        country,
+                    }));
+                }
+            });
+        }
+    };
+
+    const handleSubmit = () => {
+        const customserviceData = {
+            service_provider_id: id,
+            title: formData.title,
+            date: formData.date,
+            time: formData.time,
+            duration: formData.duration,
+            lat: formData.lat,
+            long: formData.long,
+            city: formData.city,
+            state: formData.state,
+            country: formData.country,
+            location: formData.location,
+            description: formData.description,
+            payment_method_id: selectedCard.id,
+            amount: formData.price,
+            images: formData.images
+        };
+        // Dispatch the action to submit the form
+        dispatch(RequestCustomService({ customserviceData }));
+    };
 
 
     const [custombookingtwo, setCustombookingtwo] = useState(false);
     const [custombookingthree, setCustombookingthree] = useState(false);
-    const { allservices } = useSelector((s) => s.user);
+    const { allservices, paymentMethoduser } = useSelector((s) => s.user);
 
 
     const handleOnLoad = (autocomplete) => {
         setAutocomplete(autocomplete);
     };
+
+    const handleNextStep = () => {
+        // Check if the required fields are filled
+        if (!selectedDate) {
+            ErrorToast("Please select a date.");
+            return; // Stop further processing
+        }
+
+        if (!selectedTime) {
+            ErrorToast("Please select a time.");
+            return; // Stop further processing
+        }
+
+        if (!duration || duration === "") {
+            ErrorToast("Please enter the duration.");
+            return; // Stop further processing
+        }
+
+        // Proceed if all fields are valid
+        setRequestservicetwo(true);
+        setRequestservice(false);
+    };
+
+
+    const handleNextSteptwo = () => {
+        // Validate job location
+        if (!locations) {
+            ErrorToast("Please enter a job location.");
+            return; // Stop further processing
+        }
+
+        // Validate job description
+        if (!description || description.trim() === "") {
+            ErrorToast("Please provide a job description.");
+            return; // Stop further processing
+        }
+
+        // Validate uploaded images (optional, but should handle the case if any are uploaded)
+        if (files.length > 0 && files.some(file => !file.file)) {
+            ErrorToast("There was an error with your uploaded images.");
+            return; // Stop further processing if there's an issue with files
+        }
+
+        // Proceed if all fields are valid
+        setRequestservicethree(true);
+        setRequestservicetwo(false);
+    };
+
+
 
     const handlePlaceChanged = () => {
         if (autocomplete) {
@@ -62,6 +192,68 @@ const Serviceprovider = () => {
             setLocations(place.formatted_address); // Set the location with the formatted address
         }
     };
+
+
+    const handlePlaceChangeded = () => {
+        if (!autocompleteRef.current) return;
+        const place = autocompleteRef.current.getPlace();
+
+        if (!place.geometry) return;
+
+        // Get Latitude & Longitude
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+
+        // Initialize variables
+        let city = "";
+        let state = "";
+        let country = "";
+        let postalCode = "";
+
+        // Loop through address components
+        place.address_components.forEach(component => {
+            const types = component.types;
+
+            if (types.includes("locality")) {
+                city = component.long_name;
+            }
+
+            if (types.includes("administrative_area_level_1")) {
+                state = component.long_name;
+            }
+
+            if (types.includes("country")) {
+                country = component.long_name;
+            }
+
+            if (types.includes("postal_code")) {
+                postalCode = component.long_name;
+            }
+        });
+
+        // Update state
+        setFormData(prev => ({
+            ...prev,
+            lat,
+            long: lng,
+            city,
+            state,
+            country,
+            postalCode,
+            location: place.formatted_address, // full address
+        }));
+
+        // Optional: update input field
+        setLocations(place.formatted_address);
+    };
+
+
+    const autocompleteRef = useRef(null);
+
+    const handleOnLoads = (autocomplete) => {
+        autocompleteRef.current = autocomplete;
+    };
+
 
 
     console.log(id, "userid")
@@ -109,12 +301,100 @@ const Serviceprovider = () => {
     const [duration, setDuration] = useState('');
     const [locations, setLocations] = useState('');
     const [description, setDescription] = useState('');
-    const [file, setFile] = useState(null);
+    const [files, setFiles] = useState([]);
+
+
+    // const handleFileChange = (e) => {
+    //     const selectedFiles = Array.from(e.target.files); // Get selected files
+
+    //     const updatedFiles = selectedFiles.map((file) => {
+    //         const fileType = file.type.split("/")[0]; // Check file type (image)
+    //         let preview = null;
+
+    //         return new Promise((resolve) => {
+    //             if (fileType === "image") {
+    //                 // If it's an image, create a preview
+    //                 const reader = new FileReader();
+    //                 reader.onloadend = () => {
+    //                     preview = reader.result; // Base64 image preview
+    //                     resolve({ file, preview, fileName: file.name });
+    //                 };
+    //                 reader.readAsDataURL(file); // Read image as base64
+    //             } else {
+    //                 resolve({ file, preview, fileName: file.name });
+    //             }
+    //         });
+    //     });
+
+    //     // Wait for all promises to resolve before updating the state
+    //     Promise.all(updatedFiles).then((resolvedFiles) => {
+    //         setFiles((prevFiles) => [...prevFiles, ...resolvedFiles]); // Add selected files to state
+    //     });
+    // };
+
+
+
+    // Handle file removal
 
     const handleFileChange = (e) => {
-        if (e.target.files[0]) {
-            setFile(e.target.files[0]);
-        }
+        const selectedFiles = Array.from(e.target.files); // Get selected files
+
+        const updatedFiles = selectedFiles.map((file) => {
+            const fileType = file.type.split("/")[0]; // Check file type (image)
+            let preview = null;
+
+            // Convert size to KB (if size > 1024 bytes)
+            const sizeInKB = (file.size / 1024).toFixed(3); // Size in KB, rounded to 3 decimal places
+
+            return new Promise((resolve) => {
+                if (fileType === "image") {
+                    // If it's an image, create a preview
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        preview = reader.result; // Base64 image preview
+                        resolve({
+                            file,       // Actual file object
+                            preview,    // Keep preview only for UI
+                            name: file.name,
+                            size: `${sizeInKB}KB`,
+                        });
+                    };
+                    reader.readAsDataURL(file); // Read image as base64
+                } else {
+                    // For non-image files
+                    resolve({
+                        file,
+                        preview: null,
+                        name: file.name,
+                        size: `${sizeInKB}KB`,
+                    });
+                }
+            });
+        });
+
+        Promise.all(updatedFiles).then((resolvedFiles) => {
+            // Keep preview for UI
+            setFiles((prevFiles) => [...prevFiles, ...resolvedFiles]);
+
+            // Only store name & size in formData.images
+            setFormData((prevData) => ({
+                ...prevData,
+                images: [
+                    ...prevData.images,
+                    ...resolvedFiles.map(f => ({
+                        name: f.name,
+                        size: f.size
+                    }))
+                ],
+            }));
+        });
+    };
+
+
+
+
+    const handleRemoveFile = (index) => {
+        setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index)); // Remove file at the specified index
     };
 
     const [services, setServices] = useState({});
@@ -202,30 +482,6 @@ const Serviceprovider = () => {
     }
 
 
-    // const handleHireNow = () => {
-    //     const providerData = {
-    //         title: "Service Request",
-    //         date: dateRange[0].toISOString().split('T')[0],  // Formatting the date
-    //         time: "10:00AM",  // Assuming a fixed time or get it from the user input
-    //         location: locations,
-    //         description: description,
-    //         payment_method_id: paymentMethodId,
-    //         services: [
-    //             { service_id: 1, quantity: services.bathroom },
-    //             { service_id: 2, quantity: services.bedroom },
-    //             { service_id: 3, quantity: services.kitchen },
-    //             { service_id: 4, quantity: services.fullHome },
-    //         ],
-    //     };
-
-    //     // Dispatch HireServiceProvider with userId and providerData
-    //     const payload = {
-    //         userId: id,  // Assuming the userId is available
-    //         providerData,
-    //     };
-    //     dispatch(HireServiceProvider(payload));
-    // };
-
     const formatDate = (date) => {
         const d = new Date(date);
         const year = d.getFullYear();
@@ -271,13 +527,13 @@ const Serviceprovider = () => {
             time: formattedTime,  // You can replace this with selectedTime if you're using it
             location: locations,
             duration: duration,
-            city: "Denver",
-            state: "Colorado",
-            country: "United State",
-            lat: 39.7508948,
-            long: -104.9331132,
+            city: formData.city || "Default City",
+            state: formData.state || "Default State",
+            country: formData.country || "Default Country",
+            lat: formData.lat || 0,  // Dynamically set latitude from formData
+            long: formData.long || 0,  // Dynamically set longitude from formData
             description: description,
-            payment_method_id: "pm_1S1SIzRu13l5i5sUSTMQoAl6", // Ensure this is set correctly
+            payment_method_id: selectedCard.id,
             services: serviceData,
         };
 
@@ -290,6 +546,18 @@ const Serviceprovider = () => {
 
         dispatch(HireServiceProvider(payload));  // Dispatch the action
     };
+
+    useEffect(() => {
+        dispatch(getPaymentMethoduser())
+    }, [dispatch])
+
+    useEffect(() => {
+        if (paymentMethoduser) {
+            setPaymentmethoduser(paymentMethoduser)
+        }
+    }, [paymentMethoduser])
+
+    console.log(paymentmethoduser, "paymentMethoduser")
 
 
     return (
@@ -564,17 +832,18 @@ const Serviceprovider = () => {
                                     onChange={(e) => setDuration(e.target.value)}
                                     placeholder="0"
                                     className="w-full border rounded-lg px-4 py-2 pr-10"
+                                    required
                                 />
                             </div>
                         </div>
 
                         {/* Footer Button */}
-                        <button onClick={() => {
-                            setRequestservicetwo(true);
-                            setRequestservice(false);
-                        }} className="w-full mt-4 bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold">
+                        <button
+                            onClick={handleNextStep}
+                            className="w-full mt-4 bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold">
                             Next
                         </button>
+
 
                         {/* Progress Bar */}
                         <div className="mt-6 flex justify-center space-x-2">
@@ -606,7 +875,7 @@ const Serviceprovider = () => {
                                 <label className="font-semibold">Job Location</label>
                                 <div className="relative mt-1">
                                     <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API} libraries={['places']}>
-                                        <Autocomplete onLoad={handleOnLoad} onPlaceChanged={handlePlaceChanged}>
+                                        <Autocomplete onLoad={handleOnLoads} onPlaceChanged={handlePlaceChangeded}>
                                             <input
                                                 type="text"
                                                 value={locations}
@@ -643,13 +912,13 @@ const Serviceprovider = () => {
                                 />
                             </div>
 
-                            <button onClick={() => {
-                                setRequestservicethree(true);
-                                setRequestservicetwo(false);
-                            }}
-                                className="w-full mt-4 bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold">
+                            <button
+                                onClick={handleNextSteptwo}
+                                className="w-full mt-4 bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
+                            >
                                 Next
                             </button>
+
 
                             <div onClick={() => {
                                 setRequestservice(true);
@@ -906,19 +1175,29 @@ const Serviceprovider = () => {
 
                             {/* Payment Method Info */}
                             <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
-                                <div className='w-full'>
-                                    <span className="font-medium text-gray-800">Attached Stripe</span>
-                                    <div className="text-gray-600 bg-[#F3F3F3] rounded-[10px] p-3 w-full mt-2 flex items-center justify-between">
-                                        <div className='flex gap-4'>
-                                            <span>**** **** **** **72</span>
-                                            <img src={stripe} className='w-auto h-6' alt="" />
+                                <div className="w-full">
+                                    <span className="font-medium text-gray-800 ">Attached Stripe</span>
+                                    {paymentmethoduser && paymentmethoduser.map((card) => (
+                                        <div
+                                            key={card.id}
+                                            className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 
+              ${selectedCard?.id === card.id ? 'bg-blue-100 border-blue-500' : ''} 
+            `} // Highlight the selected card with a background
+                                            onClick={() => handleCardSelect(card)} // Set the card as selected when clicked
+                                        >
+                                            <div className="flex gap-3">
+                                                <span className="text-gray-700">**** **** **** **{card.last_digits}</span>
+                                                <img src={stripe} className="h-6" alt={card.brand} />
+                                            </div>
+
+                                            <button className="text-red-500 hover:text-red-700 text-lg">
+                                                <GoTrash />
+                                            </button>
                                         </div>
-
-                                        <MdDelete color='red' />
-
-                                    </div>
+                                    ))}
                                 </div>
                             </div>
+
 
                             {/* Payment Summary */}
                             <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
@@ -1089,65 +1368,103 @@ const Serviceprovider = () => {
 
                         {/* Form */}
                         <div className="space-y-4 pl-6 pr-6">
-                            {/* Description */}
+                            {/* Title */}
                             <div>
-                                <label className="block mb-1 font-medium">Service Description</label>
+                                <label className="block mb-1 font-medium">Title*</label>
+                                <input
+                                    type="text"
+                                    name="title"
+                                    placeholder="Enter your title"
+                                    value={formData.title}
+                                    onChange={handleInputChange}
+                                    required
+                                    className="w-full border rounded p-2 focus:outline-none"
+                                />
+                            </div>
+
+                            {/* Service Description */}
+                            <div>
+                                <label className="block mb-1 font-medium">Service Description*</label>
                                 <textarea
                                     name="description"
                                     rows="3"
                                     placeholder="Briefly explain the service required"
                                     value={formData.description}
                                     onChange={handleInputChange}
+                                    required
                                     className="w-full border rounded p-2 focus:outline-none"
                                 />
                             </div>
 
-                            {/* Upload */}
                             <div>
                                 <label className="block mb-1 font-medium">
                                     Upload Images <span className="text-gray-500">(Optional)</span>
                                 </label>
-
                                 <label
                                     htmlFor="file-upload"
                                     className="cursor-pointer border border-dashed rounded p-6 text-center w-full block hover:bg-gray-50 transition"
                                 >
-                                    <div className="text-gray-700 font-medium">Upload “document name”</div>
-                                    <p className="text-sm text-gray-500 mt-1">Upto 20mbps JPG, PNG</p>
+                                    <div className="text-gray-700 font-medium">Upload Images</div>
+                                    <p className="text-sm text-gray-500 mt-1">Up to 20MB JPG, PNG</p>
                                     <input
                                         id="file-upload"
                                         type="file"
                                         name="file"
-                                        accept="image/*"
-                                        onChange={handleInputChange}
+                                        accept="image/*" // Accept only images
+                                        onChange={handleFileChange}
+                                        multiple // Allow multiple file selection
                                         className="hidden"
                                     />
                                 </label>
+
+                                {/* Display uploaded images */}
+                                <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    {files.map((file, index) => (
+                                        <div key={index} className="relative flex justify-center items-center">
+                                            {/* Display Image Preview */}
+                                            <img
+                                                src={file.preview} // Image preview
+                                                alt={file.fileName}
+                                                className="h-[10em] w-48 object-cover rounded-md"
+                                            />
+                                            {/* Remove Button */}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveFile(index)} // Function to remove the file
+                                                className="absolute top-0 right-0 bg-white rounded-full p-1 text-gray-600 hover:text-gray-900"
+                                            >
+                                                <span className="text-xl">×</span> {/* Cross button */}
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
 
                             {/* Date & Time */}
                             <div className="flex gap-2">
                                 <div className="flex-1">
-                                    <label className="block mb-1 font-medium">Date</label>
+                                    <label className="block mb-1 font-medium">Date*</label>
                                     <div className="flex items-center border rounded px-2">
                                         <input
                                             type="date"
                                             name="date"
                                             value={formData.date}
                                             onChange={handleInputChange}
+                                            required
                                             className="w-full py-2 focus:outline-none"
                                         />
                                     </div>
                                 </div>
                                 <div className="flex-1">
-                                    <label className="block mb-1 font-medium">Time</label>
+                                    <label className="block mb-1 font-medium">Time*</label>
                                     <div className="flex items-center border rounded px-2">
                                         <input
                                             type="time"
                                             name="time"
                                             value={formData.time}
                                             onChange={handleInputChange}
+                                            required
                                             className="w-full py-2 focus:outline-none"
                                         />
                                     </div>
@@ -1156,67 +1473,116 @@ const Serviceprovider = () => {
 
                             {/* Location */}
                             <div>
-                                <label className="block mb-1 font-medium">Location</label>
-                                <input
-                                    type="text"
-                                    name="location"
-                                    placeholder="Enter your location"
-                                    value={formData.location}
-                                    onChange={handleInputChange}
-                                    className="w-full border rounded p-2 focus:outline-none"
-                                />
-                                <div className="flex items-center mt-2 text-black cursor-pointer">
-                                    <SlTarget className="mr-1" />
-                                    <span className="text-sm">Use my current Location</span>
+                                <label className="block mb-1 font-medium">Location*</label>
+                                <div className="relative mt-1">
+                                    <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API} libraries={['places']}>
+                                        <Autocomplete onLoad={handleOnLoad} onPlaceChanged={handlePlaceChangeds}>
+                                            <input
+                                                type="text"
+                                                name="location"
+                                                value={formData.location}
+                                                onChange={handleInputChange}
+                                                placeholder="Enter your location"
+                                                required
+                                                className="w-full border rounded p-2 focus:outline-none"
+                                            />
+                                        </Autocomplete>
+                                    </LoadScript>
+                                    <span className="absolute right-3 top-2.5 text-blue-500">
+                                        <IoLocationOutline size={20} />
+                                    </span>
                                 </div>
                             </div>
 
-                            {/* Price */}
-                            <div>
-                                <label className="block mb-1 font-medium">Proposed Price</label>
-                                <div className="flex items-center border rounded px-2">
-                                    <span className="text-gray-500">$</span>
-                                    <input
-                                        type="number"
-                                        name="price"
-                                        placeholder="Enter amount"
-                                        value={formData.price}
-                                        onChange={handleInputChange}
-                                        className="w-full py-2 ml-1 focus:outline-none"
-                                    />
+                            {/* Price & Duration */}
+                            <div className="flex justify-between">
+                                {/* Price */}
+                                <div>
+                                    <label className="block mb-1 font-medium">Proposed Price*</label>
+                                    <div className="flex items-center border rounded px-2">
+                                        <span className="text-gray-500">$</span>
+                                        <input
+                                            type="number"
+                                            name="price"
+                                            placeholder="Enter amount"
+                                            value={formData.price}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="w-full py-2 ml-1 focus:outline-none"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Duration */}
+                                <div>
+                                    <label className="block mb-1 font-medium">Duration*</label>
+                                    <div className="flex items-center border rounded px-2">
+                                        <span className="text-gray-500">🕒</span>
+                                        <input
+                                            type="text"
+                                            name="duration"
+                                            placeholder="Enter Duration"
+                                            value={formData.duration}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="w-full py-2 ml-1 focus:outline-none"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Payment Method */}
                             <div>
                                 <label className="block mb-1 font-medium">Payment Method</label>
-                                <div className="flex justify-between items-center border rounded p-2">
-                                    <div className='flex gap-3'>
-                                        <span className="text-gray-700">**** **** **** **72</span>
-                                        <img src={stripe} className='h-6' alt="" />
-                                    </div>
+                                {paymentmethoduser && paymentmethoduser.map((card) => (
+                                    <div
+                                        key={card.id}
+                                        className={`flex justify-between items-center border cursor-pointer rounded p-2 mb-2 
+              ${selectedCard?.id === card.id ? 'bg-blue-100 border-blue-500' : ''} 
+            `} // Highlight the selected card with a background
+                                        onClick={() => handleCardSelect(card)} // Set the card as selected when clicked
+                                    >
+                                        <div className="flex gap-3">
+                                            <span className="text-gray-700">**** **** **** **{card.last_digits}</span>
+                                            <img src={stripe} className="h-6" alt={card.brand} />
+                                        </div>
 
-                                    <button className="text-red-500 hover:text-red-700 text-lg"><GoTrash />
-                                    </button>
-                                </div>
+                                        <button className="text-red-500 hover:text-red-700 text-lg">
+                                            <GoTrash />
+                                        </button>
+                                    </div>
+                                ))}
                             </div>
 
-
-
                             {/* Submit Button */}
-                            <div className='flex justify-center'>
-                                <button onClick={() => {
-                                    setCustombooking(false);
-                                    setCustombookingtwo(true);
-                                }} className="w-[30em] flex justify-center mt-2 bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-2 rounded-[10px] font-semibold hover:opacity-90">
+                            <div className="flex justify-center">
+                                <button
+                                    onClick={() => {
+                                        if (
+                                            !formData.title ||
+                                            !formData.description ||
+                                            !formData.date ||
+                                            !formData.time ||
+                                            !formData.location ||
+                                            !formData.price ||
+                                            !formData.duration
+                                        ) {
+                                            ErrorToast("Please fill out all required fields.");
+                                            return;
+                                        }
+                                        setCustombooking(false);
+                                        setCustombookingtwo(true);
+                                    }}
+                                    className="w-[30em] flex justify-center mt-2 bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-2 rounded-[10px] font-semibold hover:opacity-90"
+                                >
                                     Next
                                 </button>
                             </div>
-
                         </div>
                     </div>
                 </div>
             )}
+
 
             {custombookingtwo && (
                 <div className="fixed inset-0 bg-black bg-opacity-40 z-50 flex items-center justify-center">
@@ -1237,16 +1603,13 @@ const Serviceprovider = () => {
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <h4 className="font-semibold text-[15px]">
-                                            Deep Cleaning for a 2-Bedroom Apartment
+                                            {formData.title || "No Title"}
                                         </h4>
                                         <p className="text-gray-600">
-                                            The standard Lorem Ipsum passage, m ipsum dolor sit amet,
-                                            cetcetur adipiscing elit, sed do eiusmodThe standard Lorem Ipsum passage, used since the, sed do eiusmodThe standard Lorem Ipsum passage.
+                                            {formData.description || "No Description"}
                                         </p>
                                     </div>
-                                    <button className="text-blue-600 text-sm ml-2 mt-1">
-                                        <LuPenLine className='text-[#3338ca]' size={20} />
-                                    </button>
+
                                 </div>
                             </div>
 
@@ -1256,11 +1619,8 @@ const Serviceprovider = () => {
                             <div className="flex justify-between items-start">
                                 <div>
                                     <h4 className="text-sm font-semibold text-slate-500">Location</h4>
-                                    <p className="font-semibold mt-1">936 Kiehn Route West Ned Tennessee</p>
+                                    <p className="font-semibold mt-1">{formData.location || "No Location"}</p>
                                 </div>
-                                <button className="text-blue-600 text-sm ml-2 mt-1">
-                                    <LuPenLine className='text-[#3338ca]' size={20} />
-                                </button>
                             </div>
 
                             <hr />
@@ -1269,19 +1629,28 @@ const Serviceprovider = () => {
                             <div>
                                 <div className="flex justify-between mb-2">
                                     <h4 className="text-sm font-semibold text-slate-500">Uploaded photos</h4>
-                                    <button className="text-blue-600 text-sm ml-2">
-                                        <LuPenLine className='text-[#3338ca]' size={20} />
-                                    </button>
+
                                 </div>
                                 <div className="flex gap-3">
-                                    {[1, 2, 3].map((_, i) => (
-                                        <img
-                                            key={i}
-                                            src={imageone}
-                                            className="h-20 w-28 rounded object-cover"
-                                            alt="uploaded"
-                                        />
-                                    ))}
+
+
+                                    {files.length > 0 ? (
+                                        files.map((fileObj, index) => (
+                                            <div key={index} className="relative flex justify-center items-center">
+                                                {/* Display Image Preview */}
+                                                <img
+                                                    src={fileObj.preview} // Image preview
+                                                    alt="Preview"
+                                                    className="h-[10em] w-48 object-cover rounded-md"
+                                                />
+
+                                                {/* Remove Button */}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-gray-500 text-center">No Image</p>
+                                    )}
+
                                 </div>
                             </div>
 
@@ -1291,17 +1660,15 @@ const Serviceprovider = () => {
                             <div className="flex justify-between gap-6">
                                 <div>
                                     <h4 className="text-sm font-semibold text-slate-600">Proposed Price</h4>
-                                    <p className="font-semibold mt-1">$300</p>
+                                    <p className="font-semibold mt-1">${formData.price}</p>
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <h4 className="text-sm font-semibold text-slate-600">Preferred Date & Time</h4>
-                                            <p className="font-semibold mt-1">Saturday, 10 AM</p>
+                                            <p className="font-semibold mt-1">{formData.date || "No Date"} |  {formData.time || "No Time"}</p>
                                         </div>
-                                        <button className="text-blue-600 text-sm ml-2 mt-1">
-                                            <LuPenLine className='text-[#3338ca]' size={20} />
-                                        </button>
+
                                     </div>
                                 </div>
                             </div>
@@ -1310,16 +1677,13 @@ const Serviceprovider = () => {
 
                             {/* User Info */}
                             <div className="flex items-center gap-4">
-                                <img
-                                    src="https://randomuser.me/api/portraits/men/32.jpg"
-                                    className="w-12 h-12 rounded-full"
-                                    alt="user"
-                                />
+                                <img src="https://www.w3schools.com/w3images/avatar2.png" alt="User Avatar" className="h-[3em] w-auto rounded-full" />
                                 <div>
-                                    <p className="font-semibold">John Doe</p>
-                                    <p className="flex items-center text-yellow-500">
-                                        <FaStar className="mr-1" /> 4.9
-                                    </p>
+                                    <h3 className="font-semibold text-gray-800">{data.name}</h3>
+                                    <div className="flex items-center space-x-1">
+                                        <span className="text-yellow-500">★</span>
+                                        <span>{data.rating}</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1364,17 +1728,18 @@ const Serviceprovider = () => {
 
                             {/* Payment Method Info */}
                             <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
-                                <div className='w-full'>
+                                <div className="w-full">
                                     <span className="font-medium text-gray-800">Attached Stripe</span>
-                                    <div className="text-gray-600 bg-[#F3F3F3] rounded-[10px] p-3 w-full mt-2 flex items-center justify-between">
-                                        <div className='flex gap-4'>
-                                            <span>**** **** **** **72</span>
-                                            <img src={stripe} className='w-auto h-6' alt="" />
+                                    {selectedCard && (
+                                        <div key={selectedCard.id} className="text-gray-600 bg-[#F3F3F3] rounded-[10px] p-3 w-full mt-2 flex items-center justify-between">
+                                            <div className="flex gap-4">
+                                                <span>**** **** **** **{selectedCard.last_digits}</span>
+                                                <img src={stripe} className="w-auto h-6" alt={selectedCard.brand} />
+                                            </div>
+
+                                            <MdDelete color="red" />
                                         </div>
-
-                                        <MdDelete color='red' />
-
-                                    </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -1382,16 +1747,16 @@ const Serviceprovider = () => {
                             <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
                                 <div className='w-full bg-[#F3F3F3] p-3 rounded-[10px]'>
                                     <div className='w-full border-b-[1px] pb-[3px]'>
-                                        <span className="font-medium text-gray-800 ">Payment Summary</span>
+                                        <span className="font-medium text-gray-800">Payment Summary</span>
                                     </div>
                                     <div className="text-gray-600 mt-2">
                                         <div className='flex justify-between'>
                                             <p>Subtotal: </p>
-                                            <p>$790</p>
+                                            <p>${formData.price}</p>
                                         </div>
                                         <div className='flex justify-between pt-3'>
                                             <p className='text-black font-[500]'>Total: </p>
-                                            <p className='text-black font-[500]'>$790</p>
+                                            <p className='text-black font-[500]'>${formData.price}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1402,16 +1767,7 @@ const Serviceprovider = () => {
                                 <button
                                     className="w-full bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
                                     onClick={() => {
-                                        setBookrequestsend(true);
-                                        setCustombookingthree(false);
-                                        setInterval(() => {
-                                            setBookrequestsend(false);
-                                            setBookingconfirm(true);
-                                            setInterval(() => {
-                                                navigate("/custom-booking-details");
-
-                                            }, 2000);
-                                        }, 3000);
+                                        handleSubmit(); // Call your submit function here
                                     }}
                                 >
                                     Send request to service provider
@@ -1420,20 +1776,18 @@ const Serviceprovider = () => {
                                 <div
                                     className="text-center mt-2 text-sm font-medium text-gray-500 cursor-pointer"
                                     onClick={() => {
-                                        setCustombookingthree(false)
-                                        setCustombookingtwo(true)
+                                        setCustombookingthree(false);
+                                        setCustombookingtwo(true); // Go back to the second step
                                     }}
                                 >
                                     Back
                                 </div>
                             </div>
-
-                            {/* Progress Bar */}
-
                         </div>
                     </div>
                 </div>
             )}
+
 
         </>
     );
