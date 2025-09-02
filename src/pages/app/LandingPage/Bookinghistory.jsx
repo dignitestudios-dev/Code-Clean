@@ -1,57 +1,92 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { FaArrowLeft } from 'react-icons/fa';
 import { HeroBg } from "../../../assets/export";
 import Navbar from '../../../components/layout/Navbar';
 import Footer from "../../../components/layout/Footer";
 import { CiSearch } from "react-icons/ci";
-
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchBookinghistory } from '../../../redux/slices/users.slice';
 
 const Bookinghistory = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { bookinghistorydata, bookinghistoryLoading } = useSelector((state) => state.user);
+  const [booking, setBooking] = useState([]); // Set initial state as an empty array
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState('All'); // Active tab state
 
-  // Sample booking data
-  const bookings = [
-    {
-      id: 1,
-      name: "Michael Brown",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "Completed",
-      avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-    },
-    {
-      id: 2,
-      name: "Sophia Turner",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "Completed",
-      avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-    },
-    {
-      id: 3,
-      name: "Justin Cruz",
-      date: "16-January-2025",
-      time: "10:00 Am",
-      duration: "4hrs",
-      status: "Canceled",
-      avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-    },
-  ];
+  useEffect(() => {
+    dispatch(fetchBookinghistory());
+  }, [dispatch]);
 
-  // Filtered bookings based on search query
-  const filteredBookings = bookings.filter((booking) =>
-    booking.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    booking.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    booking.status.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    if (bookinghistorydata && bookinghistorydata.data) {
+      setBooking(bookinghistorydata.data); // Update with actual API data
+    }
+  }, [bookinghistorydata]);
+
+  console.log(bookinghistorydata,"bookinghistorydata===")
+
+  // Filtered bookings based on search query and active tab
+  const filteredBookings = booking.filter((booking) => {
+    // Filter bookings based on the selected tab (All, Completed Jobs, Canceled Jobs)
+    const matchesTab = 
+      activeTab === 'All' || 
+      (activeTab === 'Completed Jobs' && booking.status.toLowerCase() === 'completed') || 
+      (activeTab === 'Canceled Jobs' && booking.status.toLowerCase() === 'canceled');
+    
+    // Filter bookings based on the search query (for booking details like name, date, and status)
+    const matchesSearchQuery = 
+      booking.service_provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      booking.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      booking.status.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Return bookings that match both the tab and the search query
+    return matchesTab && matchesSearchQuery;
+  });
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab); // Update active tab
+  };
+
+  // Skeleton Loader Component
+  const SkeletonRows = ({ count = 6 }) => (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <tr key={i} className="animate-pulse border-t">
+          <td className="px-6 py-4">
+            <div className="h-4 w-6 bg-gray-200 rounded" />
+          </td>
+          <td className="px-6 py-4">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-gray-200" />
+              <div className="h-4 w-32 bg-gray-200 rounded" />
+            </div>
+          </td>
+          <td className="px-6 py-4">
+            <div className="h-4 w-28 bg-gray-200 rounded" />
+          </td>
+          <td className="px-6 py-4">
+            <div className="h-4 w-20 bg-gray-200 rounded" />
+          </td>
+          <td className="px-6 py-4">
+            <div className="h-4 w-16 bg-gray-200 rounded" />
+          </td>
+          <td className="px-6 py-4">
+            <div className="h-4 w-28 bg-gray-200 rounded" />
+          </td>
+          <td className="px-6 py-4">
+            <div className="h-4 w-4 bg-gray-200 rounded" />
+          </td>
+        </tr>
+      ))}
+    </>
+  );
 
   return (
     <div>
@@ -65,47 +100,42 @@ const Bookinghistory = () => {
         }}
       >
         <div className="flex justify-between items-center gap-3 ml-[11em] w-[74em] -mb-10">
-          
           <div className='flex gap-3'>
-              <button type="button" onClick={() => navigate(-1)}>
-            <FaArrowLeft color="white" size={20} />
-          </button>
-          <h2 className="text-white text-[30px] font-bold leading-[48px] capitalize">
-            Booking history
-          </h2>
+            <button type="button" onClick={() => navigate(-1)}>
+              <FaArrowLeft color="white" size={20} />
+            </button>
+            <h2 className="text-white text-[30px] font-bold leading-[48px] capitalize">
+              Booking history
+            </h2>
           </div>
-        
-        <div>
+          <div>
             {/* Search Bar Section */}
-          <div className="px-[0em] py-[2em]">
-            <div className="relative">
-              <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white" color='white' size={20} />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={handleSearchChange}
-                placeholder="Search for bookings"
-                className="w-full py-3 pl-10 pr-5 rounded-lg border bg-white/10 !text-white border-[#ccc] text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF]"
-              />
+            <div className="px-[0em] py-[2em]">
+              <div className="relative">
+                <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white" color='white' size={20} />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  placeholder="Search for bookings"
+                  className="w-full py-3 pl-10 pr-5 rounded-lg border bg-white/10 !text-white border-[#ccc] text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF]"
+                />
+              </div>
             </div>
           </div>
         </div>
-        
-
-        </div>
       </div>
-
-
 
       {/* Booking Table Section */}
       <div className="px-[10em] py-[4em] bg-[#f5f8fb00] -mt-[18em] relative mb-10">
         <div className="bg-white rounded-xl shadow-md overflow-x-auto">
           {/* Tabs */}
           <div className="flex border-b px-6 pt-6">
-            {["All", "Upcoming Jobs", "In Progress Jobs", "Completed Jobs", "Canceled Jobs"].map((tab, index) => (
+            {["All", "Completed Jobs", "Canceled Jobs"].map((tab, index) => (
               <button
                 key={index}
-                className={`px-4 py-2 text-sm font-[500] text-[#000000] hover:text-[#00AEEF] focus:outline-none border-b-2 ${index === 0 ? "border-[#00AEEF]" : "border-transparent"}`}
+                onClick={() => handleTabChange(tab)}
+                className={`px-4 py-2 text-sm font-[500] text-[#000000] hover:text-[#00AEEF] focus:outline-none border-b-2 ${activeTab === tab ? "border-[#00AEEF]" : "border-transparent"}`}
               >
                 {tab}
               </button>
@@ -126,30 +156,44 @@ const Bookinghistory = () => {
               </tr>
             </thead>
             <tbody className="text-sm text-[#3F3F3F]">
-              {filteredBookings.map((row, index) => (
-                <tr key={index} className="border-t">
-                  <td className="px-6 py-4">{row.id}</td>
-                  <td className="px-6 py-4 flex items-center gap-3">
-                    <img
-                      src={row.avatar}
-                      alt={row.name}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                    {row.name}
-                  </td>
-                  <td className="px-6 py-4">{row.date}</td>
-                  <td className="px-6 py-4">{row.time}</td>
-                  <td className="px-6 py-4">{row.duration}</td>
-                  <td className="px-6 py-4">
-                    <span className={`font-semibold ${row.status === "Completed" ? "text-green-600" : "text-red-500"}`}>
-                      {row.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-[#00AEEF] cursor-pointer">
-                    <span>&gt;</span>
-                  </td>
-                </tr>
-              ))}
+              {bookinghistoryLoading ? (
+                <SkeletonRows count={6} />
+              ) : (
+                <>
+                  {filteredBookings.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" className="px-6 py-4 text-center text-sm font-semibold text-gray-500">
+                        No data found
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredBookings.map((row, index) => (
+                      <tr key={index} className="border-t">
+                        <td className="px-6 py-4">{row.booking_id}</td>
+                        <td className="px-6 py-4 flex items-center gap-3">
+                          <img
+                            src={row.service_provider.avatar ? `http://family-phys-ed-s3.s3.amazonaws.com/${row.service_provider.avatar}` : "https://randomuser.me/api/portraits/men/1.jpg"}
+                            alt={row.service_provider.name}
+                            className="w-8 h-8 rounded-full object-cover"
+                          />
+                          {row.service_provider.name}
+                        </td>
+                        <td className="px-6 py-4">{row.date}</td>
+                        <td className="px-6 py-4">{row.time}</td>
+                        <td className="px-6 py-4">{row.duration} hrs</td>
+                        <td className="px-6 py-4">
+                          <span className={`font-semibold ${row.status === "completed" ? "text-green-600" : "text-red-500"}`}>
+                            {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-[#00AEEF] cursor-pointer">
+                          <span>&gt;</span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </>
+              )}
             </tbody>
           </table>
         </div>
