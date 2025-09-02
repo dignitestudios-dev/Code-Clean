@@ -41,12 +41,17 @@ export default function CreateCard() {
   const [loading, setLoading] = useState(false);
   const [stripeError, setStripeError] = useState(false);
   const { isLoading } = useSelector((state) => state?.provider);
-  const navigate=useNavigate("");
+  const navigate = useNavigate("");
   const dispatch = useDispatch();
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!cardHolderName) {
+      ErrorToast("Card Holder Name Required");
+      return;
+    }
     const cardNumberElement = elements.getElement(CardNumberElement);
     const { token } = await stripe.createToken(cardNumberElement);
+
     const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: "card",
       card: cardNumberElement,
@@ -62,14 +67,17 @@ export default function CreateCard() {
       try {
         setLoading(true);
         const data = {
-          card_token: token?.id,
-          last_digits: paymentMethod?.card?.last4,
-          expiry_month: paymentMethod?.card?.exp_month,
-          expiry_year: paymentMethod?.card?.exp_year,
-          brand: paymentMethod?.card?.brand,
+          url: "provider/payment-methods",
+          payload: {
+            card_token: token?.id,
+            last_digits: paymentMethod?.card?.last4,
+            expiry_month: paymentMethod?.card?.exp_month,
+            expiry_year: paymentMethod?.card?.exp_year,
+            brand: paymentMethod?.card?.brand,
+          },
         };
         await dispatch(AddCard(data)).unwrap();
-        navigate("/app/payment-method")
+        navigate("/app/payment-method");
       } catch (apiError) {
         ErrorToast(apiError?.response?.data?.message);
       } finally {
@@ -141,11 +149,7 @@ export default function CreateCard() {
                 </div>
               </div>
               <div className="w-full mt-3">
-                <Button
-                  loading={loading  }
-                  text={"Add"}
-                  onClick={handleSubmit}
-                />
+                <Button loading={loading} text={"Add"} onClick={handleSubmit} />
               </div>
             </div>
           </form>

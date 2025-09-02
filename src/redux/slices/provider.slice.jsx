@@ -94,7 +94,7 @@ export const AddCard = createAsyncThunk(
   "/provider/payment-methods",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.post("/user/payment-methods", payload);
+      const response = await axios.post(payload.url, payload?.payload);
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {

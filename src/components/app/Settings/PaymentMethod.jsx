@@ -24,9 +24,9 @@ export default function PaymentMethod() {
 
   const handleDelete = (id) => {
     dispatch(DeletePaymentMethod(id));
+    dispatch(getPaymentMethod());
   };
 
-  console.log(paymentMethod);
   return (
     <div>
       <Navbar />

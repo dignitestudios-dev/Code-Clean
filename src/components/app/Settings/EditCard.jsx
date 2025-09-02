@@ -104,19 +104,7 @@ export default function EditCard() {
                             handleSubmit(e);
                         }}
                         className="w-full mx-auto  mt-8 flex flex-col justify-start items-start gap-6"
-                    >
-                        <Input
-                            text={"Card Holder Name"}
-                            name={"cardHolderName"}
-                            type={"text"}
-                            holder={"Enter card holder name here"}
-                            value={values.cardHolderName}
-                            handleBlur={handleBlur}
-                            handleChange={handleChange}
-                            error={errors.cardHolderName}
-                            touched={touched?.cardHolderName}
-                        />
-
+                    >                       
                         <Input
                             text={"Card Number"}
                             name={"cardNumber"}
@@ -127,6 +115,7 @@ export default function EditCard() {
                             handleChange={handleCardNumberChange}
                             error={errors.cardNumber}
                             touched={touched?.cardNumber}
+                            
                         />
 
                         <div className="w-full flex gap-4">
