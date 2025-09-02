@@ -1,16 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import Navbar from '../../components/layout/Navbar';
-import Herotwo from '../../components/app/LandingPage/Dashboard/Herotwo';
-import { FaMapMarkerAlt, FaBriefcase, FaShieldAlt, FaStar, FaRegHeart, FaChevronRight, FaChevronLeft, FaSpinner } from 'react-icons/fa';
-import { LuSettings2 } from 'react-icons/lu';
-import { awardIcon, LocationIcon, WorkIcon } from '../../assets/export';
-import BroadCastModal from '../../components/app/Profile/BroadCastModal';
-import Filter from '../../components/global/Filter';
-import { useNavigate } from 'react-router';
-import Footer from '../../components/layout/Footer';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchallservices } from '../../redux/slices/users.slice';
-
+import React, { useEffect, useState } from "react";
+import Navbar from "../../components/layout/Navbar";
+import Herotwo from "../../components/app/LandingPage/Dashboard/Herotwo";
+import {
+  FaMapMarkerAlt,
+  FaBriefcase,
+  FaShieldAlt,
+  FaStar,
+  FaRegHeart,
+  FaChevronRight,
+  FaChevronLeft,
+  FaSpinner,
+} from "react-icons/fa";
+import { LuSettings2 } from "react-icons/lu";
+import { awardIcon, LocationIcon, WorkIcon } from "../../assets/export";
+import BroadCastModal from "../../components/app/Profile/BroadCastModal";
+import Filter from "../../components/global/Filter";
+import { useNavigate } from "react-router";
+import Footer from "../../components/layout/Footer";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchallservices } from "../../redux/slices/users.slice";
 
 const itemsPerPage = 6;
 
@@ -19,7 +27,7 @@ const Home = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFilter, setIsFilter] = useState(false);
   const [data, setData] = useState([]);
-  const totalPages = Math.ceil(data.length / itemsPerPage);  // Dynamically calculate total pages based on the fetched data
+  const totalPages = Math.ceil(data.length / itemsPerPage); // Dynamically calculate total pages based on the fetched data
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentProfessionals = data.slice(startIndex, startIndex + itemsPerPage); // Slice data for pagination
   const { allservices, allservicesloading } = useSelector((s) => s.user);
@@ -36,23 +44,34 @@ const Home = () => {
     }
   }, [allservices]);
 
-  // Logging to check the data
-  console.log(currentProfessionals, "currentProfessionals");
 
   return (
     <div>
       <Navbar />
       <Herotwo />
-      <div className='mx-auto max-w-[87em] mt-6'>
+      <div className="mx-auto max-w-[87em] mt-6">
         <div className="px-10 py-8">
-          <div className='flex gap-3 justify-between items-center mb-10'>
-            <div className='flex items-center gap-3'>
-              <h1 className='text-3xl font-[600]'>Hire Top-Rated Professionals</h1>
-              <span className='bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white px-4 py-0 rounded-xl text-sm'>{data.length}</span>
+          <div className="flex gap-3 justify-between items-center mb-10">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-[600]">
+                Hire Top-Rated Professionals
+              </h1>
+              <span className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white px-4 py-0 rounded-xl text-sm">
+                {data?.length}
+              </span>
             </div>
-            <div className='flex items-center gap-3'>
-              <button onClick={() => setIsOpen(!isOpen)} className='bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white p-2 rounded-md'>Broadcast a Request</button>
-              <button onClick={() => setIsFilter(!isFilter)} className='bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white p-3 rounded-md' ><LuSettings2 />
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white p-2 rounded-md"
+              >
+                Broadcast a Request
+              </button>
+              <button
+                onClick={() => setIsFilter(!isFilter)}
+                className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white p-3 rounded-md"
+              >
+                <LuSettings2 />
               </button>
             </div>
           </div>
@@ -182,7 +201,6 @@ const Home = () => {
               )}
             </>
           )}
-
         </div>
         <Footer />
       </div>
@@ -192,5 +210,3 @@ const Home = () => {
 };
 
 export default Home;
-
-

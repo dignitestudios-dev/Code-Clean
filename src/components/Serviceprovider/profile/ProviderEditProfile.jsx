@@ -98,7 +98,6 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
       setPreviewImage(imageUrl);
     }
   };
-  console.log(errors, "erros");
 
   return (
     <>
