@@ -31,6 +31,9 @@ const initialState = {
   hireProviderLoading: false,
   hireProviderSuccess: null,
   hireProviderError: null,
+  CustomserviceproviderLoading:false,
+  CustomserviceproviderError:null,
+  CustomserviceproviderSuccess:null,
 };
 // ================= THUNKS =================
 
@@ -45,6 +48,24 @@ export const HireServiceProvider = createAsyncThunk(
       // Sending the userId in the URL and providerData in the request body
       const res = await axios.post(`/provider/requests/private/${userId}`, providerData);
 
+      // Return the response data after submission
+      return res.data;
+    } catch (error) {
+      // Reject the promise with a custom error message
+      return thunkAPI.rejectWithValue("Failed to submit provider data");
+    }
+  }
+);
+
+
+// Hire Now Service Provider with dynamic user ID in the URL and data in the body
+export const RequestCustomService = createAsyncThunk(
+  "/provider/requests/custom", // Action type
+  async (payload, thunkAPI) => {
+    try {
+      const {customserviceData} = payload;  // Destructure userId and providerData from payload
+      // Sending the userId in the URL and providerData in the request body
+      const res = await axios.post(`/provider/requests/custom`, customserviceData);
       // Return the response data after submission
       return res.data;
     } catch (error) {
@@ -253,6 +274,23 @@ const userSlice = createSlice({
         state.hireProviderLoading = false;
         state.hireProviderError = action.payload; 
         ErrorToast(state.hireProviderError);
+      })
+
+      //Custom Service Data
+      .addCase(RequestCustomService.pending, (state) => {
+        state.CustomserviceproviderLoading = true;
+        state.CustomserviceproviderSuccess = null;
+        state.CustomserviceproviderError = null;
+      })
+      .addCase(RequestCustomService.fulfilled, (state, action) => {
+        state.CustomserviceproviderLoading = false;
+        state.CustomserviceproviderSuccess = "Custom Service provider hired successfully!";
+        SuccessToast(state.CustomserviceproviderSuccess);
+      })
+      .addCase(RequestCustomService.rejected, (state, action) => {
+        state.CustomserviceproviderLoading = false;
+        state.CustomserviceproviderError = action.payload; 
+        ErrorToast(state.CustomserviceproviderError);
       })
       
       // ----- update profile -----

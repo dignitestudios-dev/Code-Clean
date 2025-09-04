@@ -29,10 +29,11 @@ export default function SignUp() {
   const location = useLocation();
   const role = location.state?.role || "user";
   const [email, setEmail] = useState("");
-  const stripePromise = loadStripe(import.meta.env.VITE_APP_STRIPE_KEY);
-
+  // const stripePromise = loadStripe(import.meta.env.VITE_APP_STRIPE_KEY);
+    const stripePromise = loadStripe('pk_test_51R35dTRu13l5i5sUEtVltwn9P4R1bByNOlamVhR0Vq8xVSG4kMMuFjNAXfQ0swFl3qxbuKtdRLcouiGA0I6rw7i900oTZUOMeu');
+  
   // Step Data for Service Provider
-  const providerSteps = [
+  const providerSteps = [ 
     { icon: FaUser, title: "Your details" },
     { icon: IoMailOutline, title: "Verify email" },
     { icon: LiaIdCard, title: "Personal details" },
