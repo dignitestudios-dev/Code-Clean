@@ -107,11 +107,18 @@ export default function Profile() {
                             )}
 
                             <div>
-                                <h3 className='text-[24px] font-medium'>
-                                    {user_data?.role === "service_provider"
-                                        ? (serviceUser && Object.keys(serviceUser).length > 0 ? serviceUser.name : "No User Name")
-                                        : (userdata && Object.keys(userdata).length > 0 ? userdata.name : "No User Name")}
+                                <h3 className="text-[24px] font-medium">
+                                    {isLoading ? (
+                                        <div className="animate-pulse bg-gray-200 h-6 w-40 rounded"></div>
+                                    ) : (
+                                        <>
+                                            {userdata && Object.keys(userdata).length > 0
+                                                ? userdata.name
+                                                : "No User Name"}
+                                        </>
+                                    )}
                                 </h3>
+
 
 
                             </div>

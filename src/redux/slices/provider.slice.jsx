@@ -55,7 +55,7 @@ export const getServices = createAsyncThunk(
       console.log(response, "response");
       return response.data;
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to Fetch Plans";
+      const msg = error?.response?.data?.message || "Failed to Services";
       ErrorToast(msg); // Show error toast
       return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
@@ -197,6 +197,7 @@ export const MarkStartJob = createAsyncThunk(
     }
   }
 );
+
 export const getPaymentMethod = createAsyncThunk(
   "/provider/payment-methods/get-card", // The action type
   async (_, thunkAPI) => {
@@ -204,7 +205,7 @@ export const getPaymentMethod = createAsyncThunk(
       const response = await axios.get("/provider/payment-methods"); // API request to fetch the profile
       return response.data; // Assuming the API returns the user profile data
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to Fetch Plans";
+      const msg = error?.response?.data?.message || "Failed to Payment Method";
       ErrorToast(msg); // Show error toast
       return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
