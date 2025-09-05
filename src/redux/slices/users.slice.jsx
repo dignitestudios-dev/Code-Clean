@@ -34,6 +34,7 @@ const initialState = {
   CustomserviceproviderLoading:false,
   CustomserviceproviderError:null,
   CustomserviceproviderSuccess:null,
+  paymentMethoduser:null,
 };
 // ================= THUNKS =================
 
@@ -71,6 +72,22 @@ export const RequestCustomService = createAsyncThunk(
     } catch (error) {
       // Reject the promise with a custom error message
       return thunkAPI.rejectWithValue("Failed to submit provider data");
+    }
+  }
+);
+
+
+//Get Payment Method
+export const getPaymentMethoduser = createAsyncThunk(
+  "/user/payment-methods", // The action type
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get("/user/payment-methods"); // API request to fetch the profile
+      return response.data; // Assuming the API returns the user profile data
+    } catch (error) {
+      const msg = error?.response?.data?.message || "Failed to Get Payment Method of User";
+      ErrorToast(msg); // Show error toast
+      return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
   }
 );
@@ -226,6 +243,22 @@ const userSlice = createSlice({
       .addCase(fetchCurrentBooking.rejected, (state, action) => {
         state.currentbookingLoading = false;
         state.currentbookingerror = action.payload;
+      })
+
+      //Get payment Method for user
+       .addCase(getPaymentMethoduser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getPaymentMethoduser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.paymentMethoduser = action.payload;
+        state.success = "Payment Method Get Successfully";
+      })
+      .addCase(getPaymentMethoduser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       })
 
       // ----- Fetch all Current Booking -----
