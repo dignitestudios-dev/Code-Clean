@@ -15,6 +15,7 @@ import {
 } from "../../../redux/slices/provider.slice";
 import { Button } from "../../../components/global/GlobalButton";
 import { ErrorToast } from "../../../components/global/Toaster";
+import { HiXMark } from "react-icons/hi2";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -245,11 +246,9 @@ const Dashboard = () => {
                   <td className="px-6 py-4">
                     <span
                       className={`font-semibold ${
-                        row.status === "accepted" ||
-                        row.status == "completed"
+                        row.status === "accepted" || row.status == "completed"
                           ? "text-[#00C853]"
-                          : row.status === "pending" ||
-                            row.status == "waiting"
+                          : row.status === "pending" || row.status == "waiting"
                           ? "text-[#EC8325]"
                           : row.status === "inprogress" ||
                             row.status == "In Progress Jobs"
@@ -273,103 +272,6 @@ const Dashboard = () => {
                         >
                           Reject
                         </button>
-
-                        {rejectedpopup && (
-                          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                            <div className="bg-white rounded-xl p-6 md:w-[30em] shadow-2xl text-center">
-                              {/* Checkmark Icon */}
-                              <div className="mb-4 flex justify-center items-center">
-                                <div className=" w-[70px] h-[70px] rounded-full flex justify-center items-center">
-                                  <TiWarning size={70} color="#EE3131" />
-                                </div>
-                              </div>
-                              {/* Title */}
-                              <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                                Reject Request!
-                              </h2>
-                              {/* Message */}
-                              <p className="text-gray-600 text-sm mb-4">
-                                Are you sure you want reject this request
-                              </p>
-                              <div className="flex gap-4 justify-center">
-                                <button
-                                  className="bg-[#F2F1F1] text-black px-8 p-3 text-sm rounded-xl"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setRejectedpopup(false);
-                                  }}
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setRejectedreasons(true);
-                                  }}
-                                  className="bg-[#EE3131] rounded-xl px-8 text-sm  p-3 text-white"
-                                >
-                                  Reject Now
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {rejectedreasons && (
-                          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-                            {/* This outer div handles the background click to close, optional */}
-                            <div
-                              className="bg-white rounded-xl shadow-lg w-[440px] p-6"
-                              onClick={(e) => e.stopPropagation()} // ← Important line!
-                            >
-                              <h2 className="text-[26px] font-bold text-black text-center mb-6">
-                                Reject Reason
-                              </h2>
-
-                              <label className="block text-sm text-left font-medium text-black mb-1">
-                                Reason
-                              </label>
-                              <textarea
-                                rows={4}
-                                value={reason}
-                                onChange={(e) => setReason(e.target.value)}
-                                required
-                                placeholder="Type your reason here..."
-                                className="w-full border border-gray-300 rounded-xl px-4 py-3 placeholder-gray-400 text-black resize-none focus:outline-none focus:ring-2 focus:ring-black"
-                              />
-
-                              <div className="flex justify-between gap-4 mt-6">
-                                <Button
-                                  onClick={HandleRejectRequest}
-                                  text={"Submit"}
-                                  loading={bookingRequestLoader}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {rejectedreqcomplete && (
-                          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                            <div className="bg-white rounded-xl p-10 md:w-[26em] shadow-2xl text-center">
-                              {/* Checkmark Icon */}
-                              <div className="mb-4 flex justify-center items-center">
-                                <div className="bg-gradient-to-r from-[#27A8E2] to-[#00034A] w-[70px] h-[70px] rounded-full flex justify-center items-center">
-                                  <FaCheck color="white" size={30} />
-                                </div>
-                              </div>
-                              {/* Title */}
-                              <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                                Request Rejected
-                              </h2>
-                              {/* Message */}
-                              <p className="text-gray-600 text-sm mb-4">
-                                You have Reject the user request. Thank you for
-                                taking action promptly!
-                              </p>
-                            </div>
-                          </div>
-                        )}
 
                         <Button
                           text={"Accept"}
@@ -397,6 +299,115 @@ const Dashboard = () => {
           </table>
         </div>
       </div>
+      {rejectedpopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl p-6 md:w-[30em] shadow-2xl text-center">
+            {/* Checkmark Icon */}
+            <div className="flex items-center justify-end gap-2">
+              <div>
+                <button onClick={() => setRejectedpopup(false)}>
+                  <HiXMark />
+                </button>
+              </div>
+            </div>
+            <div className="mb-4 flex justify-center items-center">
+              <div className=" w-[70px] h-[70px] rounded-full flex justify-center items-center">
+                <TiWarning size={70} color="#EE3131" />
+              </div>
+            </div>
+            {/* Title */}
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              Reject Request!
+            </h2>
+            {/* Message */}
+            <p className="text-gray-600 text-sm mb-4">
+              Are you sure you want reject this request
+            </p>
+            <div className="flex gap-4 justify-center">
+              <button
+                className="bg-[#F2F1F1] text-black px-8 p-3 text-sm rounded-xl"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setRejectedpopup(false);
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setRejectedreasons(true);
+                }}
+                className="bg-[#EE3131] rounded-xl px-8 text-sm  p-3 text-white"
+              >
+                Reject Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {rejectedreasons && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          {/* This outer div handles the background click to close, optional */}
+          <div
+            className="bg-white rounded-xl shadow-lg w-[440px] p-6"
+            onClick={(e) => e.stopPropagation()} // ← Important line!
+          >
+            <div className="flex items-center justify-between gap-2 mb-6">
+              <h2 className="text-[26px] font-bold text-black text-center ">
+                Reject Reason
+              </h2>
+              <div>
+                <button onClick={() => setRejectedreasons(false)}>
+                  <HiXMark />
+                </button>
+              </div>
+            </div>
+            <label className="block text-sm text-left font-medium text-black mb-1">
+              Reason
+            </label>
+            <textarea
+              rows={4}
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              required
+              placeholder="Type your reason here..."
+              className="w-full border border-gray-300 rounded-xl px-4 py-3 placeholder-gray-400 text-black resize-none focus:outline-none focus:ring-2 focus:ring-black"
+            />
+
+            <div className="flex justify-between gap-4 mt-6">
+              <Button
+                onClick={HandleRejectRequest}
+                text={"Submit"}
+                loading={bookingRequestLoader}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {rejectedreqcomplete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl p-10 md:w-[26em] shadow-2xl text-center">
+            {/* Checkmark Icon */}
+            <div className="mb-4 flex justify-center items-center">
+              <div className="bg-gradient-to-r from-[#27A8E2] to-[#00034A] w-[70px] h-[70px] rounded-full flex justify-center items-center">
+                <FaCheck color="white" size={30} />
+              </div>
+            </div>
+            {/* Title */}
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+              Request Rejected
+            </h2>
+            {/* Message */}
+            <p className="text-gray-600 text-sm mb-4">
+              You have Reject the user request. Thank you for taking action
+              promptly!
+            </p>
+          </div>
+        </div>
+      )}
 
       <Pagination filteredBookings={filteredBookings} />
 

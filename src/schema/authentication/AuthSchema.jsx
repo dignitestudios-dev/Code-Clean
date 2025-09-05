@@ -57,6 +57,7 @@ export const stripeAccountSchema = Yup.object({
     .required("CVC is required"),
 });
 
+
 export const forgetPasswordSchema = Yup.object({
   email: Yup.string()
     .email("Please enter a valid email address")

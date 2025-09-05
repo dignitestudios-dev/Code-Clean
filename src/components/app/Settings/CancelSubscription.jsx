@@ -1,6 +1,22 @@
 import Modal from "react-modal";
 import { HiOutlineXMark } from "react-icons/hi2";
-const CancelSubscription = ({ isOpen, setIsOpen }) => {
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getPlans,
+  SubscriptionCancel,
+} from "../../../redux/slices/provider.slice";
+const CancelSubscription = ({ isOpen, setIsOpen, selectedPlane }) => {
+  const { bookingRequestLoader } = useSelector((state) => state?.provider);
+  const dispatch = useDispatch();
+  const handleCancel = async() => {
+    const data = {
+      subscription_id: selectedPlane?.subscription_id,
+    };
+   await dispatch(SubscriptionCancel(data)).unwrap();
+    setIsOpen(!open);
+    dispatch(getPlans());
+  };
+
   return (
     <Modal
       isOpen={isOpen}
@@ -24,15 +40,21 @@ const CancelSubscription = ({ isOpen, setIsOpen }) => {
             Are you sure you want to cancel subscription?
           </p>
           <div className="flex gap-3 items-center mt-3">
-            <button className="bg-[#21293514] text-[#212935] rounded-[8px] p-3">
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="bg-[#21293514] text-[#212935] rounded-[8px] p-3"
+            >
               Don’t cancel
             </button>
-            <button className="bg-[#EE3131] text-[white] rounded-[8px] p-3">
+            <button
+              onClick={handleCancel}
+              className="bg-[#EE3131] text-[white] rounded-[8px] p-3"
+            >
               Cancel now
             </button>
           </div>
         </div>
-      </div>
+      </div>  
     </Modal>
   );
 };

@@ -15,6 +15,7 @@ const initialState = {
   bookingRequest: null,
   bookingRequestLoader: false,
   paymentMethod: null,
+  discoverJobs: null,
 };
 // ================= THUNKS =================
 
@@ -75,6 +76,20 @@ export const getBookingRequest = createAsyncThunk(
     }
   }
 );
+export const getDiscoverJobs = createAsyncThunk(
+  "/provider/discover/jobs",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get(`/provider/discover/jobs`);
+      console.log(response, "data-item");
+      return response?.data?.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Verification failed"
+      );
+    }
+  }
+);
 export const getRequestDetail = createAsyncThunk(
   "/provider/requests/4/details",
   async (_, thunkAPI) => {
@@ -96,6 +111,25 @@ export const AddCard = createAsyncThunk(
     try {
       const response = await axios.post(payload.url, payload?.payload);
       SuccessToast(response?.data?.message);
+      return { success: true, message: response?.data?.message };
+    } catch (error) {
+      ErrorToast(error.response?.data?.message || "Card Add failed");
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Card Add failed"
+      );
+    }
+  }
+);
+export const EditStripeCard = createAsyncThunk(
+  "/provider/edit/payment-methods",
+  async (payload, thunkAPI) => {
+    try {
+      console.log(payload, "payload");
+      const response = await axios.post(payload.url, {
+        expiry_month: payload?.expiry_month,
+        expiry_year: payload?.expiry_year,
+      });
+      SuccessToast("Update Card Succefully");
       return { success: true, message: response?.data?.message };
     } catch (error) {
       ErrorToast(error.response?.data?.message || "Card Add failed");
@@ -196,6 +230,46 @@ export const DeletePaymentMethod = createAsyncThunk(
     }
   }
 );
+export const SubscriptionCancel = createAsyncThunk(
+  "/provider/subscriptions/cancel",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.post(
+        `provider/subscriptions/cancel`,
+        payload
+      );
+      SuccessToast(response?.data?.message);
+      return { success: true, message: response?.data?.message };
+    } catch (error) {
+      ErrorToast(
+        error.response?.data?.message || "Booking Request Accept failed"
+      );
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Booking Request Accept failed"
+      );
+    }
+  }
+);
+export const SubscriptionUpgrade = createAsyncThunk(
+  "/provider/plan/subscribe",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.post(
+        `provider/plan/subscribe`,
+        payload
+      );
+      SuccessToast(response?.data?.message);
+      return { success: true, message: response?.data?.message };
+    } catch (error) {
+      ErrorToast(
+        error.response?.data?.message || "Booking Request Accept failed"
+      );
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Booking Request Accept failed"
+      );
+    }
+  }
+);
 
 // ================= SLICE =================
 const providerSlice = createSlice({
@@ -236,7 +310,7 @@ const providerSlice = createSlice({
       })
       .addCase(getPlans.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.plans = action.payload?.payment_methods;
+        state.plans = action.payload?.data;
         state.success = "Plans Get Successfully";
       })
       .addCase(getPlans.rejected, (state, action) => {
@@ -303,6 +377,20 @@ const providerSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+      .addCase(getDiscoverJobs.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getDiscoverJobs.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.discoverJobs = action.payload;
+        state.success = "Discover Jobs Get Successfully";
+      })
+      .addCase(getDiscoverJobs.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       //Add Card
       .addCase(AddCard.pending, (state) => {
         state.isLoading = true;
@@ -317,6 +405,19 @@ const providerSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+      .addCase(EditStripeCard.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(EditStripeCard.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.success = "Card Edit Successfully";
+      })
+      .addCase(EditStripeCard.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       .addCase(DeletePaymentMethod.pending, (state) => {
         state.bookingRequestLoader = true;
         state.error = null;
@@ -327,6 +428,32 @@ const providerSlice = createSlice({
         state.success = "Delete Successfully";
       })
       .addCase(DeletePaymentMethod.rejected, (state, action) => {
+        state.bookingRequestLoader = false;
+        state.error = action.payload;
+      })
+      .addCase(SubscriptionCancel.pending, (state) => {
+        state.bookingRequestLoader = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(SubscriptionCancel.fulfilled, (state, action) => {
+        state.bookingRequestLoader = false;
+        state.success = "Cancel Successfully";
+      })
+      .addCase(SubscriptionCancel.rejected, (state, action) => {
+        state.bookingRequestLoader = false;
+        state.error = action.payload;
+      })
+      .addCase(SubscriptionUpgrade.pending, (state) => {
+        state.bookingRequestLoader = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(SubscriptionUpgrade.fulfilled, (state, action) => {
+        state.bookingRequestLoader = false;
+        state.success = "Subscription Upgrade Successfully";
+      })
+      .addCase(SubscriptionUpgrade.rejected, (state, action) => {
         state.bookingRequestLoader = false;
         state.error = action.payload;
       })

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "../../../components/layout/Footer";
 import { FaArrowLeft } from "react-icons/fa";
 import Navbar from "../../../components/layout/Navbar";
@@ -7,12 +7,21 @@ import { HeroBg } from "../../../assets/export";
 import { Button } from "../../../components/global/GlobalButton";
 import UpdgradePlane from "../../../components/app/Settings/UpgradePlane";
 import CancelSubscription from "../../../components/app/Settings/CancelSubscription";
+import { getPlans } from "../../../redux/slices/provider.slice";
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Subscription() {
   const navigate = useNavigate("");
   const [activeTab, setActiveTab] = useState("billing");
   const [SubscriptionModal, setSubscriptionModal] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedPlane, setSelectedPlane] = useState(null);
+  const dispatch = useDispatch();
+  const { plans } = useSelector((state) => state?.provider);
+  useEffect(() => {
+    dispatch(getPlans());
+  }, []);
+  console.log(plans, "palns");
   const invoiceData = [
     {
       date: "Feb 19, 2024",
@@ -74,13 +83,6 @@ export default function Subscription() {
       total: "$150.00",
       status: "Paid",
     },
-  ];
-
-  const plans = [
-    { id: "01", name: "Enterprise", price: "$800.00", isActive: true },
-    { id: "02", name: "Enterprise", price: "$800.00", isActive: false },
-    { id: "03", name: "Enterprise", price: "$800.00", isActive: false },
-    { id: "05", name: "Enterprise", price: "$800.00", isActive: false },
   ];
 
   return (
@@ -204,56 +206,62 @@ export default function Subscription() {
 
                 {/* Plan Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {plans.map((plan) => (
-                    <div
-                      key={plan.id}
-                      className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm"
-                    >
-                      <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                          Plan {plan.id}
-                        </h3>
-                        <p className="text-gradient font-medium mb-4">
-                          {plan.name}
-                        </p>
-                        <p className="text-3xl font-bold text-[#0099DE] mb-6">
-                          {plan.price}
-                        </p>
-                      </div>
-
-                      {/* Features */}
-                      <div className="mb-8 space-y-2">
-                        {[...Array(6)].map((_, i) => (
-                          <p key={i} className="text-gray-600">
-                            Feature text goes here
+                  {plans &&
+                    plans?.map((plan, index) => (
+                      <div
+                        key={plan?.id}
+                        style={{
+                          boxShadow: "6px 6px 54px 0px #0000000A",
+                        }}
+                        className="bg-[#FFFFFF] rounded-[14px] border border-[#F4F4F4] shadow-md hover:shadow-lg transition-shadow duration-300 p-3 sm:p-4 md:p-6 lg:p-8"
+                      >
+                        {/* Plan? Header */}
+                        <div className="mb-4 sm:mb-5 md:mb-6">
+                          <h3 className="text-base sm:text-lg md:text-[12px] font-[500] text-[#181818] mb-1">
+                            Plan {index + 1}
+                          </h3>
+                          <p className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent text-xs sm:text-sm md:text-[12px] font-[500] mb-2 sm:mb-3">
+                            {" "}
+                            {plan?.name}
                           </p>
-                        ))}
-                      </div>
+                          <p className="text-xl sm:text-2xl md:text-3xl lg:text-23px font-bold text-[#0099DE]">
+                            ${plan?.amount}
+                          </p>
+                        </div>
 
-                      {/* Action Button */}
-                      <div className="mt-auto">
-                        {plan.isActive ? (
-                          <button
-                            onClick={() => {
-                              setSubscriptionModal("cancel");
-                              setIsOpen(!isOpen);
-                            }}
-                            className="w-full bg-[#EE313126] text-red-600 py-3 px-4 rounded-lg font-medium hover:bg-red-100 transition-colors"
-                          >
-                            Cancel Subscription
-                          </button>
-                        ) : (
-                          <Button
-                            text={"Upgrade Plan"}
-                            onClick={() => {
-                              setSubscriptionModal("upgrade");
-                              setIsOpen(!isOpen);
-                            }}
-                          />
-                        )}
+                        {/* Features */}
+                        <div className="mb-6 sm:mb-7 md:mb-8">
+                          <p className="text-[#181818B2] text-xs sm:text-sm md:text-[12px] font-[400] mb-1 sm:mb-2">
+                            {plan.description}
+                          </p>
+                        </div>
+
+                        {/* Action Button */}
+                        <div className="mt-auto">
+                          {plan?.is_subscribed ? (
+                            <button
+                              onClick={() => {
+                                setSubscriptionModal("cancel");
+                                setIsOpen(!isOpen);
+                                setSelectedPlane(plan);
+                              }}
+                              className="w-full bg-[#EE313126] text-red-600 py-3 px-4 rounded-lg font-medium hover:bg-red-100 transition-colors"
+                            >
+                              Cancel Subscription
+                            </button>
+                          ) : (
+                            <Button
+                              text={"Upgrade Plan"}
+                              onClick={() => {
+                                setSubscriptionModal("upgrade");
+                                setIsOpen(!isOpen);
+                                setSelectedPlane(plan);
+                              }}
+                            />
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </>
             )}
@@ -261,10 +269,10 @@ export default function Subscription() {
         </div>
       </div>
       {SubscriptionModal == "upgrade" && (
-        <UpdgradePlane isOpen={isOpen} setIsOpen={setIsOpen} />
+        <UpdgradePlane selectedPlane={selectedPlane} isOpen={isOpen} setIsOpen={setIsOpen} />
       )}
       {SubscriptionModal == "cancel" && (
-        <CancelSubscription isOpen={isOpen} setIsOpen={setIsOpen} />
+        <CancelSubscription selectedPlane={selectedPlane} isOpen={isOpen} setIsOpen={setIsOpen} />
       )}
       <Footer />
     </div>

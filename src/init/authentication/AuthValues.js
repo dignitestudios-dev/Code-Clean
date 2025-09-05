@@ -15,6 +15,9 @@ export const stripeAccountValues = {
   expiry: "",
   cvc: "",
 };
+export const editStripeValues = {
+  expiry: "",
+};
 
 export const forgetPasswordValues = {
   email: "",

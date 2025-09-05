@@ -78,7 +78,7 @@ export default function PaymentMethod() {
 
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => navigate("/app/edit-card")}
+                      onClick={() => navigate("/app/edit-card",{state:{id:item?.id}})}
                       style={{
                         background:
                           "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",
