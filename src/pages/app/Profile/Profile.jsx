@@ -90,7 +90,7 @@ export default function Profile() {
                         <div className='flex items-center gap-3 justify-between' >
                             {userdata?.avatar ? (
                                 <img
-                                    src={userdata?.avatar ? `http://family-phys-ed-s3.s3.amazonaws.com/${userdata.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
+                                    src={userdata?.avatar ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${userdata.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
                                     className="w-[80px] h-[80px] rounded-full object-cover border-2"
                                     alt={userdata.name || "User Avatar"}
                                 />
@@ -107,11 +107,18 @@ export default function Profile() {
                             )}
 
                             <div>
-                                <h3 className='text-[24px] font-medium'>
-                                    {user_data?.role === "service_provider"
-                                        ? (serviceUser && Object.keys(serviceUser).length > 0 ? serviceUser.name : "No User Name")
-                                        : (userdata && Object.keys(userdata).length > 0 ? userdata.name : "No User Name")}
+                                <h3 className="text-[24px] font-medium">
+                                    {isLoading ? (
+                                        <div className="animate-pulse bg-gray-200 h-6 w-40 rounded"></div>
+                                    ) : (
+                                        <>
+                                            {userdata && Object.keys(userdata).length > 0
+                                                ? userdata.name
+                                                : "No User Name"}
+                                        </>
+                                    )}
                                 </h3>
+
 
 
                             </div>

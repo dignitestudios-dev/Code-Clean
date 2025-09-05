@@ -43,7 +43,7 @@ export default function EditProfileModal({ isOpen, setIsOpen, updateProfile, set
       });
 
       // Use server avatar if present, else keep default
-      setSelectedImage(`http://family-phys-ed-s3.s3.amazonaws.com/${userProfile?.avatar}` || DEFAULT_AVATAR);
+      setSelectedImage(`https://code-clean-bucket.s3.us-east-2.amazonaws.com/${userProfile?.avatar}` || DEFAULT_AVATAR);
       setImageFile(null);
     }
   }, [isOpen, userProfile]);

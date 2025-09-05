@@ -234,7 +234,7 @@ const Dashboard = () => {
                   <td className="px-6 py-4">{index + 1}</td>
                   <td className="px-6 py-4 flex items-center gap-3">
                     <img
-                      src={`http://family-phys-ed-s3.s3.amazonaws.com/${row?.user?.avatar}`}
+                      src={`https://code-clean-bucket.s3.us-east-2.amazonaws.com/${row?.user?.avatar}`}
                       alt={row?.user?.name}
                       className="w-8 h-8 rounded-full object-cover"
                     />

@@ -10,6 +10,7 @@ import {
   FaChevronRight,
   FaChevronLeft,
   FaSpinner,
+  FaHeart,
 } from "react-icons/fa";
 import { LuSettings2 } from "react-icons/lu";
 import { awardIcon, LocationIcon, WorkIcon } from "../../assets/export";
@@ -91,7 +92,7 @@ const Home = () => {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <img
-                            src={pro?.avatar ? `http://family-phys-ed-s3.s3.amazonaws.com/${pro.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
+                            src={pro?.avatar ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${pro.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
                             alt={pro.name}
                             className="w-12 h-12 rounded-full object-cover"
                           />
@@ -108,10 +109,17 @@ const Home = () => {
                             </div>
                           </div>
                         </div>
-                        <FaRegHeart
-                          onClick={() => navigate("/favorites")}
-                          className="text-black text-lg cursor-pointer"
-                        />
+                        {pro?.is_favorite ? (
+                          <FaHeart
+                            onClick={() => navigate("/favorites")}
+                            className="text-red-500 cursor-pointer"
+                          />
+                        ) : (
+                          <FaRegHeart
+                            onClick={() => navigate("/favorites")}
+                            className="text-gray-500 cursor-pointer"
+                          />
+                        )}
                       </div>
 
                       <div className="text-sm text-gray-600 space-y-1 mb-4">
@@ -194,7 +202,7 @@ const Home = () => {
 
                     >
                       Next
-                       <FaChevronRight color='#00034A' size={10} />
+                      <FaChevronRight color='#00034A' size={10} />
                     </button>
                   </div>
                 </div>

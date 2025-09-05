@@ -67,7 +67,7 @@ export default function CreateCard() {
       try {
         setLoading(true);
         const data = {
-          url: "provider/payment-methods",
+          url: "/payment-methods",
           payload: {
             card_token: token?.id,
             last_digits: paymentMethod?.card?.last4,

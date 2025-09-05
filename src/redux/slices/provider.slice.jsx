@@ -55,7 +55,7 @@ export const getServices = createAsyncThunk(
       console.log(response, "response");
       return response.data;
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to Fetch Plans";
+      const msg = error?.response?.data?.message || "Failed to Services";
       ErrorToast(msg); // Show error toast
       return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
@@ -106,7 +106,7 @@ export const getRequestDetail = createAsyncThunk(
 );
 // RESEND OTP
 export const AddCard = createAsyncThunk(
-  "/provider/payment-methods",
+  "/payment-methods",
   async (payload, thunkAPI) => {
     try {
       const response = await axios.post(payload.url, payload?.payload);
@@ -121,7 +121,7 @@ export const AddCard = createAsyncThunk(
   }
 );
 export const EditStripeCard = createAsyncThunk(
-  "/provider/edit/payment-methods",
+  "/edit/payment-methods",
   async (payload, thunkAPI) => {
     try {
       console.log(payload, "payload");
@@ -197,14 +197,15 @@ export const MarkStartJob = createAsyncThunk(
     }
   }
 );
+
 export const getPaymentMethod = createAsyncThunk(
-  "/provider/payment-methods/get-card", // The action type
+  "/payment-methods/get-card", // The action type
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("/provider/payment-methods"); // API request to fetch the profile
+      const response = await axios.get("/payment-methods"); // API request to fetch the profile
       return response.data; // Assuming the API returns the user profile data
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to Fetch Plans";
+      const msg = error?.response?.data?.message || "Failed to Payment Method";
       ErrorToast(msg); // Show error toast
       return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
@@ -212,11 +213,11 @@ export const getPaymentMethod = createAsyncThunk(
 );
 
 export const DeletePaymentMethod = createAsyncThunk(
-  "/provider/payment-method/{payment_method_id}",
+  "/payment-method/{payment_method_id}",
   async (payload, thunkAPI) => {
     try {
       const response = await axios.delete(
-        `/provider/payment-method/${payload}`
+        `/payment-method/${payload}`
       );
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };

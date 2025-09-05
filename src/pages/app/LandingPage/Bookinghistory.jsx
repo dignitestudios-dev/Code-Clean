@@ -34,7 +34,7 @@ const Bookinghistory = () => {
     const matchesTab = 
       activeTab === 'All' || 
       (activeTab === 'Completed Jobs' && booking.status.toLowerCase() === 'completed') || 
-      (activeTab === 'Canceled Jobs' && booking.status.toLowerCase() === 'canceled');
+      (activeTab === 'Canceled Jobs' && booking.status.toLowerCase() === 'cancelled');
     
     // Filter bookings based on the search query (for booking details like name, date, and status)
     const matchesSearchQuery = 
@@ -172,7 +172,7 @@ const Bookinghistory = () => {
                         <td className="px-6 py-4">{row.booking_id}</td>
                         <td className="px-6 py-4 flex items-center gap-3">
                           <img
-                            src={row.service_provider.avatar ? `http://family-phys-ed-s3.s3.amazonaws.com/${row.service_provider.avatar}` : "https://randomuser.me/api/portraits/men/1.jpg"}
+                            src={row.service_provider.avatar ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${row.service_provider.avatar}` : "https://randomuser.me/api/portraits/men/1.jpg"}
                             alt={row.service_provider.name}
                             className="w-8 h-8 rounded-full object-cover"
                           />
