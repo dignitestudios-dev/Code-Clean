@@ -19,7 +19,7 @@ import Filter from "../../components/global/Filter";
 import { useNavigate } from "react-router";
 import Footer from "../../components/layout/Footer";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchallservices } from "../../redux/slices/users.slice";
+import { fetchallservices, unfavoriteProvider } from "../../redux/slices/users.slice";
 
 const itemsPerPage = 6;
 
@@ -34,6 +34,35 @@ const Home = () => {
   const { allservices, allservicesloading } = useSelector((s) => s.user);
   const dispatch = useDispatch();
   const navigate = useNavigate("");
+  const [pending, setPending] = useState({}); // { [id]: true }
+
+
+  const onToggleFavorite = async (pro) => {
+    if (!pro?.id || pending[pro.id]) return;
+    setPending(p => ({ ...p, [pro.id]: true }));
+    try {
+      const result = await dispatch(unfavoriteProvider(pro.id)).unwrap();
+      const nextVal = typeof result?.is_favorite === "boolean"
+        ? result.is_favorite
+        : !pro.is_favorite;
+
+      // local list me flip (taake turant reflect ho)
+      setData(prev => prev.map(x => x.id === pro.id ? { ...x, is_favorite: nextVal } : x));
+
+      // optional: re-fetch current page to stay in sync with server
+      // dispatch(fetchallservices(currentPage));
+    } catch (e) {
+      // ErrorToast("Could not update favorite. Please try again.");
+      console.error(e);
+    } finally {
+      setPending(p => {
+        const { [pro.id]: _, ...rest } = p;
+        return rest;
+      });
+    }
+  };
+
+
 
   useEffect(() => {
     dispatch(fetchallservices(currentPage)); // pass page to API
@@ -44,6 +73,8 @@ const Home = () => {
       setData(allservices.data); // use only the providers array
     }
   }, [allservices]);
+
+
 
 
   return (
@@ -87,42 +118,56 @@ const Home = () => {
 
               {currentProfessionals.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {currentProfessionals.map((pro, idx) => (
-                    <div key={idx} className="p-5 rounded-xl shadow-xl bg-white hover:shadow-md transition-all">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={pro?.avatar ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${pro.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
-                            alt={pro.name}
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
-                          <div>
-                            <h2
-                              className="font-semibold text-md text-gray-800 cursor-pointer"
-                              onClick={() => navigate("/service-provider", { state: { id: pro.id } })}
-                            >
-                              {pro.name}
-                            </h2>
-                            <div className="flex items-center text-sm text-yellow-500">
-                              <FaStar className="mr-1" />
-                              {pro.rating}
+                  {currentProfessionals.map((pro, idx) => {
+                    const isFav = !!pro?.is_favorite;
+                    const isPend = !!pending[pro?.id];
+
+                    return (
+                      <div key={pro?.id ?? idx} className="p-5 rounded-xl shadow-xl bg-white hover:shadow-md transition-all">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={pro?.avatar ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${pro.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
+                              alt={pro.name}
+                              className="w-12 h-12 rounded-full object-cover"
+                            />
+                            <div>
+                              <h2
+                                className="font-semibold text-md text-gray-800 cursor-pointer"
+                                onClick={() => navigate("/service-provider", { state: { id: pro.id } })}
+                              >
+                                {pro.name}
+                              </h2>
+                              <div className="flex items-center text-sm text-yellow-500">
+                                <FaStar className="mr-1" />
+                                {pro.rating}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        {pro?.is_favorite ? (
-                          <FaHeart
-                            onClick={() => navigate("/favorites")}
-                            className="text-red-500 cursor-pointer"
-                          />
-                        ) : (
-                          <FaRegHeart
-                            onClick={() => navigate("/favorites")}
-                            className="text-gray-500 cursor-pointer"
-                          />
-                        )}
-                      </div>
 
-                      <div className="text-sm text-gray-600 space-y-1 mb-4">
+                          {/* ❤️ FAVORITE TOGGLE BUTTON */}
+                          <button
+                            type="button"
+                            onClick={() => onToggleFavorite(pro)}
+                            disabled={isPend}
+                            aria-label={isFav ? "Unfavorite" : "Favorite"}
+                            className={`transition ${isPend ? "opacity-70 cursor-not-allowed" : "hover:scale-110"}`}
+                            title={isPend ? "Updating…" : isFav ? "Remove from favorites" : "Add to favorites"}
+                          >
+                            {isPend ? (
+                              <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4A4 4 0 008 12H4z"></path>
+                              </svg>
+                            ) : isFav ? (
+                              <FaHeart className="text-red-500" />
+                            ) : (
+                              <FaRegHeart className="text-gray-500" />
+                            )}
+                          </button>
+                        </div>
+
+                          <div className="text-sm text-gray-600 space-y-1 mb-4">
                         <div className="text-sm text-gray-600 space-y-1 mb-2">
                           <div className="flex items-center gap-2">
                             <img src={LocationIcon} alt="LocationIcon" className="w-3" />
@@ -143,8 +188,10 @@ const Home = () => {
 
                       <h3 className="font-semibold text-[#00034A] mb-1">Biography</h3>
                       <p className="text-sm text-gray-700 line-clamp-3">{pro.biography}</p>
-                    </div>
-                  ))}
+                      </div>
+                    );
+                  })}
+
                 </div>
               ) : (
                 <div className="flex justify-center items-center py-20">
