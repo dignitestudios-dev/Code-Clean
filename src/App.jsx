@@ -20,6 +20,8 @@ import '@fontsource/inter/600.css'; // or 500, 600, etc.
 import '@fontsource/inter/100.css'; // or 500, 600, etc.
 import '@fontsource/inter/200.css'; // or 500, 600, etc.
 import { serviceproviderRoutes } from "./routes/app/ServiceproviderRoutes";
+import PrivateRoute from "./components/app/Profile/PrivateRoute";
+
 
 function App() {
   return (
@@ -36,17 +38,38 @@ function App() {
       </Route>
 
       <Route path="">
-        {appRoutes?.map((Link, i) => (
-          <Route path={Link.url} key={i} element={Link.page} />
+        {appRoutes.map((route, idx) => (
+          <Route
+            key={idx}
+            path={route.url}
+            element={
+              route.isPublic ? (
+                route.page
+              ) : (
+                <PrivateRoute>{route.page}</PrivateRoute>
+              )
+            }
+          />
         ))}
       </Route>
 
 
       <Route path="">
-        {serviceproviderRoutes?.map((Link, i) => (
-          <Route path={Link.url} key={i} element={Link.page} />
+        {serviceproviderRoutes?.map((route, i) => (
+          <Route
+            key={i}
+            path={route.url}               // relative child path e.g. "home"
+            element={
+              route.isPublic ? (
+                route.page
+              ) : (
+                <PrivateRoute>{route.page}</PrivateRoute>
+              )
+            }
+          />
         ))}
       </Route>
+
 
       <Route path="auth" element={<AuthLayout />}>
         <Route path="role-selection" element={<RoleSelection />} />

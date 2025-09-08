@@ -41,23 +41,22 @@ const initialState = {
 };
 // ================= THUNKS =================
 
-// Hire Now Service Provider with dynamic user ID in the URL and data in the body
+// Hire Now Service Provider with optional userId
 export const HireServiceProvider = createAsyncThunk(
   "/provider/requests/private", // Action type
   async (payload, thunkAPI) => {
     try {
-      const { userId, providerData } = payload; // Destructure userId and providerData from payload
+      const { userId, providerData } = payload; 
 
-      // Sending the userId in the URL and providerData in the request body
-      const res = await axios.post(
-        `/provider/requests/private/${userId}`,
-        providerData
-      );
+      // Agar userId hai to URL mein lagao, warna base endpoint use karo
+      const endpoint = userId 
+        ? `/provider/requests/private/${userId}` 
+        : `/provider/requests/custom`;
 
-      // Return the response data after submission
+      const res = await axios.post(endpoint, providerData);
+
       return res.data;
     } catch (error) {
-      // Reject the promise with a custom error message
       return thunkAPI.rejectWithValue("Failed to submit provider data");
     }
   }
@@ -87,10 +86,10 @@ export const RequestCustomService = createAsyncThunk(
 
 //Get Payment Method
 export const getPaymentMethoduser = createAsyncThunk(
-  "/user/payment-methods", // The action type
+  "/payment-methods", // The action type
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("/user/payment-methods"); // API request to fetch the profile
+      const response = await axios.get("/payment-methods"); // API request to fetch the profile
       return response.data; // Assuming the API returns the user profile data
     } catch (error) {
       const msg =
