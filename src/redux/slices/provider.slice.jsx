@@ -19,6 +19,7 @@ const initialState = {
   billings: null,
   wallet: null,
   transaction: null,
+  badges: null,
 };
 // ================= THUNKS =================
 
@@ -35,6 +36,16 @@ export const getProfile = createAsyncThunk(
     }
   }
 );
+export const getBadges = createAsyncThunk("/badges", async (_, thunkAPI) => {
+  try {
+    const response = await axios.get("/badges");
+    return response.data; // Return entire API response
+  } catch (error) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message || "Verification failed"
+    );
+  }
+});
 export const getBillings = createAsyncThunk(
   "/provider/billings",
   async (_, thunkAPI) => {
@@ -342,6 +353,20 @@ const providerSlice = createSlice({
         state.getprofileloading = false;
         state.error = action.payload;
       })
+      .addCase(getBadges.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getBadges.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.badges = action.payload;
+        state.success = action.payload.message;
+      })
+      .addCase(getBadges.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       // Provider Plans
       .addCase(getBillings.pending, (state) => {
         state.isLoading = true;
@@ -525,7 +550,7 @@ const providerSlice = createSlice({
       .addCase(SubscriptionCancel.rejected, (state, action) => {
         state.bookingRequestLoader = false;
         state.error = action.payload;
-      }) 
+      })
       .addCase(SubscriptionUpgrade.pending, (state) => {
         state.bookingRequestLoader = true;
         state.error = null;

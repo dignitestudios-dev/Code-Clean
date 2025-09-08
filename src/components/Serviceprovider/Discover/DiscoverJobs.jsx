@@ -79,7 +79,6 @@ export default function DiscoverJobs() {
       request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       request.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  console.log(discoverJobs, "jobss");
   return (
     <div>
       <Navbar />
@@ -105,6 +104,7 @@ export default function DiscoverJobs() {
                 </div>
                 <input
                   type="text"
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="bg-[#FFFFFF4D] blur-[40] outline-none p-2 px-7 rounded-[8px] text-white"
                 />
               </div>
@@ -208,10 +208,10 @@ export default function DiscoverJobs() {
           </div>
 
           {/* Empty state */}
-          {filteredRequests.length === 0 && (
+          {discoverJobs.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">
-                No service requests found matching your search.
+                No service requests found.
               </p>
             </div>
           )}

@@ -16,6 +16,7 @@ import {
 import { Button } from "../../../components/global/GlobalButton";
 import { ErrorToast } from "../../../components/global/Toaster";
 import { HiXMark } from "react-icons/hi2";
+import SkeletonRows from "../../../components/global/Skellyton";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const Dashboard = () => {
   const [rejectedreqcomplete, setRejectedreqcomplete] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const dispatch = useDispatch();
-  const { bookingRequest, bookingRequestLoader } = useSelector(
+  const { bookingRequest, bookingRequestLoader,isLoading } = useSelector(
     (state) => state.provider
   );
   useEffect(() => {
@@ -215,86 +216,99 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className="text-sm text-[#3F3F3F]">
-              {filteredBookings?.map((row, index) => (
-                <tr
-                  key={index}
-                  className="border-t cursor-pointer"
-                  onClick={() =>
-                    navigate(
-                      `/job-details?id=${row?.request_id}&status=${
-                        row?.status
-                      }&type=${
-                        activeTab == "Booking Request"
-                          ? `provider/requests/${row?.request_id}/details`
-                          : `provider/bookings/${row?.booking_id}/details`
-                      }`
-                    )
-                  }
-                >
-                  <td className="px-6 py-4">{index + 1}</td>
-                  <td className="px-6 py-4 flex items-center gap-3">
-                    <img
-                      src={`http://family-phys-ed-s3.s3.amazonaws.com/${row?.user?.avatar}`}
-                      alt={row?.user?.name}
-                      className="w-8 h-8 rounded-full object-cover"
-                    />
-                    {row?.user?.name}
-                  </td>
-                  <td className="px-6 py-4">{row.date}</td>
-                  <td className="px-6 py-4">{row.time}</td>
-                  <td className="px-6 py-4">{row.duration}</td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`font-semibold ${
-                        row.status === "accepted" || row.status == "completed"
-                          ? "text-[#00C853]"
-                          : row.status === "pending" || row.status == "waiting"
-                          ? "text-[#EC8325]"
-                          : row.status === "inprogress" ||
-                            row.status == "In Progress Jobs"
-                          ? "text-[#208BC7]"
-                          : "text-[#EE3131]"
-                      }`}
-                    >
-                      {row.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-2 text-[#00AEEF] cursor-pointer text-center">
-                    {row.status === "pending" ? (
-                      <div className="flex gap-3">
-                        <button
-                          className="bg-[#EE3131] text-white px-6 py-3 rounded-xl"
-                          onClick={(e) => {
-                            setSelectedItem(row?.request_id);
-                            e.stopPropagation();
-                            setRejectedpopup(true);
-                          }}
-                        >
-                          Reject
-                        </button>
+              {isLoading ? (
+                <SkeletonRows count={6} />
+              ) : filteredBookings?.length > 0 ? (
+                filteredBookings.map((row, index) => (
+                  <tr
+                    key={index}
+                    className="border-t cursor-pointer"
+                    onClick={() =>
+                      navigate(
+                        `/job-details?id=${row?.request_id}&status=${
+                          row?.status
+                        }&type=${
+                          activeTab == "Booking Request"
+                            ? `provider/requests/${row?.request_id}/details`
+                            : `provider/bookings/${row?.booking_id}/details`
+                        }`
+                      )
+                    }
+                  >
+                    <td className="px-6 py-4">{index + 1}</td>
+                    <td className="px-6 py-4 flex items-center gap-3">
+                      <img
+                        src={`http://family-phys-ed-s3.s3.amazonaws.com/${row?.user?.avatar}`}
+                        alt={row?.user?.name}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                      {row?.user?.name}
+                    </td>
+                    <td className="px-6 py-4">{row.date}</td>
+                    <td className="px-6 py-4">{row.time}</td>
+                    <td className="px-6 py-4">{row.duration}</td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`font-semibold ${
+                          row.status === "accepted" || row.status == "completed"
+                            ? "text-[#00C853]"
+                            : row.status === "pending" ||
+                              row.status == "waiting"
+                            ? "text-[#EC8325]"
+                            : row.status === "inprogress" ||
+                              row.status == "In Progress Jobs"
+                            ? "text-[#208BC7]"
+                            : "text-[#EE3131]"
+                        }`}
+                      >
+                        {row.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-2 text-[#00AEEF] cursor-pointer text-center">
+                      {row.status === "pending" ? (
+                        <div className="flex gap-3">
+                          <button
+                            className="bg-[#EE3131] text-white px-6 py-3 rounded-xl"
+                            onClick={(e) => {
+                              setSelectedItem(row?.request_id);
+                              e.stopPropagation();
+                              setRejectedpopup(true);
+                            }}
+                          >
+                            Reject
+                          </button>
 
-                        <Button
-                          text={"Accept"}
-                          onClick={(e) => {
-                            setSelectedItem(index);
-                            e.stopPropagation();
-                            console.log(row, "RowsId");
-                            dispatch(AcceptBookingRequest(row.request_id));
-                            dispatch(
-                              getBookingRequest("provider/booking/requests")
-                            );
-                          }}
-                          loading={
-                            selectedItem == index && bookingRequestLoader
-                          }
-                        />
-                      </div>
-                    ) : (
-                      <span>&gt;</span>
-                    )}
+                          <Button
+                            text={"Accept"}
+                            onClick={(e) => {
+                              setSelectedItem(index);
+                              e.stopPropagation();
+                              dispatch(AcceptBookingRequest(row.request_id));
+                              dispatch(
+                                getBookingRequest("provider/booking/requests")
+                              );
+                            }}
+                            loading={
+                              selectedItem == index && bookingRequestLoader
+                            }
+                          />
+                        </div>
+                      ) : (
+                        <span>&gt;</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="7"
+                    className="text-center py-6 text-gray-500 font-medium"
+                  >
+                    No bookings found
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

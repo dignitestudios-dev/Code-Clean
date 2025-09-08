@@ -38,16 +38,18 @@ const initialState = {
 };
 // ================= THUNKS =================
 
-
 // Hire Now Service Provider with dynamic user ID in the URL and data in the body
 export const HireServiceProvider = createAsyncThunk(
   "/provider/requests/private", // Action type
   async (payload, thunkAPI) => {
     try {
-      const { userId, providerData } = payload;  // Destructure userId and providerData from payload
+      const { userId, providerData } = payload; // Destructure userId and providerData from payload
 
       // Sending the userId in the URL and providerData in the request body
-      const res = await axios.post(`/provider/requests/private/${userId}`, providerData);
+      const res = await axios.post(
+        `/provider/requests/private/${userId}`,
+        providerData
+      );
 
       // Return the response data after submission
       return res.data;
@@ -57,16 +59,18 @@ export const HireServiceProvider = createAsyncThunk(
     }
   }
 );
-
 
 // Hire Now Service Provider with dynamic user ID in the URL and data in the body
 export const RequestCustomService = createAsyncThunk(
   "/provider/requests/custom", // Action type
   async (payload, thunkAPI) => {
     try {
-      const { customserviceData } = payload;  // Destructure userId and providerData from payload
+      const { customserviceData } = payload; // Destructure userId and providerData from payload
       // Sending the userId in the URL and providerData in the request body
-      const res = await axios.post(`/provider/requests/custom`, customserviceData);
+      const res = await axios.post(
+        `/provider/requests/custom`,
+        customserviceData
+      );
       // Return the response data after submission
       return res.data;
     } catch (error) {
@@ -76,15 +80,17 @@ export const RequestCustomService = createAsyncThunk(
   }
 );
 
-
 //Get Payment Method
-export const getPaymentMethoduser = createAsyncThunk("/user/payment-methods", // The action type
+export const getPaymentMethoduser = createAsyncThunk(
+  "/user/payment-methods", // The action type
   async (_, thunkAPI) => {
     try {
       const response = await axios.get("/user/payment-methods"); // API request to fetch the profile
       return response.data; // Assuming the API returns the user profile data
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to Get Payment Method of User";
+      const msg =
+        error?.response?.data?.message ||
+        "Failed to Get Payment Method of User";
       ErrorToast(msg); // Show error toast
       return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
@@ -160,10 +166,13 @@ export const updateUserProfile = createAsyncThunk(
   "/user/updateProfile",
   async (payload, thunkAPI) => {
     try {
-      const isFormData = typeof FormData !== "undefined" && payload instanceof FormData;
+      const isFormData =
+        typeof FormData !== "undefined" && payload instanceof FormData;
 
       const res = await axios.post("/user/profile", payload, {
-        headers: isFormData ? { "Content-Type": "multipart/form-data" } : undefined,
+        headers: isFormData
+          ? { "Content-Type": "multipart/form-data" }
+          : undefined,
       });
 
       // After updating, fetch the updated profile data
@@ -183,7 +192,6 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
-
 // Change Password
 export const changePassword = createAsyncThunk(
   "/user/update-password", // Action type
@@ -197,14 +205,12 @@ export const changePassword = createAsyncThunk(
 
       return res.data;
     } catch (error) {
-      const msg =
-        error?.response?.data?.message || "Failed to update password";
+      const msg = error?.response?.data?.message || "Failed to update password";
       ErrorToast(msg);
       return thunkAPI.rejectWithValue(msg);
     }
   }
 );
-
 
 // ================= SLICE =================
 const userSlice = createSlice({
@@ -248,7 +254,6 @@ const userSlice = createSlice({
         state.updateLoading = false;
         state.updateError = action.payload;
       })
-
 
       // ----- fetch all services -----
       .addCase(fetchallservices.pending, (state) => {
@@ -354,7 +359,8 @@ const userSlice = createSlice({
       })
       .addCase(RequestCustomService.fulfilled, (state, action) => {
         state.CustomserviceproviderLoading = false;
-        state.CustomserviceproviderSuccess = "Custom Service provider hired successfully!";
+        state.CustomserviceproviderSuccess =
+          "Custom Service provider hired successfully!";
         SuccessToast(state.CustomserviceproviderSuccess);
       })
       .addCase(RequestCustomService.rejected, (state, action) => {
