@@ -269,9 +269,7 @@ export const DeletePaymentMethod = createAsyncThunk(
   "/payment-method/{payment_method_id}",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.delete(
-        `/payment-method/${payload}`
-      );
+      const response = await axios.delete(`/payment-method/${payload}`);
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {
@@ -317,6 +315,38 @@ export const SubscriptionUpgrade = createAsyncThunk(
       );
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Booking Request Accept failed"
+      );
+    }
+  }
+);
+// Bank Details
+
+export const AddBank = createAsyncThunk(
+  "/provider/bank-details",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.post("provider/bank-details", payload);
+      SuccessToast(response?.data?.message);
+      return { success: true, message: response?.data?.message };
+    } catch (error) {
+      ErrorToast(error.response?.data?.message || "Bank Add failed");
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Bank Add failed"
+      );
+    }
+  }
+);
+export const widrawFunds = createAsyncThunk(
+  "/withdrawals",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.post("/withdrawals", payload);
+      SuccessToast(response?.data?.message);
+      return { success: true, message: response?.data?.message };
+    } catch (error) {
+      ErrorToast(error.response?.data?.message || "withdraw Funds failed");
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "withdraw Funds failed"
       );
     }
   }
@@ -499,6 +529,32 @@ const providerSlice = createSlice({
         state.error = action.payload;
       })
       //Add Card
+      .addCase(AddBank.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(AddBank.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.success = "Bank Add Successfully";
+      })
+      .addCase(AddBank.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(widrawFunds.pending, (state) => {
+        state.bookingRequestLoader = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(widrawFunds.fulfilled, (state, action) => {
+        state.bookingRequestLoader = false;
+        state.success = "withdraw Funds Successfully";
+      })
+      .addCase(widrawFunds.rejected, (state, action) => {
+        state.bookingRequestLoader = false;
+        state.error = action.payload;
+      })
       .addCase(AddCard.pending, (state) => {
         state.isLoading = true;
         state.error = null;

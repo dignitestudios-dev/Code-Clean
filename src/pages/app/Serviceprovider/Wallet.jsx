@@ -5,7 +5,28 @@ import { FaArrowLeft, FaCheck } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { ImCross } from "react-icons/im";
 import { useDispatch, useSelector } from "react-redux";
-import { getTransactions, getWallet } from "../../../redux/slices/provider.slice";
+import {
+  AddBank,
+  getPaymentMethod,
+  getTransactions,
+  getWallet,
+  widrawFunds,
+} from "../../../redux/slices/provider.slice";
+import { Button } from "../../../components/global/GlobalButton";
+import { ErrorToast } from "../../../components/global/Toaster";
+const BankSkeleton = ({ count = 2 }) => (
+  <>
+    {Array.from({ length: count }).map((_, i) => (
+      <div
+        key={i}
+        className="border-2 rounded-2xl py-1 px-3 mt-3 mb-3 animate-pulse"
+      >
+        <label className="block text-sm font-bold text-black">Bank Name</label>
+        <div className="h-4 w-40 bg-gray-200 rounded mt-1" />
+      </div>
+    ))}
+  </>
+);
 
 const Wallet = () => {
   const navigate = useNavigate();
@@ -13,13 +34,23 @@ const Wallet = () => {
   const [showModal, setShowModal] = useState(false); // State to control the modal visibility
   const [withdrawal, setWithdrawal] = useState(false);
   const [addbankaccount, setAddbankaccount] = useState(false);
+  // State add kardo
+  const [selectedBank, setSelectedBank] = useState(null);
+  const [amount, setAmount] = useState("");
   const dispatch = useDispatch();
-  const { wallet,transaction } = useSelector((state) => state.provider);
+  const {
+    wallet,
+    transaction,
+    isLoading,
+    paymentMethod,
+    bookingRequestLoader,
+  } = useSelector((state) => state.provider);
   useEffect(() => {
     dispatch(getTransactions());
     dispatch(getWallet());
-  }, []);
-  console.log(wallet,"wallets record")
+    dispatch(getPaymentMethod());
+  }, [dispatch]);
+  console.log(wallet, "wallets record");
   const [formData, setFormData] = useState({
     bankName: "",
     accountHolderName: "",
@@ -42,22 +73,30 @@ const Wallet = () => {
       saveDetails: !prev.saveDetails,
     }));
   };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const data = {
+      account_number: formData?.accountNumber,
+      routing_number: formData?.routingNumber,
+      bank_name: formData?.bankName,
+      holder_name: formData?.accountHolderName,
+    };
+    await dispatch(AddBank(data)).unwrap();
+    dispatch(getPaymentMethod());
     setAddbankaccount(false);
     setShowModal(true);
   };
-
-  const transactions = Array(7).fill({
-    id: "12FGH123",
-    name: "John Doe",
-    account: "0112********12",
-    date: "10/May/2024",
-    time: "08:15pm",
-    amount: "$1499",
-  });
-console.log(transaction,"transaction")
+  const handleWidraw = async () => {
+    if (!selectedBank) return ErrorToast("Please Select Bank");
+    if (!amount) return ErrorToast("amount is required");
+    const data = {
+      bank_id: selectedBank,
+      amount: amount,
+    };
+    await dispatch(widrawFunds(data)).unwrap();
+    setShowModal(false);
+    setWithdrawal(true);
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar type="serviceprovider" />
@@ -114,12 +153,33 @@ console.log(transaction,"transaction")
                 <ImCross />
               </button>
             </div>
-            <div className="border-2 rounded-2xl py-1 px-3 mt-3 mb-3">
-              <label className="block text-sm font-bold text-black">
-                Bank Name
-              </label>
-              <p className="text-sm">0112**********12</p>
-            </div>
+            {isLoading ? ( // <-- yahan apna loader state use karo
+              <BankSkeleton count={2} />
+            ) : paymentMethod?.banks?.length > 0 ? (
+              paymentMethod.banks.map((item, i) => (
+                <div
+                  key={i}
+                  onClick={() => setSelectedBank(item?.id)} // <-- select bank
+                  className={`border-2 rounded-2xl py-1 px-3 mt-3 mb-3 cursor-pointer transition
+      ${
+        selectedBank == item?.id
+          ? "border-blue-500 bg-blue-50"
+          : "border-gray-300"
+      }
+    `}
+                >
+                  <label className="block text-sm font-bold text-black">
+                    {item?.bank_name}
+                  </label>
+                  <p className="text-sm">0112********{item?.last_digits}</p>
+                </div>
+              ))
+            ) : (
+              <div className="border-2 rounded-2xl py-1 px-3 mt-3 mb-3 text-center">
+                <p className="text-sm text-gray-500">No Bank Found</p>
+              </div>
+            )}
+
             <div className="-mt-3">
               <span
                 className="text-blue-600 text-[12px] underline cursor-pointer"
@@ -141,7 +201,9 @@ console.log(transaction,"transaction")
               </label>
               <input
                 type="number"
+                onChange={(e) => setAmount(e?.target?.value)}
                 placeholder="$200"
+                value={amount}
                 className="w-full p-2 mt-2 border rounded-md"
               />
             </div>
@@ -152,15 +214,11 @@ console.log(transaction,"transaction")
               </label>
             </div>
             <div className="mt-6 flex justify-center">
-              <button
-                onClick={() => {
-                  setShowModal(false);
-                  setWithdrawal(true);
-                }}
-                className="bg-gradient-to-r from-[#003973] to-[#27A8E2] text-white text-sm px-[8em] py-2 rounded-lg"
-              >
-                Withdraw Funds
-              </button>
+              <Button
+                text={"Withdraw Funds"}
+                loading={bookingRequestLoader}
+                onClick={() => handleWidraw()}
+              />
             </div>
           </div>
         </div>
@@ -244,6 +302,7 @@ console.log(transaction,"transaction")
                   onChange={handleInputChange}
                   className="w-full p-2 mt-2 border rounded-md"
                   placeholder="Enter your name"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -257,6 +316,7 @@ console.log(transaction,"transaction")
                   onChange={handleInputChange}
                   className="w-full p-2 mt-2 border rounded-md"
                   placeholder="Enter your name"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -270,6 +330,7 @@ console.log(transaction,"transaction")
                   onChange={handleInputChange}
                   className="w-full p-2 mt-2 border rounded-md"
                   placeholder="Enter your number"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -283,6 +344,7 @@ console.log(transaction,"transaction")
                   onChange={handleInputChange}
                   className="w-full p-2 mt-2 border rounded-md"
                   placeholder="Enter your routing number"
+                  required
                 />
               </div>
               <div className="flex items-center">
@@ -297,12 +359,7 @@ console.log(transaction,"transaction")
                 </label>
               </div>
               <div className="mt-6 flex justify-center">
-                <button
-                  type="submit"
-                  className="bg-gradient-to-r from-[#003973] to-[#27A8E2] text-white px-[8em] py-2 rounded-lg"
-                >
-                  Add Bank
-                </button>
+                <Button loading={isLoading} text={"Add Bank"} type={"submit"} />
               </div>
             </form>
           </div>
@@ -345,15 +402,19 @@ console.log(transaction,"transaction")
                 <th className="px-6 py-4 text-[#082166] ">Transfer Time</th>
                 <th className="px-6 py-4 text-[#082166] ">Total Amount</th>
               </tr>
-            </thead> 
+            </thead>
             <tbody className="text-[#181818]">
               {transaction?.transactions?.data?.map((t, index) => (
                 <tr key={index} className="border-t">
                   <td className="px-6 py-4 text-[12px] font-[400]">
                     {index + 1}
                   </td>
-                  <td className="px-6 py-4 text-[12px] font-[400]">{t.transaction_id}</td>
-                  <td className="px-6 py-4 text-[12px] font-[400]">{t.account_name}</td>
+                  <td className="px-6 py-4 text-[12px] font-[400]">
+                    {t.transaction_id}
+                  </td>
+                  <td className="px-6 py-4 text-[12px] font-[400]">
+                    {t.account_name}
+                  </td>
                   <td className="px-6 py-4 text-[12px] font-[400]">
                     {t.account_number}
                   </td>
