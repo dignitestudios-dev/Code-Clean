@@ -34,7 +34,7 @@ const Bookinghistory = () => {
     const matchesTab = 
       activeTab === 'All' || 
       (activeTab === 'Completed Jobs' && booking.status.toLowerCase() === 'completed') || 
-      (activeTab === 'Canceled Jobs' && booking.status.toLowerCase() === 'canceled');
+      (activeTab === 'Canceled Jobs' && booking.status.toLowerCase() === 'cancelled');
     
     // Filter bookings based on the search query (for booking details like name, date, and status)
     const matchesSearchQuery = 

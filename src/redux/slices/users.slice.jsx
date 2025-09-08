@@ -27,14 +27,14 @@ const initialState = {
   requestbookingsuccess: null,
   requestbookingerror: null,
   requestbookingLoading: false,
-  requestbookingdata:null,
+  requestbookingdata: null,
   hireProviderLoading: false,
   hireProviderSuccess: null,
   hireProviderError: null,
-  CustomserviceproviderLoading:false,
-  CustomserviceproviderError:null,
-  CustomserviceproviderSuccess:null,
-  paymentMethoduser:null,
+  CustomserviceproviderLoading: false,
+  CustomserviceproviderError: null,
+  CustomserviceproviderSuccess: null,
+  paymentMethoduser: null,
 };
 // ================= THUNKS =================
 
@@ -64,7 +64,7 @@ export const RequestCustomService = createAsyncThunk(
   "/provider/requests/custom", // Action type
   async (payload, thunkAPI) => {
     try {
-      const {customserviceData} = payload;  // Destructure userId and providerData from payload
+      const { customserviceData } = payload;  // Destructure userId and providerData from payload
       // Sending the userId in the URL and providerData in the request body
       const res = await axios.post(`/provider/requests/custom`, customserviceData);
       // Return the response data after submission
@@ -93,10 +93,10 @@ export const getPaymentMethoduser = createAsyncThunk("/user/payment-methods", //
 
 // Fetch user profile
 export const fetchUserProfile = createAsyncThunk(
-  "/user/profile",
+  "/profile",
   async (_, thunkAPI) => {
     try {
-      const res = await axios.get("/user/profile");
+      const res = await axios.get("/profile");
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue("Failed to fetch profile");
@@ -183,6 +183,29 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
+
+// Change Password
+export const changePassword = createAsyncThunk(
+  "/user/update-password", // Action type
+  async (payload, thunkAPI) => {
+    try {
+      // payload = { old_password, password, password_confirmation }
+      const res = await axios.post("/update-password", payload);
+
+      // success toast
+      SuccessToast("Password updated successfully!");
+
+      return res.data;
+    } catch (error) {
+      const msg =
+        error?.response?.data?.message || "Failed to update password";
+      ErrorToast(msg);
+      return thunkAPI.rejectWithValue(msg);
+    }
+  }
+);
+
+
 // ================= SLICE =================
 const userSlice = createSlice({
   name: "user",
@@ -211,6 +234,21 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+
+      .addCase(changePassword.pending, (state) => {
+        state.updateLoading = true;
+        state.updateError = null;
+        state.updateSuccess = null;
+      })
+      .addCase(changePassword.fulfilled, (state, action) => {
+        state.updateLoading = false;
+        state.updateSuccess = "Password updated successfully!";
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.updateLoading = false;
+        state.updateError = action.payload;
+      })
+
 
       // ----- fetch all services -----
       .addCase(fetchallservices.pending, (state) => {
@@ -245,7 +283,7 @@ const userSlice = createSlice({
       })
 
       //Get payment Method for user
-       .addCase(getPaymentMethoduser.pending, (state) => {
+      .addCase(getPaymentMethoduser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
         state.success = null;
@@ -304,7 +342,7 @@ const userSlice = createSlice({
       })
       .addCase(HireServiceProvider.rejected, (state, action) => {
         state.hireProviderLoading = false;
-        state.hireProviderError = action.payload; 
+        state.hireProviderError = action.payload;
         ErrorToast(state.hireProviderError);
       })
 
@@ -321,10 +359,10 @@ const userSlice = createSlice({
       })
       .addCase(RequestCustomService.rejected, (state, action) => {
         state.CustomserviceproviderLoading = false;
-        state.CustomserviceproviderError = action.payload; 
+        state.CustomserviceproviderError = action.payload;
         ErrorToast(state.CustomserviceproviderError);
       })
-      
+
       // ----- update profile -----
       .addCase(updateUserProfile.pending, (state) => {
         state.updateLoading = true;
