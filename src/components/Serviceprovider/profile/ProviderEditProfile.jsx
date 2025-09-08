@@ -18,7 +18,7 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
   const { loading } = useLogin();
   const { user_data } = useSelector((state) => state?.auth);
   const [previewImage, setPreviewImage] = useState(
-    `http://family-phys-ed-s3.s3.amazonaws.com/${user_data?.avatar}`
+    `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${user_data?.avatar}`
   );
   const fallbackImage = usertwo;
   const [showModal, setShowModal] = useState(false);

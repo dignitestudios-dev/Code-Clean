@@ -75,7 +75,7 @@ export default function EditCard() {
 
         // ✅ Passed all checks → prepare payload
         const data = {
-          url: `/provider/payment-methods/${loc?.state?.id}`,
+          url: `/payment-methods/${loc?.state?.id}`,
           expiry_month: mm, // "01", "02", ..., "12"
           expiry_year: yyyy, // 2028
         };

@@ -158,7 +158,7 @@ const ServiceproviderProfile = () => {
           <div className="flex flex-col md:flex-row gap-8">
             <div className="md:w-[18em]">
               <img
-                src={`http://family-phys-ed-s3.s3.amazonaws.com/${user_data?.avatar}`}
+                src={`https://code-clean-bucket.s3.us-east-2.amazonaws.com/${user_data?.avatar}`}
                 alt="John Doe"
                 className="w-80 h-100 rounded-xl object-cover"
               />

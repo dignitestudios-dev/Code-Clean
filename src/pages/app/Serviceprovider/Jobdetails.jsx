@@ -145,7 +145,7 @@ const Jobdetails = () => {
                       <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                         <img
                           src={
-                            "http://family-phys-ed-s3.s3.amazonaws.com/" +
+                            "https://code-clean-bucket.s3.us-east-2.amazonaws.com/" +
                             bookingRequestDetail?.user?.avatar
                           }
                           className="rounded-full h-full w-full"

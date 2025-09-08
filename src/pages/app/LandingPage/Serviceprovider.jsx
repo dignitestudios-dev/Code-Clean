@@ -583,7 +583,7 @@ const Serviceprovider = () => {
                 <div className="flex flex-col md:flex-row gap-8">
                     <div className="w-[18em]">
                         <img
-                            src={data?.avatar ? `http://family-phys-ed-s3.s3.amazonaws.com/${data.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
+                            src={data?.avatar ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${data.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
                             alt="Profile"
                             className="w-80 h-100 rounded-xl object-cover"
                         />
