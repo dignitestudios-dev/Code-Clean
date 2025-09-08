@@ -90,7 +90,7 @@ export default function Profile() {
                         <div className='flex items-center gap-3 justify-between' >
                             {userdata?.avatar ? (
                                 <img
-                                    src={userdata?.avatar ? `http://family-phys-ed-s3.s3.amazonaws.com/${userdata.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
+                                    src={userdata?.avatar ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${userdata.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
                                     className="w-[80px] h-[80px] rounded-full object-cover border-2"
                                     alt={userdata.name || "User Avatar"}
                                 />

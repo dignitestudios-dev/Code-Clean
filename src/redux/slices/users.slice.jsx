@@ -35,6 +35,9 @@ const initialState = {
   CustomserviceproviderError: null,
   CustomserviceproviderSuccess: null,
   paymentMethoduser: null,
+  favoritesSuccess:null,
+  favoritesLoading:false,
+  favoritesError:null,
 };
 // ================= THUNKS =================
 
@@ -65,7 +68,7 @@ export const RequestCustomService = createAsyncThunk(
   "/provider/requests/custom", // Action type
   async (payload, thunkAPI) => {
     try {
-      const { customserviceData } = payload; // Destructure userId and providerData from payload
+      const { customserviceData } = payload;  // Destructure userId and providerData from payload
       // Sending the userId in the URL and providerData in the request body
       const res = await axios.post(
         `/provider/requests/custom`,
@@ -79,6 +82,8 @@ export const RequestCustomService = createAsyncThunk(
     }
   }
 );
+
+
 
 //Get Payment Method
 export const getPaymentMethoduser = createAsyncThunk(
@@ -109,6 +114,45 @@ export const fetchUserProfile = createAsyncThunk(
     }
   }
 );
+
+
+//Get Payment getuserfavorites
+export const getuserfavorites = createAsyncThunk(
+  "/user/favorites", // The action type
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get("/user/favorites"); 
+      return response.data; 
+    } catch (error) {
+      const msg = error?.response?.data?.message || "Failed to Get Favorites";
+      ErrorToast(msg);
+      return thunkAPI.rejectWithValue(msg);
+    }
+  }
+);
+
+//Get Payment getuserfavorites
+export const unfavoriteProvider = createAsyncThunk(
+  "user/unfavoriteProvider",
+  async (providerId, { rejectWithValue }) => {
+    try {
+      // Primary: DELETE /providers/:id/favorite
+      const res = await axios.delete(`/providers/${providerId}/favorite`);
+      return { providerId, server: res.data };
+    } catch (err) {
+      // Fallback: some backends toggle via POST
+      try {
+        const res = await axios.post(`/providers/${providerId}/favorite`, { action: "unfavorite" });
+        return { providerId, server: res.data };
+      } catch (err2) {
+        const msg = err2?.response?.data?.message || "Failed to remove favorite";
+        ErrorToast(msg);
+        return rejectWithValue(msg);
+      }
+    }
+  }
+);
+
 
 //Fetch Current Booking
 export const fetchCurrentBooking = createAsyncThunk(
@@ -192,6 +236,7 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
+
 // Change Password
 export const changePassword = createAsyncThunk(
   "/user/update-password", // Action type
@@ -205,12 +250,14 @@ export const changePassword = createAsyncThunk(
 
       return res.data;
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to update password";
+      const msg =
+        error?.response?.data?.message || "Failed to update password";
       ErrorToast(msg);
       return thunkAPI.rejectWithValue(msg);
     }
   }
 );
+
 
 // ================= SLICE =================
 const userSlice = createSlice({
@@ -254,6 +301,7 @@ const userSlice = createSlice({
         state.updateLoading = false;
         state.updateError = action.payload;
       })
+
 
       // ----- fetch all services -----
       .addCase(fetchallservices.pending, (state) => {
@@ -333,6 +381,38 @@ const userSlice = createSlice({
       .addCase(fetchBookinghistory.rejected, (state, action) => {
         state.bookinghistoryLoading = false;
         state.bookinghistoryerror = action.payload;
+      })
+
+      // ----- Fetch all Favorites -----
+      .addCase(getuserfavorites.pending, (state) => {
+        state.favoritesLoading = true;
+        state.favoritesError = null;
+        state.favoritesSuccess = null;
+      })
+      .addCase(getuserfavorites.fulfilled, (state, action) => {
+        state.favoritesLoading = false;
+        state.favoritesData = action.payload;
+        state.favoritesSuccess = "Successfully fetched favoritesData";
+      })
+      .addCase(getuserfavorites.rejected, (state, action) => {
+        state.favoritesLoading = false;
+        state.favoritesError = action.payload;
+      })
+
+      // ----- Unfavorite Provider -----
+      .addCase(unfavoriteProvider.pending, (state) => {
+        state.favoritesError = null;
+      })
+      .addCase(unfavoriteProvider.fulfilled, (state, action) => {
+        const id = action.payload?.providerId;
+        if (id != null) {
+          state.favoritesData = (state.favoritesData || []).filter(p => p.id !== id);
+        }
+        state.favoritesSuccess = "Removed from favorites";
+        SuccessToast(state.favoritesSuccess);
+      })
+      .addCase(unfavoriteProvider.rejected, (state, action) => {
+        state.favoritesError = action.payload || "Failed to remove favorite";
       })
 
       .addCase(HireServiceProvider.pending, (state) => {
