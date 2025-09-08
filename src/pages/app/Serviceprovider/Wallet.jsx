@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../../../components/layout/Navbar";
 import { HeroBg } from "../../../assets/export";
 import { FaArrowLeft, FaCheck } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { ImCross } from "react-icons/im";
+import { useDispatch, useSelector } from "react-redux";
+import { getTransactions, getWallet } from "../../../redux/slices/provider.slice";
 
 const Wallet = () => {
   const navigate = useNavigate();
@@ -11,6 +13,13 @@ const Wallet = () => {
   const [showModal, setShowModal] = useState(false); // State to control the modal visibility
   const [withdrawal, setWithdrawal] = useState(false);
   const [addbankaccount, setAddbankaccount] = useState(false);
+  const dispatch = useDispatch();
+  const { wallet,transaction } = useSelector((state) => state.provider);
+  useEffect(() => {
+    dispatch(getTransactions());
+    dispatch(getWallet());
+  }, []);
+  console.log(wallet,"wallets record")
   const [formData, setFormData] = useState({
     bankName: "",
     accountHolderName: "",
@@ -48,7 +57,7 @@ const Wallet = () => {
     time: "08:15pm",
     amount: "$1499",
   });
-
+console.log(transaction,"transaction")
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar type="serviceprovider" />
@@ -78,7 +87,7 @@ const Wallet = () => {
               Remaining Balance
             </p>
             <h2 className="text-[37px] font-semibold text-[#ffffff]">
-              $3,5362
+              ${wallet?.balance}
             </h2>
           </div>
           <button
@@ -336,17 +345,17 @@ const Wallet = () => {
                 <th className="px-6 py-4 text-[#082166] ">Transfer Time</th>
                 <th className="px-6 py-4 text-[#082166] ">Total Amount</th>
               </tr>
-            </thead>
+            </thead> 
             <tbody className="text-[#181818]">
-              {transactions.map((t, index) => (
+              {transaction?.transactions?.data?.map((t, index) => (
                 <tr key={index} className="border-t">
                   <td className="px-6 py-4 text-[12px] font-[400]">
                     {index + 1}
                   </td>
-                  <td className="px-6 py-4 text-[12px] font-[400]">{t.id}</td>
-                  <td className="px-6 py-4 text-[12px] font-[400]">{t.name}</td>
+                  <td className="px-6 py-4 text-[12px] font-[400]">{t.transaction_id}</td>
+                  <td className="px-6 py-4 text-[12px] font-[400]">{t.account_name}</td>
                   <td className="px-6 py-4 text-[12px] font-[400]">
-                    {t.account}
+                    {t.account_number}
                   </td>
                   <td className="px-6 py-4 text-[12px] font-[400]">{t.date}</td>
                   <td className="px-6 py-4 text-[12px] font-[400]">{t.time}</td>

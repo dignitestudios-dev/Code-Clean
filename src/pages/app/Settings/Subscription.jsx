@@ -7,8 +7,9 @@ import { HeroBg } from "../../../assets/export";
 import { Button } from "../../../components/global/GlobalButton";
 import UpdgradePlane from "../../../components/app/Settings/UpgradePlane";
 import CancelSubscription from "../../../components/app/Settings/CancelSubscription";
-import { getPlans } from "../../../redux/slices/provider.slice";
+import { getBillings, getPlans } from "../../../redux/slices/provider.slice";
 import { useDispatch, useSelector } from "react-redux";
+import { RiLoader5Line } from "react-icons/ri";
 
 export default function Subscription() {
   const navigate = useNavigate("");
@@ -17,11 +18,13 @@ export default function Subscription() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPlane, setSelectedPlane] = useState(null);
   const dispatch = useDispatch();
-  const { plans } = useSelector((state) => state?.provider);
+  const { plans, billings, bookingRequestLoader } = useSelector(
+    (state) => state?.provider
+  );
   useEffect(() => {
+    dispatch(getBillings());
     dispatch(getPlans());
   }, []);
-  console.log(plans, "palns");
   const invoiceData = [
     {
       date: "Feb 19, 2024",
@@ -84,6 +87,7 @@ export default function Subscription() {
       status: "Paid",
     },
   ];
+  console.log(billings, "billings");
 
   return (
     <div>
@@ -139,7 +143,7 @@ export default function Subscription() {
                       Next Invoice Issue Date
                     </h3>
                     <p className="text-2xl font-bold text-gray-900">
-                      Dec 29, 2024
+                      {billings?.next_invoice_date}
                     </p>
                   </div>
 
@@ -148,7 +152,9 @@ export default function Subscription() {
                     <h3 className="text-gradient font-medium mb-2">
                       Invoice Total
                     </h3>
-                    <p className="text-2xl font-bold text-gray-900">$150.00</p>
+                    <p className="text-2xl font-bold text-gray-900">
+                      $ {billings?.total_invoice_amount}
+                    </p>
                   </div>
                 </div>
 
@@ -170,7 +176,7 @@ export default function Subscription() {
                 </div>
                 {/* Table Body */}
                 <div className="divide-y px-10 divide-gray-200">
-                  {invoiceData.map((invoice, index) => (
+                  {billings?.billings?.data?.map((invoice, index) => (
                     <div key={index} className="py-4 hover:bg-gray-50">
                       <div className="grid grid-cols-4 gap-4 items-center">
                         <div className="text-sm text-gray-900">
@@ -180,7 +186,7 @@ export default function Subscription() {
                           {invoice.description}
                         </div>
                         <div className="text-sm text-gray-900">
-                          {invoice.total}
+                          {invoice.amount}
                         </div>
                         <div className="text-sm text-gray-900">
                           {invoice.status}
@@ -247,7 +253,11 @@ export default function Subscription() {
                               }}
                               className="w-full bg-[#EE313126] text-red-600 py-3 px-4 rounded-lg font-medium hover:bg-red-100 transition-colors"
                             >
-                              Cancel Subscription
+                              <div className="flex justify-center text-center w-full items-center">
+                                <span className="mr-1 text-nowrap">
+                                  Cancel Subscription
+                                </span>
+                              </div>
                             </button>
                           ) : (
                             <Button
@@ -269,10 +279,18 @@ export default function Subscription() {
         </div>
       </div>
       {SubscriptionModal == "upgrade" && (
-        <UpdgradePlane selectedPlane={selectedPlane} isOpen={isOpen} setIsOpen={setIsOpen} />
+        <UpdgradePlane
+          selectedPlane={selectedPlane}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+        />
       )}
       {SubscriptionModal == "cancel" && (
-        <CancelSubscription selectedPlane={selectedPlane} isOpen={isOpen} setIsOpen={setIsOpen} />
+        <CancelSubscription
+          selectedPlane={selectedPlane}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+        />
       )}
       <Footer />
     </div>

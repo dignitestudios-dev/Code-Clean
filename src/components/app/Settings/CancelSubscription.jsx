@@ -5,14 +5,15 @@ import {
   getPlans,
   SubscriptionCancel,
 } from "../../../redux/slices/provider.slice";
+import { RiLoader5Line } from "react-icons/ri";
 const CancelSubscription = ({ isOpen, setIsOpen, selectedPlane }) => {
   const { bookingRequestLoader } = useSelector((state) => state?.provider);
   const dispatch = useDispatch();
-  const handleCancel = async() => {
+  const handleCancel = async () => {
     const data = {
       subscription_id: selectedPlane?.subscription_id,
     };
-   await dispatch(SubscriptionCancel(data)).unwrap();
+    await dispatch(SubscriptionCancel(data)).unwrap();
     setIsOpen(!open);
     dispatch(getPlans());
   };
@@ -50,11 +51,16 @@ const CancelSubscription = ({ isOpen, setIsOpen, selectedPlane }) => {
               onClick={handleCancel}
               className="bg-[#EE3131] text-[white] rounded-[8px] p-3"
             >
-              Cancel now
+              <div className="flex justify-center text-center w-full items-center">
+                <span className="mr-1 text-nowrap"> Cancel now</span>
+                {bookingRequestLoader && (
+                  <RiLoader5Line className="animate-spin text-lg " />
+                )}
+              </div>
             </button>
           </div>
         </div>
-      </div>  
+      </div>
     </Modal>
   );
 };

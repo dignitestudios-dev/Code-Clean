@@ -105,7 +105,7 @@ export default function DiscoverJobs() {
                 </div>
                 <input
                   type="text"
-                  className="bg-[#FFFFFF4D] blur-[40] outline-none p-2 rounded-[8px] text-white"
+                  className="bg-[#FFFFFF4D] blur-[40] outline-none p-2 px-7 rounded-[8px] text-white"
                 />
               </div>
               <button

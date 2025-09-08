@@ -16,6 +16,9 @@ const initialState = {
   bookingRequestLoader: false,
   paymentMethod: null,
   discoverJobs: null,
+  billings: null,
+  wallet: null,
+  transaction: null,
 };
 // ================= THUNKS =================
 
@@ -25,6 +28,45 @@ export const getProfile = createAsyncThunk(
     try {
       const response = await axios.get("/provider/profile");
       return response.data; // Return entire API response
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Verification failed"
+      );
+    }
+  }
+);
+export const getBillings = createAsyncThunk(
+  "/provider/billings",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get("/provider/billings");
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Verification failed"
+      );
+    }
+  }
+);
+export const getTransactions = createAsyncThunk(
+  "/provider/transactions",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get("/provider/transactions");
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Verification failed"
+      );
+    }
+  }
+);
+export const getWallet = createAsyncThunk(
+  "provider/withdrawals",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get("provider/withdrawals");
+      return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Verification failed"
@@ -255,10 +297,7 @@ export const SubscriptionUpgrade = createAsyncThunk(
   "/provider/plan/subscribe",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.post(
-        `provider/plan/subscribe`,
-        payload
-      );
+      const response = await axios.post(`provider/plan/subscribe`, payload);
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {
@@ -304,6 +343,34 @@ const providerSlice = createSlice({
         state.error = action.payload;
       })
       // Provider Plans
+      .addCase(getBillings.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getBillings.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.billings = action.payload;
+        state.success = "Billings Get Successfully";
+      })
+      .addCase(getBillings.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(getWallet.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getWallet.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.wallet = action.payload;
+        state.success = "Wallet Get Successfully";
+      })
+      .addCase(getWallet.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       .addCase(getPlans.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -330,6 +397,20 @@ const providerSlice = createSlice({
         state.success = "Payment Method Get Successfully";
       })
       .addCase(getPaymentMethod.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(getTransactions.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getTransactions.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.transaction = action.payload;
+        state.success = "Transactions Get Successfully";
+      })
+      .addCase(getTransactions.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
@@ -444,7 +525,7 @@ const providerSlice = createSlice({
       .addCase(SubscriptionCancel.rejected, (state, action) => {
         state.bookingRequestLoader = false;
         state.error = action.payload;
-      })
+      }) 
       .addCase(SubscriptionUpgrade.pending, (state) => {
         state.bookingRequestLoader = true;
         state.error = null;

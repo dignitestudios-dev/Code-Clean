@@ -78,8 +78,7 @@ export const RequestCustomService = createAsyncThunk(
 
 
 //Get Payment Method
-export const getPaymentMethoduser = createAsyncThunk(
-  "/user/payment-methods", // The action type
+export const getPaymentMethoduser = createAsyncThunk("/user/payment-methods", // The action type
   async (_, thunkAPI) => {
     try {
       const response = await axios.get("/user/payment-methods"); // API request to fetch the profile
