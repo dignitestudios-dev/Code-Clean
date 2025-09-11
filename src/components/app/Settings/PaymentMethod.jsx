@@ -20,14 +20,14 @@ export default function PaymentMethod() {
   );
   useEffect(() => {
     dispatch(getPaymentMethod());
-  },[dispatch]);
+  }, [dispatch]);
 
   const handleDelete = (id) => {
     dispatch(DeletePaymentMethod(id));
     dispatch(getPaymentMethod());
   };
 
-  console.log(paymentMethod,"paymentMethod====")
+  console.log(paymentMethod, "paymentMethod====");
 
   return (
     <div>
@@ -60,9 +60,9 @@ export default function PaymentMethod() {
             </div>
           </div>
           <p className="text-[16px] text-[#212935] mb-1">Attached Stripe</p>
-          {paymentMethod &&
-          paymentMethod.length > 0 ? (
-            paymentMethod.map((item) => (
+          {paymentMethod?.payment_methods &&
+          paymentMethod?.payment_methods.length > 0 ? (
+            paymentMethod?.payment_methods.map((item) => (
               <div key={item?.id} className="bg-[#FFFFFF] p-4 rounded-lg">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
@@ -80,7 +80,9 @@ export default function PaymentMethod() {
 
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => navigate("/app/edit-card",{state:{id:item?.id}})}
+                      onClick={() =>
+                        navigate("/app/edit-card", { state: { id: item?.id } })
+                      }
                       style={{
                         background:
                           "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",

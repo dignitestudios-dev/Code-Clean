@@ -20,7 +20,8 @@ const initialState = {
   wallet: null,
   transaction: null,
   badges: null,
-  widrawData:null,
+  widrawData: null,
+  getUserProfileDetail: null,
 };
 // ================= THUNKS =================
 
@@ -37,6 +38,20 @@ export const getProfile = createAsyncThunk(
     }
   }
 );
+export const getUserProfile = createAsyncThunk(
+  "/user/profile",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get(`/profile?user_id=${_}}`);
+      return response.data; // Return entire API response
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Verification failed"
+      );
+    }
+  }
+);
+
 export const getBadges = createAsyncThunk("/badges", async (_, thunkAPI) => {
   try {
     const response = await axios.get("/badges");
@@ -154,6 +169,43 @@ export const getRequestDetail = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Verification failed"
+      );
+    }
+  }
+);
+export const ReportAnIssue = createAsyncThunk(
+  "/report-issue",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.post("/report/issue", payload);
+
+      SuccessToast(response?.data?.message || "Report Successfully");
+
+      return { success: true, message: response?.data?.message };
+    } catch (error) {
+      ErrorToast(error.response?.data?.message || "Report failed");
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Report failed"
+      );
+    }
+  }
+);
+
+export const reportUser = createAsyncThunk(
+  "report/user",
+  async (payload, thunkAPI) => {
+    try {
+      console.log(payload, "payload");
+      const response = await axios.post(`/report/${payload?.id}`, {
+        reason: payload?.reason,
+      });
+
+      SuccessToast(response?.data?.message || "User reported successfully");
+      return { success: true, message: response?.data?.message };
+    } catch (error) {
+      ErrorToast(error.response?.data?.message || "Report failed");
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Report failed"
       );
     }
   }
@@ -384,6 +436,20 @@ const providerSlice = createSlice({
         state.getprofileloading = false;
         state.error = action.payload;
       })
+      .addCase(getUserProfile.pending, (state) => {
+        state.getprofileloading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getUserProfile.fulfilled, (state, action) => {
+        state.getprofileloading = false;
+        state.getUserProfileDetail = action.payload;
+        state.success = action.payload.message;
+      })
+      .addCase(getUserProfile.rejected, (state, action) => {
+        state.getprofileloading = false;
+        state.error = action.payload;
+      })
       .addCase(getBadges.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -395,6 +461,34 @@ const providerSlice = createSlice({
         state.success = action.payload.message;
       })
       .addCase(getBadges.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(ReportAnIssue.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(ReportAnIssue.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.badges = action.payload;
+        state.success = action.payload.message;
+      })
+      .addCase(reportUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = false;
+      })
+      .addCase(reportUser.fulfilled, (state) => {
+        state.isLoading = false;
+        state.success = true;
+      })
+      .addCase(reportUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+        state.success = false;
+      })
+      .addCase(ReportAnIssue.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
@@ -550,7 +644,7 @@ const providerSlice = createSlice({
       })
       .addCase(widrawFunds.fulfilled, (state, action) => {
         state.bookingRequestLoader = false;
-        state.widrawData=action?.payload?.data
+        state.widrawData = action?.payload?.data;
         state.success = "withdraw Funds Successfully";
       })
       .addCase(widrawFunds.rejected, (state, action) => {

@@ -1,15 +1,22 @@
 import Modal from "react-modal";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SuccessModal from "../global/SuccessModal";
 import { ErrorToast } from "../global/Toaster";
+import { useDispatch, useSelector } from "react-redux";
+import { reportUser, resetError } from "../../redux/slices/provider.slice";
 
-const ReportUser = ({ isOpen, setIsOpen }) => {
-  const [isSuccess, setIsSuccess] = useState(false);
+const ReportUser = ({ isOpen, setIsOpen, userId }) => {
   const [reason, setReason] = useState("");
-
-  const handleSubmit = () => {
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.provider);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const handleSubmit = async () => {
     if (reason.trim() === "") return ErrorToast("Please enter a reason.");
-    setIsSuccess(true);
+    const data = {
+      id: userId,
+      reason: reason,
+    };
+    await dispatch(reportUser(data));
     setIsOpen(false);
   };
 
@@ -28,7 +35,7 @@ const ReportUser = ({ isOpen, setIsOpen }) => {
             Report User
           </h2>
           <p className="text-sm text-center text-gray-700 mb-5">
-            Are you sure you want to report this User.
+            Are you sure you want to report this user?
           </p>
 
           <label className="block text-sm font-medium text-black mb-1">
@@ -46,14 +53,20 @@ const ReportUser = ({ isOpen, setIsOpen }) => {
             <button
               onClick={() => setIsOpen(false)}
               className="w-full py-3 rounded-xl bg-gray-100 text-black font-semibold hover:bg-gray-200 transition"
+              disabled={isLoading}
             >
               Cancel
             </button>
             <button
               onClick={handleSubmit}
-              className="w-full py-3 rounded-xl bg-[#EE3131] text-white font-semibold hover:bg-red-600 transition"
+              disabled={isLoading}
+              className={`w-full py-3 rounded-xl text-white font-semibold transition ${
+                isLoading
+                  ? "bg-red-400 cursor-not-allowed"
+                  : "bg-[#EE3131] hover:bg-red-600"
+              }`}
             >
-              Report
+              {isLoading ? "Reporting..." : "Report"}
             </button>
           </div>
         </div>
