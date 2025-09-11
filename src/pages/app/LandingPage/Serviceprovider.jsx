@@ -629,7 +629,6 @@ const Serviceprovider = () => {
 
                             </div>
                             <div className='space-y-4 text-right'>
-                                <FaRegHeart size={20} className="ml-auto" /> {/* This will push the heart icon to the right */}
                                 {!fromViewProfile && (
                                     <button onClick={() => { setServicetype(true); }} className="bg-gradient-to-r mt-1 from-[#00034A] to-[#27A8E2] text-white px-14 py-2 rounded-md ml-auto">
                                         Hire Now
@@ -1177,7 +1176,7 @@ const Serviceprovider = () => {
                             <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
                                 <div className="w-full">
                                     <span className="font-medium text-gray-800 ">Attached Stripe</span>
-                                    {paymentmethoduser && paymentmethoduser.map((card) => (
+                                    {paymentmethoduser?.payment_methods && paymentmethoduser?.payment_methods.map((card) => (
                                         <div
                                             key={card.id}
                                             className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 
@@ -1535,7 +1534,7 @@ const Serviceprovider = () => {
                             {/* Payment Method */}
                             <div>
                                 <label className="block mb-1 font-medium">Payment Method</label>
-                                {paymentmethoduser && paymentmethoduser.map((card) => (
+                                {paymentmethoduser?.payment_methods && paymentmethoduser?.payment_methods.map((card) => (
                                     <div
                                         key={card.id}
                                         className={`flex justify-between items-center border cursor-pointer rounded p-2 mb-2 

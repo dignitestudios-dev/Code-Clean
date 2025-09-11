@@ -25,7 +25,7 @@ const Jobdetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
- 
+
   const [rating, setRating] = useState(false);
   const [inProgressModal, setInProgressModal] = useState(false);
   const [cancelbooking, setCancelbooking] = useState(false);
@@ -40,13 +40,14 @@ const Jobdetails = () => {
   const { bookingRequestDetail, isLoading } = useSelector(
     (state) => state.provider
   );
-   const status =bookingRequestDetail?.status;
+  const { user_data } = useSelector((state) => state.auth);
+  const status = bookingRequestDetail?.status;
   useEffect(() => {
     dispatch(getRequestDetail(queryParams.get("type")));
     SetRole(Cookies.get("role"));
   }, []);
 
-  const handleJob = async (id,sts) => {
+  const handleJob = async (id, sts) => {
     const data = {
       id: id,
       action: sts,
@@ -138,7 +139,9 @@ const Jobdetails = () => {
                 {/* Service Provider Details */}
                 <div className="pb-10">
                   <h4 className="text-lg font-semibold mb-4">
-                    Service Provider Details
+                    {user_data?.role == "user"
+                      ? "Service Provider Details"
+                      : "User Details"}
                   </h4>
                   <div className="flex items-center justify-between border-t-[1px] pt-6">
                     <div className="flex items-center space-x-3">
@@ -164,7 +167,10 @@ const Jobdetails = () => {
                         navigate(
                           `/user-provider/${bookingRequestDetail?.user?.id}`,
                           {
-                            state: { fromViewProfile: true },
+                            state: {
+                              fromViewProfile: true,
+                              id: bookingRequestDetail?.user?.id,
+                            },
                           }
                         );
                       }}
@@ -182,7 +188,7 @@ const Jobdetails = () => {
               <div className="bg-white  rounded-lg shadow-md pb-[1em] pl-[2em] pr-[2em] pt-[1.3em]">
                 {/* Status and Timer */}
                 <div className="text-center mb-2 flex gap-3">
-                  <div                   
+                  <div
                     className={`inline-block cursor-pointer px-6 pt-3 rounded-[8px] h-[44px]  text-[16px] font-medium mb-2 w-full text-center 
                                       ${
                                         status === "pending"
@@ -381,15 +387,18 @@ const Jobdetails = () => {
                   <Button
                     text={"Start Job"}
                     loading={isLoading}
-                    onClick={() => handleJob(bookingRequestDetail?.booking_id,"start")}
+                    onClick={() =>
+                      handleJob(bookingRequestDetail?.booking_id, "start")
+                    }
                   />
                 )}
                 {status == "inprogress" && (
                   <Button
                     text={"Mark Job Completed"}
                     loading={isLoading}
-                  
-                    onClick={() => handleJob(bookingRequestDetail?.booking_id,"end")}
+                    onClick={() =>
+                      handleJob(bookingRequestDetail?.booking_id, "end")
+                    }
                   />
                 )}
 
@@ -472,7 +481,7 @@ const Jobdetails = () => {
                   </div>
                 )}
 
-                {status === "completed" && (
+                {status === "completed" && user_data?.role == "user" && (
                   <div className="space-y-3">
                     <button
                       className="w-full bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-3 rounded-lg font-medium hover:bg-red-600"
@@ -597,7 +606,11 @@ const Jobdetails = () => {
             </div>
           </div>
 
-          <ReportUser isOpen={reportUser} setIsOpen={setReportUser} />
+          <ReportUser
+            isOpen={reportUser}
+            userId={bookingRequestDetail?.user?.uid}
+            setIsOpen={setReportUser}
+          />
         </div>
       </div>
       <Footer />

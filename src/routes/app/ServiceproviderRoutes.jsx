@@ -48,7 +48,7 @@ export const serviceproviderRoutes = [
     isPublic: false,
   },
   {
-    url: "user-provider",
+    url: "user-provider/:id",
     page: <Userprovider />,
     name: "User Provider",
     isPublic: false,

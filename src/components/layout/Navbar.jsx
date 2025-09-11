@@ -10,6 +10,8 @@ import LogOutModal from "../global/LogoutModal";
 import ReportAnIssueModal from "../app/Settings/ReportAnIssueModal";
 import { useDispatch, useSelector } from "react-redux";
 import { ErrorToast, SuccessToast } from "../global/Toaster";
+import { onMessage } from "firebase/messaging"; // Import Firebase onMessage
+import { messaging } from "../../firebase/firebase";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -26,9 +28,7 @@ const Navbar = () => {
   const { user, user_data, accessToken, logoutLoading, logoutSuccess, logoutError } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-
   console.log(user_data, "navbar data");
-
 
   const handleLogout = async () => {
     try {
@@ -44,10 +44,18 @@ const Navbar = () => {
   };
 
   useEffect(() => {
+    // Retrieve notifications from localStorage on component mount (after login)
+    const storedNotifications = JSON.parse(localStorage.getItem("notifications")) || [];
+    setNotifications(storedNotifications);
+
     if (user_data?.role) {
       setRole(user_data.role);
     }
-  }, [user_data]); // dependency array me user_data rakho
+  }, [user_data]);
+
+
+
+  console.log(user_data, "user_data")
 
   useEffect(() => {
     if (accessToken) {
@@ -68,6 +76,9 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
     setIsPopupOpen(false);
   };
+
+  const [notifications, setNotifications] = useState([]);
+
 
   // Detect click outside
   useEffect(() => {
@@ -97,6 +108,27 @@ const Navbar = () => {
   //   }
   // }, [location.pathname]); // re-check role on route change
 
+
+  useEffect(() => {
+    // Listen for foreground notifications
+    onMessage(messaging, (payload) => {
+      console.log("Foreground notification received: ", payload);
+      const newNotification = {
+        title: payload.notification.title,
+        message: payload.notification.body,
+        time: new Date().toLocaleTimeString(),
+        unreadCount: 1, // You can track this count dynamically based on your needs
+      };
+
+      // Update notifications in state and localStorage
+      const updatedNotifications = [newNotification, ...notifications];
+      setNotifications(updatedNotifications);
+      localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+    });
+  }, [notifications]);
+
+
+
   const togglePopup = () => {
     setUserPopup(false);
     setIsPopupOpen(!isPopupOpen);
@@ -106,6 +138,21 @@ const Navbar = () => {
     setIsPopupOpen(false);
     setUserPopup(!userPopup);
   };
+
+  const markAsRead = (index) => {
+  // Make a copy of the notifications array to avoid directly mutating the state
+  const updatedNotifications = [...notifications];
+  
+  // Set the unreadCount of the clicked notification to 0
+  updatedNotifications[index].unreadCount = 0;
+  
+  // Update the state with the modified notifications array
+  setNotifications(updatedNotifications);
+  
+  // Also update the notifications in localStorage
+  localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+};
+
 
   const menuLinks =
     role === "service_provider"
@@ -127,26 +174,7 @@ const Navbar = () => {
         ]
         : [];
 
-  const notifications = [
-    {
-      title: "View Request Accepted",
-      time: "7:30 PM",
-      message: "Lorem ipsum dolor sit amet consectetur.",
-      unreadCount: 1,
-    },
-    {
-      title: "Lease Date Dispute Received",
-      time: "6:15 PM",
-      message: "In volutpat et mattis ut tristique.",
-      unreadCount: 1,
-    },
-    {
-      title: "Tenant Moved Out",
-      time: "5:00 PM",
-      message: "Lorem ipsum dolor sit amet.",
-      unreadCount: 0,
-    },
-  ];
+
 
   return (
     <nav
@@ -185,43 +213,47 @@ const Navbar = () => {
                 className="text-white text-2xl cursor-pointer"
                 onClick={togglePopup}
               />
+              {/* Show unread count badge if there are unread notifications */}
+              {notifications.filter((n) => n.unreadCount > 0).length > 0 && (
+                <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] rounded-full w-[13px] h-[13px] flex items-center justify-center">
+                  {notifications.filter((n) => n.unreadCount > 0).length}
+                </div>
+              )}
               {isPopupOpen && (
-                <div className="absolute top-10 right-0 w-[507px] h-[507px] overflow-auto p-4 bg-white shadow-lg rounded-[16px] border border-gray-200 z-50">
-                  <h3 className="text-lg font-semibold text-black">
-                    Notifications
-                  </h3>
+                <div className="absolute top-10 right-0 w-[400px] bg-white shadow-lg rounded-lg p-4 z-50">
+                  <h3 className="text-lg font-semibold text-black">Notifications</h3>
                   <div className="mt-4 space-y-4 max-h-60 overflow-y-auto">
-                    {notifications.map((n, idx) => (
-                      <div key={idx}>
-                        <div className="flex justify-between ">
-                          <div>
-                            <span className="text-[14px] font-bold text-black">
-                              {n.title}
-                            </span>
-                            <p className="text-[13px]  text-[#18181880] font-[400]">{n.message}</p>
-                          </div>
-                          <div>
-                            <div className="text-xs text-gray-600">
-                              {n.time}
+                    {notifications.length > 0 ? (
+                      notifications.map((n, idx) => (
+                        <div key={idx} onClick={() => markAsRead(idx)} className="cursor-pointer">
+                          <div className="flex justify-between">
+                            <div>
+                              <span className="text-[14px] font-bold text-black">{n.title}</span>
+                              <p className="text-[13px] text-[#18181880]">{n.message}</p>
                             </div>
-                            {n.unreadCount > 0 && (
-                              <div className="bg-red-600 mt-1 text-white text-xs rounded-full w-[19px] h-[19px] flex items-center justify-center ">
-                                {n.unreadCount}
-                              </div>
-                            )}
+                            <div>
+                              <div className="text-xs text-gray-600">{n.time}</div>
+                              {n.unreadCount > 0 && (
+                                <div className="bg-red-600 text-white text-xs rounded-full w-[19px] h-[19px] flex items-center justify-center">
+                                  {n.unreadCount}
+                                </div>
+                              )}
+                            </div>
                           </div>
+                          <hr className="mt-2" />
                         </div>
-
-                        <hr className="mt-2" />
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p className="text-gray-700">No notifications</p>
+                    )}
                   </div>
                 </div>
               )}
             </div>
+
             <img
-              src={Avatar}
-              className="h-10 w-10 rounded-full cursor-pointer"
+              src={user_data?.avatar ? `${import.meta.env.VITE_APP_AWS_URL}${user_data?.avatar}` : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ3AH9WTlcacKErfpKhk-lJ7serN0eQje6Qg&s"}
+              className="h-10 w-10 object-cover rounded-full cursor-pointer border-2"
               onClick={toggleUserpopup}
               alt="Avatar"
             />

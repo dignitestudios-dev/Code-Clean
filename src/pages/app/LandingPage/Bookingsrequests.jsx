@@ -164,8 +164,8 @@ const Bookingsrequests = () => {
       // Booking Request tab (static)
       return bookings.map((b) => ({
         id: b.booking_id,
-        name: b.service_provider.name,
-        avatar: b.service_provider.avatar || PLACEHOLDER_AVATAR,
+        name: b.service_provider?.name,
+        avatar: b.service_provider?.avatar || PLACEHOLDER_AVATAR,
         dateStr: b.date || "",
         timeStr: b.time || "",
         durationStr: b.duration || "-",
