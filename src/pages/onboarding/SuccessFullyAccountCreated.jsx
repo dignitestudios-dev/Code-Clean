@@ -18,7 +18,7 @@ export default function SuccessFullyAccountCreated() {
           <Button
             onClick={() => {
                Cookies.set("role","user")
-              navigate("/home",{state:{type:"user"}});
+              navigate("/auth/login",{state:{type:"user"}});
             }}
             text={"Explore Services"}
           />

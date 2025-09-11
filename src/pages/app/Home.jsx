@@ -38,16 +38,16 @@ const Home = () => {
 
 
   const onToggleFavorite = async (pro) => {
-    if (!pro?.id || pending[pro.id]) return;
-    setPending(p => ({ ...p, [pro.id]: true }));
+    if (!pro?.id || pending[pro?.id]) return;
+    setPending(p => ({ ...p, [pro?.id]: true }));
     try {
-      const result = await dispatch(unfavoriteProvider(pro.id)).unwrap();
+      const result = await dispatch(unfavoriteProvider(pro?.id)).unwrap();
       const nextVal = typeof result?.is_favorite === "boolean"
         ? result.is_favorite
-        : !pro.is_favorite;
+        : !pro?.is_favorite;
 
       // local list me flip (taake turant reflect ho)
-      setData(prev => prev.map(x => x.id === pro.id ? { ...x, is_favorite: nextVal } : x));
+      setData(prev => prev.map(x => x.id === pro?.id ? { ...x, is_favorite: nextVal } : x));
 
       // optional: re-fetch current page to stay in sync with server
       // dispatch(fetchallservices(currentPage));
@@ -56,7 +56,7 @@ const Home = () => {
       console.error(e);
     } finally {
       setPending(p => {
-        const { [pro.id]: _, ...rest } = p;
+        const { [pro?.id]: _, ...rest } = p;
         return rest;
       });
     }
@@ -127,20 +127,20 @@ const Home = () => {
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex items-center gap-3">
                             <img
-                              src={pro?.avatar ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${pro.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
-                              alt={pro.name}
+                              src={pro?.avatar ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${pro?.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
+                              alt={pro?.name}
                               className="w-12 h-12 rounded-full object-cover"
                             />
                             <div>
                               <h2
                                 className="font-semibold text-md text-gray-800 cursor-pointer"
-                                onClick={() => navigate("/service-provider", { state: { id: pro.id } })}
+                                onClick={() => navigate("/service-provider", { state: { id: pro?.id } })}
                               >
-                                {pro.name}
+                                {pro?.name}
                               </h2>
                               <div className="flex items-center text-sm text-yellow-500">
                                 <FaStar className="mr-1" />
-                                {pro.rating}
+                                {pro?.rating}
                               </div>
                             </div>
                           </div>
@@ -171,15 +171,15 @@ const Home = () => {
                         <div className="text-sm text-gray-600 space-y-1 mb-2">
                           <div className="flex items-center gap-2">
                             <img src={LocationIcon} alt="LocationIcon" className="w-3" />
-                            Location: {pro.city}, {pro.state}, {pro.country}
+                            Location: {pro?.city}, {pro?.state}, {pro?.country}
                           </div>
                           <div className="flex items-center gap-2 ">
                             <img src={WorkIcon} alt="WorkIcon" className="w-3" />
-                            Experience: {pro.experience} yrs
+                            Experience: {pro?.experience} yrs
                           </div>
                           <div className="flex items-center gap-2">
                             <img src={awardIcon} alt="AwardIcon" className="w-3" />
-                            Job Success: {pro.complete_jobs} jobs
+                            Job Success: {pro?.complete_jobs} jobs
                           </div>
                         </div>
                       </div>
@@ -187,7 +187,7 @@ const Home = () => {
                       <hr className="mb-2" />
 
                       <h3 className="font-semibold text-[#00034A] mb-1">Biography</h3>
-                      <p className="text-sm text-gray-700 line-clamp-3">{pro.biography}</p>
+                      <p className="text-sm text-gray-700 line-clamp-3">{pro?.biography}</p>
                       </div>
                     );
                   })}

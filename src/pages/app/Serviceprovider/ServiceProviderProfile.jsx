@@ -26,6 +26,7 @@ import { formatDate } from "../../../hooks/utils/Utils";
 
 const ServiceproviderProfile = () => {
   const { user_data } = useSelector((state) => state.auth);
+  const { badges } = useSelector((state) => state.provider);
   const [servicetype, setServicetype] = useState(false);
   const [requestservice, setRequestservice] = useState(false);
   const [requestservicetwo, setRequestservicetwo] = useState(false);
@@ -236,9 +237,14 @@ const ServiceproviderProfile = () => {
               {/* Earned Badges */}
               <div className="mt-4 text-sm text-gray-700 border-t-2 pt-3">
                 <h3 className="font-semibold mb-1 text-black">Earned Badges</h3>
-                <div className="mt-2 grid grid-cols-3 gap-4">
-                  <img src={badgesImage} alt="badgesImage" />
-                </div>
+                {badges?.alloted_badges?.map((item, i) => (
+                  <div key={i} className="mt-2 grid grid-cols-3 gap-4">
+                    <img
+                      src={import.meta.env.VITE_APP_AWS_URL + item?.url}
+                      alt="badgesImage"
+                    />
+                  </div>
+                ))}
               </div>
 
               {/* Bio */}
@@ -257,7 +263,10 @@ const ServiceproviderProfile = () => {
                   <div>
                     <span className="font-semibold">Working Radius</span>
                     <br />
-                    <span className="text-[#181818] font-[500]"> {user_data?.working_radius} miles</span>
+                    <span className="text-[#181818] font-[500]">
+                      {" "}
+                      {user_data?.working_radius} miles
+                    </span>
                   </div>
                   <div>
                     <span className="font-semibold">Completed Job</span>
@@ -349,8 +358,11 @@ const ServiceproviderProfile = () => {
                   )}
                 </div>
                 {user_data?.reviews?.length > 0 ? (
-                  user_data.reviews.slice(0,1).map((review, i) => (
-                    <div key={i}  className="bg-gray-50 p-4 mt-4 rounded-md border">
+                  user_data.reviews.slice(0, 1).map((review, i) => (
+                    <div
+                      key={i}
+                      className="bg-gray-50 p-4 mt-4 rounded-md border"
+                    >
                       <div className="mb-4">
                         <p className="font-medium">
                           {review.name || "Anonymous"}

@@ -1,13 +1,9 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
 import { useFormik } from "formik";
-import {
-  providerDetailsValues,
-} from "../../init/authentication/AuthValues";
-import {
-  providerDetailsSchema,
-} from "../../schema/authentication/AuthSchema";
+import { providerDetailsValues } from "../../init/authentication/AuthValues";
+import { providerDetailsSchema } from "../../schema/authentication/AuthSchema";
 import { MapImg } from "../../assets/export";
 import { FaPlus } from "react-icons/fa";
 import AddAvailabilityModal from "../../components/onboarding/AddAvaliabilityModal";
@@ -25,25 +21,48 @@ export default function ProviderDetail({ handleNext }) {
     initialValues: providerDetailsValues,
     validationSchema: providerDetailsSchema,
     onSubmit: async (values, action) => {
-      const payload = {
-        name: values.fullName,
-        working_radius: values.radius,
-        phone_number: values.phone,
-        lat: 24.8607,
-        long: 67.0011,
-        city: "miami",
-        state: "Florida",
-        country: "US",
-        location: values.location,
-        experience: Number(values.experience),
-        biography: values.biography,
-        avatar: null,
-        availability: availability, // collected from modal
-      };
+      try {
+        const formData = new FormData();
 
-      await dispatch(CompleteProviderProfile(payload)).unwrap();
-      handleNext();
-      action.resetForm();
+        // Append simple fields
+        formData.append("name", values.fullName);
+        formData.append("working_radius", values.radius);
+        formData.append("phone_number", values.phone);
+        formData.append("lat", 24.8607);
+        formData.append("long", 67.0011);
+        formData.append("city", "miami");
+        formData.append("state", "Florida");
+        formData.append("country", "US");
+        formData.append("location", values.location);
+        formData.append("experience", Number(values.experience));
+        formData.append("biography", values.biography);
+
+        // Avatar file (agar image/file hai to)
+        if (values.profilePic) {
+          formData.append("avatar", values.profilePic);
+        } else {
+          formData.append("avatar", "");
+        }
+        console.log(availability, "avaliabilty");
+        if (availability) {
+          formData.append("availability[start_time]", availability.start_time);
+          formData.append("availability[end_time]", availability.end_time);
+
+          if (Array.isArray(availability.days)) {
+            availability.days.forEach((day, i) => {
+              formData.append(`availability[days][${i}]`, day);
+            });
+          }
+        }
+
+        // Dispatch with form data
+        await dispatch(CompleteProviderProfile(formData)).unwrap();
+
+        handleNext();
+        action.resetForm();
+      } catch (error) {
+        console.error("Profile submission failed:", error);
+      }
     },
   });
 
@@ -198,7 +217,7 @@ export default function ProviderDetail({ handleNext }) {
                   <div className="bg-[#F1F1F1D1] flex gap-2 items-center p-2 h-[38px] rounded-[8px] ml-1">
                     <p className="text-[14px]">
                       {availability.start_time} - {availability.end_time} (
-                      {availability.days.join(", ")?.slice(0,15)},...)
+                      {availability.days.join(", ")?.slice(0, 15)},...)
                     </p>
                     <FiTrash2
                       color={"#F01A1A"}

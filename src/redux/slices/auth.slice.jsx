@@ -147,7 +147,7 @@ export const getProviderProfile = createAsyncThunk(
   "/provider/profile",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("/provider/profile");
+      const response = await axios.get("/profile");
       return response.data; // Return entire API response
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -211,18 +211,14 @@ export const CompleteUserProfile = createAsyncThunk(
   }
 );
 
-
 export const UpdateProviderProfile = createAsyncThunk(
   "/provider/update-profile",
   async (payload, thunkAPI) => {
     try {
-       console.log(payload,"update ProfileRecord");
-      const response = await axios.post(
-        `/provider/profile`,payload
-      );
+      console.log(payload, "update ProfileRecord");
+      const response = await axios.post(`/provider/profile`, payload);
 
       SuccessToast("Profile Update Successfully");
-     
 
       return response?.data?.user;
     } catch (error) {
@@ -233,7 +229,6 @@ export const UpdateProviderProfile = createAsyncThunk(
     }
   }
 );
-
 
 // COMPLETE Provider PROFILE
 export const CompleteProviderProfile = createAsyncThunk(
@@ -426,8 +421,6 @@ export const DeleteCertificate = createAsyncThunk(
   }
 );
 
-
-
 export const CreateVerification = createAsyncThunk(
   "/provider/verification",
   async (payload, thunkAPI) => {
@@ -477,6 +470,34 @@ export const verifyEmail = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       const response = await axios.post("/verify-email", payload);
+      const { token, access_token, refreshToken, refresh_token, data } =
+        response.data || {};
+
+      const foundToken =
+        token ?? access_token ?? data?.token ?? data?.access_token ?? null;
+      const foundRefresh =
+        refreshToken ??
+        refresh_token ??
+        data?.refreshToken ??
+        data?.refresh_token ??
+        null;
+      if (!foundToken) {
+        return thunkAPI.rejectWithValue("Token not found in response");
+      }
+      // Write cookie
+      const isHttps =
+        typeof window !== "undefined" && window.location.protocol === "https:";
+      const encoded = encodeURIComponent(foundToken);
+
+      document.cookie =
+        "access_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT"; // Clear old cookie
+      document.cookie =
+        `access_token=${encoded}; Path=/; Max-Age=86400` +
+        (isHttps ? "; Secure; SameSite=None" : "; SameSite=Lax");
+
+      // Local storage
+      localStorage.setItem("access_token", foundToken);
+      if (foundRefresh) localStorage.setItem("refresh_token", foundRefresh);
       SuccessToast(response?.data?.message || "Email verified successfully");
       return response.data;
     } catch (error) {
@@ -569,6 +590,20 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       //Update Profile
+      .addCase(CompleteUserProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(CompleteUserProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.success = "Profile Completed Successfully";
+        state.accessToken = action.payload?.accessToken;
+      })
+      .addCase(CompleteUserProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       .addCase(UpdateProviderProfile.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -577,7 +612,7 @@ const authSlice = createSlice({
       .addCase(UpdateProviderProfile.fulfilled, (state, action) => {
         state.isLoading = false;
         state.success = "Profile Update Successfully";
-        state.user_data=action.payload
+        state.user_data = action.payload;
       })
       .addCase(UpdateProviderProfile.rejected, (state, action) => {
         state.isLoading = false;

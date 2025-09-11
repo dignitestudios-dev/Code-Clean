@@ -20,6 +20,7 @@ const initialState = {
   wallet: null,
   transaction: null,
   badges: null,
+  widrawData:null,
 };
 // ================= THUNKS =================
 
@@ -162,7 +163,7 @@ export const AddCard = createAsyncThunk(
   "/payment-methods",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.post(payload.url, payload?.payload);
+      const response = await axios.post("/payment-methods", payload);
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {
@@ -341,8 +342,8 @@ export const widrawFunds = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       const response = await axios.post("/withdrawals", payload);
-      SuccessToast(response?.data?.message);
-      return { success: true, message: response?.data?.message };
+      SuccessToast("withdraw Funds Successfully");
+      return { success: true, data: response?.data };
     } catch (error) {
       ErrorToast(error.response?.data?.message || "withdraw Funds failed");
       return thunkAPI.rejectWithValue(
@@ -549,6 +550,7 @@ const providerSlice = createSlice({
       })
       .addCase(widrawFunds.fulfilled, (state, action) => {
         state.bookingRequestLoader = false;
+        state.widrawData=action?.payload?.data
         state.success = "withdraw Funds Successfully";
       })
       .addCase(widrawFunds.rejected, (state, action) => {

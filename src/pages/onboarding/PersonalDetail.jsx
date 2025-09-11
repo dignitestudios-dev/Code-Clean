@@ -27,24 +27,34 @@ export default function PersonalDetail({ handleNext }) {
     validateOnChange: true,
     validateOnBlur: true,
     onSubmit: async (values, action) => {
-      const formData = new FormData();
-      formData.append("fullName", values.fullName);
-      formData.append("phone", values.phone);
-      formData.append("location", values.location);
-      formData.append("profilePic", values.profilePic);
-      const data = {
-        name: values.fullName,
-        phone_number: values.phone,
-        lat: 24.8607,
-        long: 67.0011,
-        state: "Florida",
-        country: "Us",
-        city: "Miami",
-        location: values.location,
-      };
-      await dispatch(CompleteUserProfile(data)).unwrap();
-      handleNext();
-      action.resetForm();
+      try {
+        const formData = new FormData();
+
+        // Append form values
+        formData.append("name", values.fullName);
+        formData.append("phone_number", values.phone);
+        formData.append("location", values.location);
+
+        // Append file/image
+        if (values.profilePic) {
+          formData.append("avatar", values.profilePic);
+        }
+
+        // Append extra fields
+        formData.append("lat", 24.8607);
+        formData.append("long", 67.0011);
+        formData.append("state", "Florida");
+        formData.append("country", "Us");
+        formData.append("city", "Miami");
+
+        // Dispatch with FormData
+        await dispatch(CompleteUserProfile(formData)).unwrap();
+
+        handleNext();
+        action.resetForm();
+      } catch (err) {
+        console.error("Profile update failed:", err);
+      }
     },
   });
 

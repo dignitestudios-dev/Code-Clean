@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../../components/layout/Navbar";
 import { HeroBg } from "../../../assets/export";
-import { FaArrowLeft, FaCheck } from "react-icons/fa";
+import { FaArrowLeft, FaCheck, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { ImCross } from "react-icons/im";
 import { useDispatch, useSelector } from "react-redux";
@@ -44,6 +44,7 @@ const Wallet = () => {
     isLoading,
     paymentMethod,
     bookingRequestLoader,
+    widrawData,
   } = useSelector((state) => state.provider);
   useEffect(() => {
     dispatch(getTransactions());
@@ -159,8 +160,8 @@ const Wallet = () => {
               paymentMethod.banks.map((item, i) => (
                 <div
                   key={i}
-                  onClick={() => setSelectedBank(item?.id)} // <-- select bank
-                  className={`border-2 rounded-2xl py-1 px-3 mt-3 mb-3 cursor-pointer transition
+                  // <-- select bank
+                  className={`border-2 flex justify-between items-center rounded-2xl py-1 px-3 mt-3 mb-3 transition
       ${
         selectedBank == item?.id
           ? "border-blue-500 bg-blue-50"
@@ -168,10 +169,21 @@ const Wallet = () => {
       }
     `}
                 >
-                  <label className="block text-sm font-bold text-black">
-                    {item?.bank_name}
-                  </label>
-                  <p className="text-sm">0112********{item?.last_digits}</p>
+                  <div>
+                    <label
+                      onClick={() => setSelectedBank(item?.id)}
+                      className="block text-sm font-bold cursor-pointer text-black"
+                    >
+                      {item?.bank_name}
+                    </label>
+                    <p className="text-sm">0112********{item?.last_digits}</p>
+                  </div>
+                  <div>
+                    <button>
+                      {" "}
+                      <FaTrash size={15} color="red" />{" "}
+                    </button>
+                  </div>
                 </div>
               ))
             ) : (
@@ -249,27 +261,25 @@ const Wallet = () => {
               Your withdrawal request has been successfully processed.
             </p>
             <p className="text-gray-600 text-sm">Amount Withdraw</p>
-            <p className="text-blue-600 font-bold text-2xl">USD $200</p>
+            <p className="text-blue-600 font-bold text-2xl">
+              USD ${widrawData?.amount}
+            </p>
             <div className="text-left border-2 rounded-2xl p-0 mt-6">
               <div className="border-b-2 p-3">
                 <p>Transaction ID:</p>
-                <p className="text-blue-600">9621486393454</p>
+                <p className="text-blue-600">{widrawData?.reference_id}</p>
               </div>
               <div className="border-b-2 p-3">
                 <p>Card Holder Name:</p>
-                <p className="text-blue-600"> John Doe</p>
-              </div>
-              <div className="border-b-2 p-3">
-                <p>Account Number:</p>
-                <p className="text-blue-600">0112**********12</p>
+                <p className="text-blue-600"> {widrawData?.name}</p>
               </div>
               <div className="border-b-2 p-3">
                 <p>Transfer Date: </p>
-                <p className="text-blue-600"> 10/May/2025</p>
+                <p className="text-blue-600"> {widrawData?.date}</p>
               </div>
               <div className="border-b-2 p-3">
                 <p>Transfer Time:</p>
-                <p className="text-blue-600"> 08:15pm</p>
+                <p className="text-blue-600"> {widrawData?.time}</p>
               </div>
             </div>
           </div>

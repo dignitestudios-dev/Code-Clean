@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 export default function AddCertification({ handleNext }) {
   const [showModal, setShowModal] = useState(false);
   const [actionType, setActionType] = useState("");
-  const { certificates } = useSelector((state) => state?.auth?.user_data);
+  const { certificates } = useSelector((state) => state?.provider);
   const [selectedItem, setSelectedItem] = useState(null);
   console.log(certificates);
 
