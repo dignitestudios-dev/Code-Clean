@@ -36,7 +36,6 @@ const Home = () => {
   const navigate = useNavigate("");
   const [pending, setPending] = useState({}); // { [id]: true }
 
-
   const onToggleFavorite = async (pro) => {
     if (!pro?.id || pending[pro?.id]) return;
     setPending(p => ({ ...p, [pro?.id]: true }));
