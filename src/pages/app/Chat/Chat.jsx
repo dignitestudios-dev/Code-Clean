@@ -21,20 +21,21 @@ const Chat = () => {
   const { user_data } = useSelector((state) => state.auth);
 
   const loc = useLocation();
-  const user = loc?.state?.user; // {id, name, avatar, role}
-  const receiverId = user?.id;
+  const user = loc?.state?.user;
   const [selectedChatId, setSelectedChatId] = useState(null);
+  const [recieverId, setRecieverId] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [input, setInput] = useState("");
-console.log(user,"user-Data")
+  console.log(user, "user-Data");
   // ✅ Create chatId (same for both users)
   useEffect(() => {
-    if (receiverId && user_data?.id) {
-      const chatId = [receiverId, user_data.id].sort().join("_");
+    setRecieverId(user?.id);
+    if (recieverId && user_data?.id) {
+      const chatId = [recieverId, user_data.id].sort().join("_");
       setSelectedChatId(chatId);
       dispatch(listenUserChats({ userId: user_data.id }));
     }
-  }, [dispatch, receiverId, user_data?.id]);
+  }, [dispatch, recieverId, user_data?.id]);
 
   // ✅ Listen to messages of selected chat
   useEffect(() => {
@@ -49,15 +50,12 @@ console.log(user,"user-Data")
 
   const handleSendMessage = () => {
     if (!input.trim()) return;
-
-    // receiverId null ho sakta hai agar chat select nahi kiya
-    if (!receiverId && !selectedChatId) return;
-
+    if (!recieverId && !selectedChatId) return;
     dispatch(
       sendMessage({
-        chatId: selectedChatId, // agar null hai to thunk auto-generate karega
+        chatId: selectedChatId,
         senderId: user_data?.id,
-        receiverId,
+        recieverId,
         senderInfo: {
           name: user_data?.name,
           avatar: user_data?.avatar,
@@ -73,7 +71,7 @@ console.log(user,"user-Data")
 
     setInput("");
   };
-  console.log(selectedUser,selectedChatId, "selectedUser");
+  console.log(selectedUser, selectedChatId, "selectedUser");
   return (
     <>
       <div className="bg-[#F6FAFF] min-h-screen">
@@ -125,6 +123,7 @@ console.log(user,"user-Data")
                       onClick={() => {
                         setSelectedChatId(chat.id);
                         setSelectedUser(otherMember);
+                        setRecieverId(otherMemberId);
                       }}
                       className={`flex items-start gap-3 p-4 cursor-pointer transition-all ${
                         selectedChatId === chat.id
