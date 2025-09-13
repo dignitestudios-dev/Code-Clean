@@ -6,7 +6,11 @@ import Navbar from "../../../components/layout/Navbar";
 import Footer from "../../../components/layout/Footer";
 import { CiSearch } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchBookinghistory, fetchBookingRequest, fetchCurrentBooking } from "../../../redux/slices/users.slice";
+import {
+  fetchBookinghistory,
+  fetchBookingRequest,
+  fetchCurrentBooking,
+} from "../../../redux/slices/users.slice";
 
 const PLACEHOLDER_AVATAR = "https://via.placeholder.com/40";
 
@@ -58,9 +62,8 @@ const Bookingsrequests = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("Current Bookings");
   const [statusFilter, setStatusFilter] = useState("All");
-  const { currentbookingdata, currentbookingLoading, requestbookingdata } = useSelector(
-    (s) => s.user
-  );
+  const { currentbookingdata, currentbookingLoading, requestbookingdata } =
+    useSelector((s) => s.user);
   const loading = !!currentbookingLoading;
 
   useEffect(() => {
@@ -73,7 +76,7 @@ const Bookingsrequests = () => {
     }
   }, [requestbookingdata]);
 
-  console.log(bookingrequest,"bookingrequest")
+  console.log(bookingrequest, "bookingrequest");
 
   useEffect(() => {
     dispatch(fetchCurrentBooking());
@@ -99,15 +102,26 @@ const Bookingsrequests = () => {
 
   const statusColor = (statusUi) => {
     const s = (statusUi || "").toLowerCase();
-    if (s.includes("completed") || s.includes("approved") || s.includes("accepted")) return "text-[#00C853]";
-    if (s.includes("upcoming") || s.includes("pending")) return "text-[#EC8325]";
+    if (
+      s.includes("completed") ||
+      s.includes("approved") ||
+      s.includes("accepted")
+    )
+      return "text-[#00C853]";
+    if (s.includes("upcoming") || s.includes("pending"))
+      return "text-[#EC8325]";
     if (s.includes("progress")) return "text-[#208BC7]";
     return "text-[#EE3131]";
   };
 
   const fmtIsoDate = (iso) => (iso ? new Date(iso).toLocaleDateString() : "");
   const fmtIsoTime = (iso) =>
-    iso ? new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+    iso
+      ? new Date(iso).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "";
 
   // ---- normalize API payload (supports {data:[...]} OR [...] OR {...}) ----
   const apiList = useMemo(() => {
@@ -136,7 +150,8 @@ const Bookingsrequests = () => {
 
         const id = item?.booking_id ?? item?.id ?? "-";
         const name = providerNew?.name || providerOld?.name || "Unknown";
-        const avatar = providerNew?.avatar || providerOld?.avatar || PLACEHOLDER_AVATAR;
+        const avatar =
+          providerNew?.avatar || providerOld?.avatar || PLACEHOLDER_AVATAR;
 
         // Prefer new strings, else ISO fallback
         const dateStr = item?.date || fmtIsoDate(sr?.date) || "";
@@ -164,19 +179,19 @@ const Bookingsrequests = () => {
       // Booking Request tab (static)
       return bookings.map((b) => ({
         id: b.booking_id,
-        name: b.service_provider.name,
-        avatar: b.service_provider.avatar || PLACEHOLDER_AVATAR,
-        dateStr: b.date || "",
-        timeStr: b.time || "",
-        durationStr: b.duration || "-",
-        statusUi: toUiStatus(b.status),
-        statusRaw: b.status || "",
+        name: b.service_provider?.name,
+        avatar: b.service_provider?.avatar || PLACEHOLDER_AVATAR,
+        dateStr: b?.date || "",
+        timeStr: b?.time || "",
+        durationStr: b?.duration || "-",
+        statusUi: toUiStatus(b?.status),
+        statusRaw: b?.status || "",
       }));
     }
   }, [isCurrent, apiList, bookings]);
 
   const statusOptions = isCurrent
-    ? ["All", "Upcoming Jobs", "In Progress Jobs", "Completed Jobs", "Canceled Jobs"]
+    ? ["All", "Upcoming Jobs", "In Progress Jobs"]
     : ["All", "Pending", "Approved", "Rejected"];
 
   const q = searchQuery.trim().toLowerCase();
@@ -304,7 +319,9 @@ const Bookingsrequests = () => {
                       key={row.id ?? index}
                       className="border-t cursor-pointer"
                       onClick={() =>
-                        navigate(`/booking-details?id=${row.id}&status=${row.statusUi}`)
+                        navigate(
+                          `/booking-details?id=${row.id}&status=${row.statusUi}`
+                        )
                       }
                     >
                       <td className="px-6 py-4">{row.id}</td>
@@ -312,7 +329,9 @@ const Bookingsrequests = () => {
                         <img
                           src={
                             row?.avatar
-                              ? `https://family-phys-ed-s3.s3.amazonaws.com/${row?.avatar}`
+                              ? `${
+                                  import.meta.env.VITE_APP_AWS_URL + row?.avatar
+                                }`
                               : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"
                           }
                           alt={row.name}
@@ -324,7 +343,11 @@ const Bookingsrequests = () => {
                       <td className="px-6 py-4">{row.timeStr}</td>
                       <td className="px-6 py-4">{row.durationStr}</td>
                       <td className="px-6 py-4">
-                        <span className={`font-semibold ${statusColor(row.statusUi)}`}>
+                        <span
+                          className={`font-semibold ${statusColor(
+                            row.statusUi
+                          )}`}
+                        >
                           {row.statusUi}
                         </span>
                       </td>
@@ -336,7 +359,10 @@ const Bookingsrequests = () => {
 
                   {filteredRows.length === 0 && (
                     <tr>
-                      <td className="px-6 py-10 text-center text-[#888]" colSpan={7}>
+                      <td
+                        className="px-6 py-10 text-center text-[#888]"
+                        colSpan={7}
+                      >
                         No bookings found.
                       </td>
                     </tr>

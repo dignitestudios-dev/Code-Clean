@@ -234,7 +234,15 @@ const Jobdetails = () => {
                   status !== "pending" && (
                     <button
                       onClick={() => {
-                        navigate("/messages");
+                        navigate("/messages", {
+                          state: {
+                            user: {
+                              id: bookingRequestDetail?.user?.id,
+                              name: bookingRequestDetail?.user?.name,
+                              avatar: bookingRequestDetail?.user?.avatar,
+                            },
+                          },
+                        });
                       }}
                       className={`w-full ${
                         role == "user"
@@ -434,24 +442,34 @@ const Jobdetails = () => {
                 </div>
 
                 {/* Total Payment */}
-                <div className="mb-6">
-                  <h4 className="text-lg font-semibold mb-4">Total Payment</h4>
+                <div className="mb-6 mt-3">
+                  <h4 className="text-lg font-semibold mb-3">Total Payment</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
                       <span className="text-gray-500">Subtotal</span>
                       <span className="font-medium">
-                        ${bookingRequestDetail?.total_payment}
+                        ${bookingRequestDetail?.sub_total}
                       </span>
                     </div>
+                    <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
+                      <span className="text-gray-500">Transaction Fees</span>
+                      <span className="font-medium">
+                        ${bookingRequestDetail?.transaction_fees}
+                      </span>
+                    </div>
+
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3 font-semibold">
                       <span>Total</span>
-                      <span>${bookingRequestDetail?.total_payment}</span>
+                      <span>${bookingRequestDetail?.total_amount}</span>
                     </div>
                   </div>
                 </div>
 
                 {status == "completed" && (
-                  <Feedback setReportUser={setReportUser} />
+                  <Feedback
+                    review={bookingRequestDetail?.review}
+                    setReportUser={setReportUser}
+                  />
                 )}
 
                 {/* Cancel Button */}

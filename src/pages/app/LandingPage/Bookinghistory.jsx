@@ -1,20 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
-import { FaArrowLeft } from 'react-icons/fa';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import { FaArrowLeft } from "react-icons/fa";
 import { HeroBg } from "../../../assets/export";
-import Navbar from '../../../components/layout/Navbar';
+import Navbar from "../../../components/layout/Navbar";
 import Footer from "../../../components/layout/Footer";
 import { CiSearch } from "react-icons/ci";
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchBookinghistory } from '../../../redux/slices/users.slice';
+import { useDispatch, useSelector } from "react-redux";
+import { fetchBookinghistory } from "../../../redux/slices/users.slice";
 
 const Bookinghistory = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { bookinghistorydata, bookinghistoryLoading } = useSelector((state) => state.user);
+  const { bookinghistorydata, bookinghistoryLoading } = useSelector(
+    (state) => state.user
+  );
   const [booking, setBooking] = useState([]); // Set initial state as an empty array
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('All'); // Active tab state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("All"); // Active tab state
 
   useEffect(() => {
     dispatch(fetchBookinghistory());
@@ -26,19 +28,23 @@ const Bookinghistory = () => {
     }
   }, [bookinghistorydata]);
 
-  console.log(bookinghistorydata,"bookinghistorydata===")
+  console.log(bookinghistorydata, "bookinghistorydata===");
 
   // Filtered bookings based on search query and active tab
   const filteredBookings = booking.filter((booking) => {
     // Filter bookings based on the selected tab (All, Completed Jobs, Canceled Jobs)
-    const matchesTab = 
-      activeTab === 'All' || 
-      (activeTab === 'Completed Jobs' && booking.status.toLowerCase() === 'completed') || 
-      (activeTab === 'Canceled Jobs' && booking.status.toLowerCase() === 'cancelled');
-    
+    const matchesTab =
+      activeTab === "All" ||
+      (activeTab === "Completed Jobs" &&
+        booking.status.toLowerCase() === "completed") ||
+      (activeTab === "Canceled Jobs" &&
+        booking.status.toLowerCase() === "cancelled");
+
     // Filter bookings based on the search query (for booking details like name, date, and status)
-    const matchesSearchQuery = 
-      booking.service_provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearchQuery =
+      booking.service_provider.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
       booking.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.status.toLowerCase().includes(searchQuery.toLowerCase());
 
@@ -100,7 +106,7 @@ const Bookinghistory = () => {
         }}
       >
         <div className="flex justify-between items-center gap-3 ml-[11em] w-[74em] -mb-10">
-          <div className='flex gap-3'>
+          <div className="flex gap-3">
             <button type="button" onClick={() => navigate(-1)}>
               <FaArrowLeft color="white" size={20} />
             </button>
@@ -112,7 +118,11 @@ const Bookinghistory = () => {
             {/* Search Bar Section */}
             <div className="px-[0em] py-[2em]">
               <div className="relative">
-                <CiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white" color='white' size={20} />
+                <CiSearch
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white"
+                  color="white"
+                  size={20}
+                />
                 <input
                   type="text"
                   value={searchQuery}
@@ -135,7 +145,9 @@ const Bookinghistory = () => {
               <button
                 key={index}
                 onClick={() => handleTabChange(tab)}
-                className={`px-4 py-2 text-sm font-[500] text-[#000000] hover:text-[#00AEEF] focus:outline-none border-b-2 ${activeTab === tab ? "border-[#00AEEF]" : "border-transparent"}`}
+                className={`px-4 py-2 text-sm font-[500] text-[#000000] hover:text-[#00AEEF] focus:outline-none border-b-2 ${
+                  activeTab === tab ? "border-[#00AEEF]" : "border-transparent"
+                }`}
               >
                 {tab}
               </button>
@@ -162,17 +174,32 @@ const Bookinghistory = () => {
                 <>
                   {filteredBookings.length === 0 ? (
                     <tr>
-                      <td colSpan="7" className="px-6 py-4 text-center text-sm font-semibold text-gray-500">
+                      <td
+                        colSpan="7"
+                        className="px-6 py-4 text-center text-sm font-semibold text-gray-500"
+                      >
                         No data found
                       </td>
                     </tr>
                   ) : (
                     filteredBookings.map((row, index) => (
-                      <tr key={index} className="border-t">
+                      <tr
+                        onClick={() =>
+                          navigate(
+                            `/booking-details?id=${row.booking_id}&status=${row.status}`
+                          )
+                        }
+                        key={index}
+                        className="border-t"
+                      >
                         <td className="px-6 py-4">{row.booking_id}</td>
                         <td className="px-6 py-4 flex items-center gap-3">
                           <img
-                            src={row.service_provider.avatar ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${row.service_provider.avatar}` : "https://randomuser.me/api/portraits/men/1.jpg"}
+                            src={
+                              row.service_provider.avatar
+                                ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${row.service_provider.avatar}`
+                                : "https://randomuser.me/api/portraits/men/1.jpg"
+                            }
                             alt={row.service_provider.name}
                             className="w-8 h-8 rounded-full object-cover"
                           />
@@ -182,8 +209,15 @@ const Bookinghistory = () => {
                         <td className="px-6 py-4">{row.time}</td>
                         <td className="px-6 py-4">{row.duration} hrs</td>
                         <td className="px-6 py-4">
-                          <span className={`font-semibold ${row.status === "completed" ? "text-green-600" : "text-red-500"}`}>
-                            {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+                          <span
+                            className={`font-semibold ${
+                              row.status === "completed"
+                                ? "text-green-600"
+                                : "text-red-500"
+                            }`}
+                          >
+                            {row.status.charAt(0).toUpperCase() +
+                              row.status.slice(1)}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-[#00AEEF] cursor-pointer">

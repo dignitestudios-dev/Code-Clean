@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import {
   FaArrowLeft,
@@ -15,17 +15,40 @@ import { HeroBg } from "../../../assets/export";
 import { user } from "../../../assets/export";
 import ServiceRatingUI from "../../../components/app/Profile/ServiceRatingUi";
 import { TiWarning } from "react-icons/ti";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  CancelBookingRequest,
+  fetchBookingDetail,
+} from "../../../redux/slices/users.slice";
+import { ErrorToast } from "../../../components/global/Toaster";
+import { Button } from "../../../components/global/GlobalButton";
 
 const Bookingdetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
+  const [cancelReasonText, setCancelReasonText] = useState();
   const status = queryParams.get("status");
+  const bookingId = queryParams.get("id");
   const [rating, setRating] = useState(false);
   const [inProgressModal, setInProgressModal] = useState(false);
   const [cancelbooking, setCancelbooking] = useState(false);
   const [cancelreason, setCancelreason] = useState(false);
-
+  const { bookingDetail, isLoading } = useSelector((state) => state?.user);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchBookingDetail(bookingId));
+  }, [dispatch]);
+  const handleCancelBooking = async () => {
+    if (!cancelReasonText) return ErrorToast("Reason is required");
+    const data = {
+      booking_id: bookingDetail?.booking_id,
+      reason: cancelReasonText,
+    };
+    await dispatch(CancelBookingRequest(data));
+    navigate("/booking-history");
+  };
+  console.log(bookingDetail, "booking-Detail");
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -54,21 +77,18 @@ const Bookingdetails = () => {
               <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                 <h3 className="text-xl font-bold mb-4">Booking Description</h3>
                 <p className="text-gray-600 mb-6">
-                  The standard Lorem Ipsum passage, m ipsum dolor sit amet,
-                  consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                  ut labore et dolore magna aliqua. The standard Lorem Ipsum
-                  passage.
+                  {bookingDetail?.description}
                 </p>
 
                 {/* Date and Time */}
                 <div className="flex items-center gap-8 mb-6 border-t-[1px] pt-6">
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Date</p>
-                    <p className="font-medium">26 Dec, 2024</p>
+                    <p className="font-medium">{bookingDetail?.date}</p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-500 mb-1">Time</p>
-                    <p className="font-medium">08:00pm</p>
+                    <p className="font-medium">{bookingDetail?.time}</p>
                   </div>
                 </div>
 
@@ -77,7 +97,9 @@ const Bookingdetails = () => {
                   <p className="text-sm text-gray-500 mb-1">Location</p>
                   <div className="flex items-center space-x-2">
                     <FaMapMarkerAlt className="text-[#353adf]" />
-                    <p className="font-medium">Downtown, Los Angeles</p>
+                    <p className="font-medium">
+                      {bookingDetail?.city + "," + bookingDetail?.state}
+                    </p>
                   </div>
                 </div>
 
@@ -87,20 +109,12 @@ const Bookingdetails = () => {
                     Cleaning Services
                   </h4>
                   <div className="grid grid-cols-3 gap-4">
-                    <div className="text-left border-r-2">
-                      <p className="text-1xl text-gray-500">
-                        Bathroom Cleaning
-                      </p>
-                      <p className="text-sm font-bold">02</p>
-                    </div>
-                    <div className="text-left border-r-2">
-                      <p className="text-1xl text-gray-500">Bedroom Cleaning</p>
-                      <p className="text-sm font-bold">04</p>
-                    </div>
-                    <div className="text-left">
-                      <p className="text-1xl text-gray-500">Kitchen Cleaning</p>
-                      <p className="text-sm font-bold">01</p>
-                    </div>
+                    {bookingDetail?.cleaning_services?.map((item, i) => (
+                      <div key={i} className="text-left border-r-2">
+                        <p className="text-1xl text-gray-500">{item?.title}</p>
+                        <p className="text-sm font-bold">{item?.quantity}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
@@ -112,17 +126,31 @@ const Bookingdetails = () => {
                   <div className="flex items-center justify-between border-t-[1px] pt-6">
                     <div className="flex items-center space-x-3">
                       <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <img src={user} alt="" />
+                        <img
+                          src={
+                            import.meta.env.VITE_APP_AWS_URL +
+                            bookingDetail?.service_provider?.avatar
+                          }
+                          className="w-full h-full rounded-full"
+                          alt=""
+                        />
                       </div>
                       <div>
-                        <p className="font-medium">John Doe</p>
-                        <p className="text-yellow-500 text-sm">⭐ 4.9</p>
+                        <p className="font-medium">
+                          {bookingDetail?.service_provider?.name}
+                        </p>
+                        <p className="text-yellow-500 text-sm">
+                          ⭐{bookingDetail?.service_provider?.rating}
+                        </p>
                       </div>
                     </div>
                     <button
                       onClick={() => {
                         navigate("/service-provider", {
-                          state: { fromViewProfile: true },
+                          state: {
+                            fromViewProfile: true,
+                            id: bookingDetail?.service_provider?.id,
+                          },
                         });
                       }}
                       className="text-blue-600 text-sm underline hover:text-blue-800 font-medium"
@@ -150,15 +178,16 @@ const Bookingdetails = () => {
                     }}
                     className={`inline-block cursor-pointer px-6 py-4 rounded text-[17px] font-medium mb-2 w-full text-center pt-[20px]
                                       ${
-                                        status === "Pending"
+                                        status === "pending"
                                           ? "bg-[#EC832533] text-[#EC8325]"
-                                          : status === "Waiting"
+                                          : status === "waiting"
                                           ? "bg-[#EC832533] text-[#EC8325]"
-                                          : status === "Rejected"
+                                          : status == "rejected" ||
+                                            status == "cancelled"
                                           ? "bg-[#EE313133] text-[#EE3131]"
-                                          : status === "Accepted"
+                                          : status === "accepted"
                                           ? "bg-green-100 text-green-600"
-                                          : status === "Completed"
+                                          : status === "completed"
                                           ? "bg-[#04AA5133] text-[#00C853]"
                                           : status === "In Progress"
                                           ? "bg-[#00B0FF33] text-[#00B0FF]"
@@ -177,12 +206,20 @@ const Bookingdetails = () => {
                 </div>
 
                 {/* Message Button */}
-                {status !== "Accepted" &&
-                  status !== "Completed" &&
-                  status !== "Rejected" && (
+                {status !== "accepted" &&
+                  status !== "completed" &&
+                  status !== "rejected" && (
                     <button
                       onClick={() => {
-                        navigate("/messages");
+                        navigate("/messages", {
+                          state: {
+                            user: {
+                              id: bookingDetail?.service_provider?.id,
+                              name: bookingDetail?.service_provider?.name,
+                              avatar: bookingDetail?.service_provider?.avatar,
+                            },
+                          },
+                        });
                       }}
                       className="w-full bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-3 rounded-lg font-medium mb-6 flex items-center justify-center space-x-2"
                     >
@@ -201,15 +238,17 @@ const Bookingdetails = () => {
                     </div>
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3 ">
                       <span className="text-gray-500">Date</span>
-                      <span className="font-medium">12/01/2025</span>
+                      <span className="font-medium">{bookingDetail?.date}</span>
                     </div>
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
                       <span className="text-gray-500">Time</span>
-                      <span className="font-medium">10 AM</span>
+                      <span className="font-medium">{bookingDetail?.time}</span>
                     </div>
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
                       <span className="text-gray-500">Total Duration</span>
-                      <span className="font-medium">2 hr</span>
+                      <span className="font-medium">
+                        {bookingDetail?.duration} hr
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -218,21 +257,18 @@ const Bookingdetails = () => {
                 <div className="mb-6">
                   <h4 className="text-lg font-semibold mb-4">Total Payment</h4>
                   <div className="space-y-2">
-                    <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
-                      <span className="text-gray-500">Subtotal</span>
-                      <span className="font-medium">$790</span>
-                    </div>
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3 font-semibold">
                       <span>Total</span>
-                      <span>$790</span>
+                      <span>${bookingDetail?.total_payment}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Cancel Button */}
-                {status !== "Accepted" &&
-                  status !== "Completed" &&
-                  status !== "Rejected" && (
+                {status !== "accepted" &&
+                  status !== "completed" &&
+                  status !== "rejected" &&
+                  status !== "cancelled" && (
                     <button
                       className="w-full bg-[#EE3131] text-white py-3 rounded-lg font-medium hover:bg-red-600"
                       onClick={() => {
@@ -243,7 +279,7 @@ const Bookingdetails = () => {
                     </button>
                   )}
 
-                {status === "Rejected" && (
+                {status === "rejected" && (
                   <div>
                     <h1>Rejection Reason </h1>
                     <p className="bg-[#F6F6F6] p-3 text-sm rounded-2xl mt-1">
@@ -254,7 +290,7 @@ const Bookingdetails = () => {
                   </div>
                 )}
 
-                {status === "Completed" && (
+                {status === "completed" && (
                   <div className="space-y-3">
                     <button
                       className="w-full bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-3 rounded-lg font-medium hover:bg-red-600"
@@ -357,21 +393,21 @@ const Bookingdetails = () => {
                         </label>
                         <textarea
                           id="reason"
+                          onChange={(e) => setCancelReasonText(e.target.value)}
                           rows={4}
+                          value={cancelReasonText}
                           placeholder="Write your reason for cancellation..."
                           className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700"
                         />
                       </div>
 
-                      {/* Submit Button */}
-                      <button
+                      <Button
+                        loading={isLoading}
+                        text={"Cancel Booking"}
                         onClick={() => {
-                          navigate("/home");
+                          handleCancelBooking();
                         }}
-                        className="w-full bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-2 rounded-lg font-medium hover:opacity-90"
-                      >
-                        Submit
-                      </button>
+                      />
                     </div>
                   </div>
                 )}

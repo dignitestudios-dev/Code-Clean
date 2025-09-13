@@ -35,9 +35,10 @@ const initialState = {
   CustomserviceproviderError: null,
   CustomserviceproviderSuccess: null,
   paymentMethoduser: null,
-  favoritesSuccess:null,
-  favoritesLoading:false,
-  favoritesError:null,
+  favoritesSuccess: null,
+  favoritesLoading: false,
+  favoritesError: null,
+  bookingDetail: null,
 };
 // ================= THUNKS =================
 
@@ -46,11 +47,11 @@ export const HireServiceProvider = createAsyncThunk(
   "/provider/requests/private", // Action type
   async (payload, thunkAPI) => {
     try {
-      const { userId, providerData } = payload; 
+      const { userId, providerData } = payload;
 
       // Agar userId hai to URL mein lagao, warna base endpoint use karo
-      const endpoint = userId 
-        ? `/provider/requests/private/${userId}` 
+      const endpoint = userId
+        ? `/provider/requests/private/${userId}`
         : `/provider/requests/custom`;
 
       const res = await axios.post(endpoint, providerData);
@@ -67,7 +68,7 @@ export const RequestCustomService = createAsyncThunk(
   "/provider/requests/custom", // Action type
   async (payload, thunkAPI) => {
     try {
-      const { customserviceData } = payload;  // Destructure userId and providerData from payload
+      const { customserviceData } = payload; // Destructure userId and providerData from payload
       // Sending the userId in the URL and providerData in the request body
       const res = await axios.post(
         `/provider/requests/custom`,
@@ -81,8 +82,6 @@ export const RequestCustomService = createAsyncThunk(
     }
   }
 );
-
-
 
 //Get Payment Method
 export const getPaymentMethoduser = createAsyncThunk(
@@ -114,14 +113,13 @@ export const fetchUserProfile = createAsyncThunk(
   }
 );
 
-
 //Get Payment getuserfavorites
 export const getuserfavorites = createAsyncThunk(
   "/user/favorites", // The action type
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("/user/favorites"); 
-      return response.data; 
+      const response = await axios.get("/user/favorites");
+      return response.data;
     } catch (error) {
       const msg = error?.response?.data?.message || "Failed to Get Favorites";
       ErrorToast(msg);
@@ -141,17 +139,19 @@ export const unfavoriteProvider = createAsyncThunk(
     } catch (err) {
       // Fallback: some backends toggle via POST
       try {
-        const res = await axios.post(`/providers/${providerId}/favorite`, { action: "unfavorite" });
+        const res = await axios.post(`/providers/${providerId}/favorite`, {
+          action: "unfavorite",
+        });
         return { providerId, server: res.data };
       } catch (err2) {
-        const msg = err2?.response?.data?.message || "Failed to remove favorite";
+        const msg =
+          err2?.response?.data?.message || "Failed to remove favorite";
         ErrorToast(msg);
         return rejectWithValue(msg);
       }
     }
   }
 );
-
 
 //Fetch Current Booking
 export const fetchCurrentBooking = createAsyncThunk(
@@ -178,6 +178,17 @@ export const fetchBookingRequest = createAsyncThunk(
     }
   }
 );
+export const fetchBookingDetail = createAsyncThunk(
+  "/user/bookings/2/details",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.get(`/user/bookings/${_}/details`);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch profile");
+    }
+  }
+);
 
 //Fetch Booking History
 export const fetchBookinghistory = createAsyncThunk(
@@ -197,6 +208,18 @@ export const fetchallservices = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await axios.get("/users/providers");
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch services");
+    }
+  }
+);
+export const CancelBookingRequest = createAsyncThunk(
+  "/user/booking/cancel",
+  async (payload, thunkAPI) => {
+    try {
+      const res = await axios.post("/user/booking/cancel", payload);
+      SuccessToast("Booking Canceled Successfull");
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue("Failed to fetch services");
@@ -235,7 +258,6 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
-
 // Change Password
 export const changePassword = createAsyncThunk(
   "/user/update-password", // Action type
@@ -249,14 +271,12 @@ export const changePassword = createAsyncThunk(
 
       return res.data;
     } catch (error) {
-      const msg =
-        error?.response?.data?.message || "Failed to update password";
+      const msg = error?.response?.data?.message || "Failed to update password";
       ErrorToast(msg);
       return thunkAPI.rejectWithValue(msg);
     }
   }
 );
-
 
 // ================= SLICE =================
 const userSlice = createSlice({
@@ -301,7 +321,6 @@ const userSlice = createSlice({
         state.updateError = action.payload;
       })
 
-
       // ----- fetch all services -----
       .addCase(fetchallservices.pending, (state) => {
         state.allservicesloading = true;
@@ -333,7 +352,33 @@ const userSlice = createSlice({
         state.currentbookingLoading = false;
         state.currentbookingerror = action.payload;
       })
-
+      // ----- Fetch Booking Detail---
+      .addCase(fetchBookingDetail.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(fetchBookingDetail.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.bookingDetail = action.payload;
+      })
+      .addCase(fetchBookingDetail.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // Booking Cancel
+      .addCase(CancelBookingRequest.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(CancelBookingRequest.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(CancelBookingRequest.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       //Get payment Method for user
       .addCase(getPaymentMethoduser.pending, (state) => {
         state.isLoading = true;
@@ -405,7 +450,9 @@ const userSlice = createSlice({
       .addCase(unfavoriteProvider.fulfilled, (state, action) => {
         const id = action.payload?.providerId;
         if (id != null) {
-          state.favoritesData = (state.favoritesData || []).filter(p => p.id !== id);
+          state.favoritesData = (state.favoritesData || []).filter(
+            (p) => p.id !== id
+          );
         }
         state.favoritesSuccess = "Removed from favorites";
         SuccessToast(state.favoritesSuccess);

@@ -1,18 +1,17 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore,serverTimestamp,addDoc,collection,onSnapshot,orderBy,query,where,doc,updateDoc,getDoc,setDoc } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getMessaging } from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_APP_FIREBASE_KEY,
-  // Update this api key with your own firebase api key
-  // authDomain: "rentibles-app.firebaseapp.com",
-  // projectId: "rentibles-app",
-  // storageBucket: "rentibles-app.firebasestorage.app",
-  // messagingSenderId: "366992554576",
-  // appId: "1:366992554576:web:8c8781df54b276fc1eef55",
-  // measurementId: "G-V0F642L156",
+  authDomain: "code-clean-47801.firebaseapp.com",
+  projectId: "code-clean-47801",
+  storageBucket: "code-clean-47801.firebasestorage.app",
+  messagingSenderId: "207099980263",
+  appId: "1:207099980263:web:33b2f335cd69e56b7fb542",
+  measurementId: "G-Z2DFVJQJDM",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -25,6 +24,6 @@ export const storage = getStorage(app);
 
 const messaging = getMessaging(app);
 
-export { messaging };
+export { messaging,collection,addDoc,serverTimestamp,onSnapshot,orderBy,query,where,doc,updateDoc,getDoc,setDoc };
 
 export default app; // Export the app if needed

@@ -29,7 +29,6 @@ const Serviceprovider = () => {
     const [requestservicefive, setRequestservicefive] = useState(false);
     const [bookingconfirm, setBookingconfirm] = useState(false);
     const [autocomplete, setAutocomplete] = useState(null);
-    const [dateRange, setDateRange] = useState([new Date(), new Date()]);
     const [bookrequestsend, setBookrequestsend] = useState(false);
     const [data, setData] = useState([]);
     const navigate = useNavigate("");
@@ -37,14 +36,13 @@ const Serviceprovider = () => {
     const { id } = location.state || {};
     const [paymentmethoduser, setPaymentmethoduser] = useState("");
     const [selectedCard, setSelectedCard] = useState(null); // New state for selected card
-    const [filePreview, setFilePreview] = useState(null); // State to hold the file preview
-    const [fileName, setFileName] = useState("");
 
     const handleCardSelect = (card) => {
         setSelectedCard(card); // Set the selected card
     };
 
     const fromViewProfile = location.state?.fromViewProfile || false;
+    const providerId = location.state?.id;
     const [showrating, setShowrating] = useState(false);
     const [custombooking, setCustombooking] = useState(false);
     const [formData, setFormData] = useState({
@@ -186,14 +184,6 @@ const Serviceprovider = () => {
 
 
 
-    const handlePlaceChanged = () => {
-        if (autocomplete) {
-            const place = autocomplete.getPlace();
-            setLocations(place.formatted_address); // Set the location with the formatted address
-        }
-    };
-
-
     const handlePlaceChangeded = () => {
         if (!autocompleteRef.current) return;
         const place = autocompleteRef.current.getPlace();
@@ -253,11 +243,6 @@ const Serviceprovider = () => {
     const handleOnLoads = (autocomplete) => {
         autocompleteRef.current = autocomplete;
     };
-
-
-
-    console.log(id, "userid")
-
 
     useEffect(() => {
         dispatch(fetchallservices());
