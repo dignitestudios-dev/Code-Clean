@@ -101,17 +101,49 @@ export const getPaymentMethoduser = createAsyncThunk(
 );
 
 // Fetch user profile
+// export const fetchUserProfile = createAsyncThunk(
+//   "/profile",
+//   async (_, thunkAPI) => {
+//     try {
+//       const res = await axios.get("/profile");
+//       return res.data;
+//     } catch (error) {
+//       return thunkAPI.rejectWithValue("Failed to fetch profile");
+//     }
+//   }
+// );
+
+// Fetch user profile — page/per_page optional; agar na do to plain /profile hit hoga
 export const fetchUserProfile = createAsyncThunk(
-  "/profile",
-  async (_, thunkAPI) => {
+  'user/fetchUserProfile',
+  async (args, thunkAPI) => {
     try {
-      const res = await axios.get("/profile");
+      const hasPaging =
+        args &&
+        (typeof args.page !== 'undefined' || typeof args.per_page !== 'undefined');
+
+      const config = { signal: thunkAPI.signal };
+
+      if (hasPaging) {
+        config.params = {};
+        if (typeof args.page !== 'undefined') config.params.page = args.page;
+        if (typeof args.per_page !== 'undefined') config.params.per_page = args.per_page;
+      }
+
+      // If hasPaging=false => no params sent (pure /profile)
+      const res = await axios.get('/profile', config);
       return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch profile");
+      if (axios.isCancel?.(error)) {
+        return thunkAPI.rejectWithValue('Request cancelled');
+      }
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message || error?.message || 'Failed to fetch profile'
+      );
     }
   }
 );
+
 
 //Get Payment getuserfavorites
 export const getuserfavorites = createAsyncThunk(

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { RxCross2 } from "react-icons/rx";
 import { stripe } from '../../../assets/export';
-import { getPaymentMethoduser, HireServiceProvider } from '../../../redux/slices/users.slice';
+import { fetchUserProfile, getPaymentMethoduser, HireServiceProvider } from '../../../redux/slices/users.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { FaEdit } from 'react-icons/fa';
 import { useNavigate } from 'react-router';
@@ -255,8 +255,8 @@ export default function BroadCastModal({ custombooking, setCustombooking, setCus
 
             const payload = { providerData };
             await dispatch(HireServiceProvider(payload));
+            dispatch(fetchUserProfile());
             // Optionally close modal on success
-            //   setCustombooking(false);
         } catch (err) {
             // Thunk handles its own errors typically
         } finally {
