@@ -133,21 +133,59 @@ export const unfavoriteProvider = createAsyncThunk(
   "user/unfavoriteProvider",
   async (providerId, { rejectWithValue }) => {
     try {
-      // Primary: DELETE /providers/:id/favorite
+      // Try the canonical DELETE first
       const res = await axios.delete(`/providers/${providerId}/favorite`);
-      return { providerId, server: res.data };
+
+      // Some APIs return 204 No Content, others include a body
+      const data = res?.data ?? {};
+      const serverMsg =
+        data?.message ||
+        // nice default if server is silent
+        "Your favorite has been removed successfully.";
+
+      // Prefer an explicit boolean if the API provides it
+      const isFavorite =
+        typeof data?.is_favorite === "boolean"
+          ? data.is_favorite
+          : false; // DELETE should mean not favorite
+
+      return {
+        providerId,
+        message: serverMsg,
+        isFavorite,
+        raw: data,
+      };
     } catch (err) {
-      // Fallback: some backends toggle via POST
+      // Fallback for backends that toggle via POST
       try {
         const res = await axios.post(`/providers/${providerId}/favorite`, {
           action: "unfavorite",
         });
-        return { providerId, server: res.data };
+
+        const data = res?.data ?? {};
+        // Some buggy APIs send the wrong text ("added"). Guard with is_favorite if present.
+        const serverMsg = data?.message;
+        const isFavorite =
+          typeof data?.is_favorite === "boolean" ? data.is_favorite : false;
+
+        const normalizedMsg =
+          isFavorite === false
+            ? serverMsg || "Your favorite has been removed successfully."
+            : // if server says it's still favorite, force a sane message
+            "Your favorite has been removed successfully.";
+
+        return {
+          providerId,
+          message: normalizedMsg,
+          isFavorite,
+          raw: data,
+        };
       } catch (err2) {
-        const msg =
-          err2?.response?.data?.message || "Failed to remove favorite";
-        ErrorToast(msg);
-        return rejectWithValue(msg);
+        const apiMsg =
+          err2?.response?.data?.message ||
+          err?.response?.data?.message ||
+          "Failed to remove favorite";
+        return rejectWithValue({ providerId, message: apiMsg });
       }
     }
   }
@@ -448,76 +486,82 @@ const userSlice = createSlice({
         state.favoritesError = null;
       })
       .addCase(unfavoriteProvider.fulfilled, (state, action) => {
-        const id = action.payload?.providerId;
-        if (id != null) {
-          state.favoritesData = (state.favoritesData || []).filter(
-            (p) => p.id !== id
-          );
+        const { providerId, message } = action.payload || {};
+
+        if (providerId != null) {
+          state.favoritesData = (state.favoritesData || []).filter(p => p.id !== providerId);
         }
-        state.favoritesSuccess = "Removed from favorites";
+
+        state.favoritesSuccess = message || "Your favorite has been removed successfully.";
         SuccessToast(state.favoritesSuccess);
       })
       .addCase(unfavoriteProvider.rejected, (state, action) => {
-        state.favoritesError = action.payload || "Failed to remove favorite";
+        const msg =
+          action.payload?.message ||
+          action.error?.message ||
+          "Failed to remove favorite";
+        state.favoritesError = msg;
+        ErrorToast(msg);
       })
+
 
       .addCase(HireServiceProvider.pending, (state) => {
         state.hireProviderLoading = true;
         state.hireProviderSuccess = null;
         state.hireProviderError = null;
       })
-      .addCase(HireServiceProvider.fulfilled, (state, action) => {
-        state.hireProviderLoading = false;
-        state.hireProviderSuccess = "Service provider hired successfully!";
-        SuccessToast(state.hireProviderSuccess);
-      })
-      .addCase(HireServiceProvider.rejected, (state, action) => {
-        state.hireProviderLoading = false;
-        state.hireProviderError = action.payload;
-        ErrorToast(state.hireProviderError);
-      })
+    .addCase(HireServiceProvider.fulfilled, (state, action) => {
+      state.hireProviderLoading = false;
+      state.hireProviderSuccess = "Service provider hired successfully!";
+      SuccessToast(state.hireProviderSuccess);
+    })
+    .addCase(HireServiceProvider.rejected, (state, action) => {
+      state.hireProviderLoading = false;
+      state.hireProviderError = action.payload;
+      ErrorToast(state.hireProviderError);
+    })
 
-      //Custom Service Data
-      .addCase(RequestCustomService.pending, (state) => {
-        state.CustomserviceproviderLoading = true;
-        state.CustomserviceproviderSuccess = null;
-        state.CustomserviceproviderError = null;
-      })
-      .addCase(RequestCustomService.fulfilled, (state, action) => {
-        state.CustomserviceproviderLoading = false;
-        state.CustomserviceproviderSuccess =
-          "Custom Service provider hired successfully!";
-        SuccessToast(state.CustomserviceproviderSuccess);
-      })
-      .addCase(RequestCustomService.rejected, (state, action) => {
-        state.CustomserviceproviderLoading = false;
-        state.CustomserviceproviderError = action.payload;
-        ErrorToast(state.CustomserviceproviderError);
-      })
+    //Custom Service Data
+    .addCase(RequestCustomService.pending, (state) => {
+      state.CustomserviceproviderLoading = true;
+      state.CustomserviceproviderSuccess = null;
+      state.CustomserviceproviderError = null;
+    })
+    .addCase(RequestCustomService.fulfilled, (state, action) => {
+      state.CustomserviceproviderLoading = false;
+      state.CustomserviceproviderSuccess =
+        "Custom Service provider hired successfully!";
+      SuccessToast(state.CustomserviceproviderSuccess);
+    })
+    .addCase(RequestCustomService.rejected, (state, action) => {
+      state.CustomserviceproviderLoading = false;
+      state.CustomserviceproviderError = action.payload;
+      ErrorToast(state.CustomserviceproviderError);
+    })
 
-      // ----- update profile -----
-      .addCase(updateUserProfile.pending, (state) => {
-        state.updateLoading = true;
-        state.updateError = null;
-        state.updateSuccess = null;
-      })
-      .addCase(updateUserProfile.fulfilled, (state, action) => {
-        state.updateLoading = false;
+    // ----- update profile -----
+    .addCase(updateUserProfile.pending, (state) => {
+      state.updateLoading = true;
+      state.updateError = null;
+      state.updateSuccess = null;
+    })
+    .addCase(updateUserProfile.fulfilled, (state, action) => {
+      state.updateLoading = false;
 
-        // Merge updated fields into userProfile
-        state.userProfile = {
-          ...(state.userProfile || {}),
-          ...(action.payload || {}),
-        };
+      // Merge updated fields into userProfile
+      state.userProfile = {
+        ...(state.userProfile || {}),
+        ...(action.payload || {}),
+      };
 
-        state.updateSuccess = "Profile updated successfully";
-        SuccessToast(state.updateSuccess);
-      })
-      .addCase(updateUserProfile.rejected, (state, action) => {
-        state.updateLoading = false;
-        state.updateError = action.payload;
-      });
-  },
+      state.updateSuccess = "Profile updated successfully";
+      SuccessToast(state.updateSuccess);
+    })
+    .addCase(updateUserProfile.rejected, (state, action) => {
+      state.updateLoading = false;
+      state.updateError = action.payload;
+    });
+},
 });
 
 export const { resetUserState } = userSlice.actions;

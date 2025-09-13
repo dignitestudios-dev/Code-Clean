@@ -41,6 +41,9 @@ const Dashboard = () => {
   }, [dispatch, activeTab]);
   console.log(statusFilter, "booking request ");
 
+
+  console.log(bookingRequest,"bookingRequestdata")
+
   // Filtered bookings based on search query
   const filteredBookings = Array.isArray(bookingRequest)
     ? bookingRequest
@@ -64,7 +67,7 @@ const Dashboard = () => {
               booking.status === "inprogress" ||
               booking.status === "waiting" ||
               booking.status === "completed" || // fixed
-              booking.status === "canceled" // fixed
+              booking.status === "cancelled" // fixed
             );
           }
 

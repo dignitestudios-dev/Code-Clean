@@ -68,11 +68,15 @@ export default function Profile() {
     }, [userProfile])
 
 
+
+    console.log(userdata, "userdata")
+
+
     return (
         <div>
             <Navbar />
             <div
-                className="flex items-center bg-cover bg-center -mt-[6em] pt-[10em] pb-[18em] border "
+                className="flex items-center bg-cover bg-center -mt-[6em] pt-[10em] pb-[18em] "
                 style={{
                     backgroundImage: `linear-gradient(234.85deg, rgb(39, 168, 226, 1) -20.45%, rgb(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
                 }}
@@ -87,10 +91,17 @@ export default function Profile() {
                 </div>
                 <div className='bg-[#F9FAFA] shadow-lg mb-48 rounded-[8px] p-10 mt-3' >
                     <div className='flex items-center justify-between' >
-                        <div className='flex items-center gap-3 justify-between' >
-                            {userdata?.avatar ? (
+                        <div className='flex items-center gap-3 justify-between'>
+                            {isLoading ? (
+                                // Avatar skeleton
+                                <div className="w-[80px] h-[80px] rounded-full bg-gray-200 animate-pulse"></div>
+                            ) : userdata?.avatar ? (
                                 <img
-                                    src={userdata?.avatar ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${userdata.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
+                                    src={
+                                        userdata?.avatar
+                                            ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${userdata.avatar}`
+                                            : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"
+                                    }
                                     className="w-[80px] h-[80px] rounded-full object-cover border-2"
                                     alt={userdata.name || "User Avatar"}
                                 />
@@ -99,7 +110,7 @@ export default function Profile() {
                                     {userdata?.name
                                         ? userdata.name
                                             .split(" ")
-                                            .map(word => word[0])
+                                            .map((word) => word[0])
                                             .join("")
                                             .toUpperCase()
                                         : ""}
@@ -118,11 +129,9 @@ export default function Profile() {
                                         </>
                                     )}
                                 </h3>
-
-
-
                             </div>
                         </div>
+
                         <div>
                             <Button onClick={() => setIsProfile(!isProfile)} text={"Edit profile"} />
                         </div>
@@ -133,8 +142,15 @@ export default function Profile() {
 
                             {/* Conditional Rendering for Loading State */}
                             {isLoading ? (
-                                <div className="w-[80px] h-[80px] flex justify-center items-center">
-                                    <div className="loader"></div> {/* Spinner */}
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    {Array.from({ length: 3 }).map((_, i) => (
+                                        <div key={i} className="space-y-2">
+                                            {/* Title skeleton */}
+                                            <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
+                                            {/* Value skeleton */}
+                                            <div className="h-5 w-48 bg-gray-300 rounded animate-pulse"></div>
+                                        </div>
+                                    ))}
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -189,16 +205,36 @@ export default function Profile() {
                         </div>
 
 
-                        <div className='rounded-2xl col-span-4 shadow-sm border px-4 py-5' >
+
+                        <div className='rounded-2xl col-span-4 shadow-sm border px-4 py-5'>
                             <h2 className="text-2xl font-semibold mb-6">Earned badges</h2>
-                            <div className='flex items-center gap-2' >
-                                {
-                                    [OneYear, ThreeMonth, SixMonth]?.map((item, i) => (
-                                        <img src={item} className='w-[80px] h-[80px]' alt="" srcset="" />
+
+                            <div className='flex items-center gap-4 flex-wrap'>
+                                {/* Agar data load ho raha hai to skeleton dikhao */}
+                                {!userdata ? (
+                                    // Skeletons
+                                    Array.from({ length: 3 }).map((_, i) => (
+                                        <div
+                                            key={i}
+                                            className="w-[80px] h-[80px] rounded-md bg-gray-200 animate-pulse"
+                                        ></div>
                                     ))
-                                }
+                                ) : userdata?.badges && userdata.badges.length > 0 ? (
+                                    userdata.badges.map((badge) => (
+                                        <div key={badge.id} className="flex flex-col items-center">
+                                            <img
+                                                src={`${import.meta.env.VITE_APP_AWS_URL}${badge.url}`}
+                                                alt={badge.name}
+                                                className="w-[80px] h-[80px] object-contain"
+                                            />
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-gray-500">No badges earned yet</p>
+                                )}
                             </div>
                         </div>
+
                     </div>
                     <div className="hidden bg-gray-50 py-4 px-4">
                         <div className=" mx-auto">

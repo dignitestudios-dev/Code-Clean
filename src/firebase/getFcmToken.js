@@ -1,6 +1,5 @@
-// getFCMToken.js
-import { messaging } from "./firebase";
-import { getToken } from "firebase/messaging";
+import { getMessaging, getToken } from "firebase/messaging";  // Import getToken directly from firebase/messaging
+import { messaging } from "./firebase"; // Import the initialized messaging instance from firebase.js
 
 const getFCMToken = async () => {
   try {
@@ -8,7 +7,7 @@ const getFCMToken = async () => {
     if (permission === "granted") {
       const token = await getToken(messaging, {
         vapidKey:
-          "BNnLSgZYDG5ojySEHllcFMk-BfdHRgBin9Qi3yISF820n0Cfgne6iazbjOCO5upjepmFwFi7zdvT1BUSG2wxDIw", // Update VAPID KEY with your projects VAPID KEY
+          "BPcmosYmWO7kJUQn5WtpztgEbS7_viq_RMd_7hyJams62Qe5FBlVFXkSH1Zvk3hhdvBeDoJ6BnegEAVZIYTAPGA", // Replace with your VAPID key
       });
       return token;
     } else {
@@ -25,7 +24,7 @@ const getFCM = async () => {
     if (permission === "granted") {
       const token = await getToken(messaging, {
         vapidKey:
-          "BNnLSgZYDG5ojySEHllcFMk-BfdHRgBin9Qi3yISF820n0Cfgne6iazbjOCO5upjepmFwFi7zdvT1BUSG2wxDIw", // Update VAPID KEY with your projects VAPID KEY
+          "BPcmosYmWO7kJUQn5WtpztgEbS7_viq_RMd_7hyJams62Qe5FBlVFXkSH1Zvk3hhdvBeDoJ6BnegEAVZIYTAPGA", // Replace with your VAPID key
       });
       return token;
     } else {
