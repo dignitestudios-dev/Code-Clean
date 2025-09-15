@@ -3,16 +3,11 @@ import { useLocation, useNavigate } from "react-router";
 import {
   FaArrowLeft,
   FaMapMarkerAlt,
-  FaFacebookF,
-  FaTwitter,
-  FaLinkedinIn,
   FaEnvelope,
-  FaBell,
   FaCheck,
 } from "react-icons/fa";
 import Navbar from "../../../components/layout/Navbar";
 import { HeroBg } from "../../../assets/export";
-import { user } from "../../../assets/export";
 import ServiceRatingUI from "../../../components/app/Profile/ServiceRatingUi";
 import { TiWarning } from "react-icons/ti";
 import { useDispatch, useSelector } from "react-redux";
@@ -403,7 +398,7 @@ const Bookingdetails = () => {
 
                       <Button
                         loading={isLoading}
-                        text={"Cancel Booking"}
+                        text={"Submit"}
                         onClick={() => {
                           handleCancelBooking();
                         }}

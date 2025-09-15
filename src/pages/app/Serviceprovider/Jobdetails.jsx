@@ -17,10 +17,12 @@ import Feedback from "../../../components/global/FeedBack";
 import ReportUser from "../../../components/Serviceprovider/Reportuser";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  CancelBookingRequest,
   getRequestDetail,
   MarkStartJob,
 } from "../../../redux/slices/provider.slice";
 import { Button } from "../../../components/global/GlobalButton";
+import { ErrorToast } from "../../../components/global/Toaster";
 const Jobdetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,6 +37,7 @@ const Jobdetails = () => {
   const [rejectedpopup, setRejectedpopup] = useState(false);
   const [rejectedreqcomplete, setRejectedreqcomplete] = useState(false);
   const [reportUser, setReportUser] = useState(false);
+  const [cancelReasonText, setCancelReasonText] = useState();
   const [role, SetRole] = useState("");
   const dispatch = useDispatch("");
   const { bookingRequestDetail, isLoading } = useSelector(
@@ -55,7 +58,15 @@ const Jobdetails = () => {
     await dispatch(MarkStartJob(data)).unwrap();
     dispatch(getRequestDetail(queryParams.get("type")));
   };
-
+  const handleCancelBooking = async () => {
+    if (!cancelReasonText) return ErrorToast("Reason is required");
+    const data = {
+      booking_id: bookingRequestDetail?.booking_id,
+      reason: cancelReasonText,
+    };
+    await dispatch(CancelBookingRequest(data));
+    navigate("/dashboard");
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar type="serviceprovider" />
@@ -197,7 +208,7 @@ const Jobdetails = () => {
                                           ? "bg-[#EC832533] text-[#EC8325]"
                                           : status === "rejected"
                                           ? "bg-[#EE313133] text-[#EE3131]"
-                                          : status === "Canceled Jobs"
+                                          : status === "cancelled"
                                           ? "bg-[#EE313133] text-[#EE3131]"
                                           : status === "accepted"
                                           ? "bg-green-100 text-green-600"
@@ -216,7 +227,7 @@ const Jobdetails = () => {
                       : status === "Upcoming Jobs"
                       ? "Waiting"
                       : status === "cancelled"
-                      ? "Cancelled"
+                      ? "cancelled"
                       : status[0].toUpperCase() + status.slice(1)}
                   </div>
 
@@ -230,7 +241,7 @@ const Jobdetails = () => {
                 {/* Message Button */}
                 {status !== "completed" &&
                   status !== "rejected" &&
-                  status !== "Canceled Jobs" &&
+                  status !== "cancelled" &&
                   status !== "pending" && (
                     <button
                       onClick={() => {
@@ -476,7 +487,7 @@ const Jobdetails = () => {
                 {status !== "accepted" &&
                   status !== "completed" &&
                   status !== "pending" &&
-                  status !== "canceled" &&
+                  status !== "cancelled" &&
                   status !== "rejected" && (
                     <button
                       className="w-full bg-[#EE3131] text-white py-3 rounded-lg font-medium hover:bg-red-600"
@@ -509,7 +520,7 @@ const Jobdetails = () => {
                     </button>
                     <button
                       className="w-full bg-[#208BC733] text-[#208BC7] py-3 rounded-lg font-medium hover:bg-[#208ac742]"
-                      onClick={() => alert("Booking Canceled")}
+                      onClick={() => alert("Booking cancelled")}
                     >
                       Report Service Provider
                     </button>
@@ -602,21 +613,22 @@ const Jobdetails = () => {
                         </label>
                         <textarea
                           id="reason"
+                          onChange={(e) => setCancelReasonText(e.target.value)}
                           rows={4}
+                          value={cancelReasonText}
                           placeholder="Write your reason for cancellation..."
                           className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700"
                         />
                       </div>
 
                       {/* Submit Button */}
-                      <button
+                      <Button
+                        loading={isLoading}
+                        text={"Submit"}
                         onClick={() => {
-                          navigate("/home");
+                          handleCancelBooking();
                         }}
-                        className="w-full bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-2 rounded-lg font-medium hover:opacity-90"
-                      >
-                        Submit
-                      </button>
+                      />
                     </div>
                   </div>
                 )}

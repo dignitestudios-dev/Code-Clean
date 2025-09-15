@@ -160,7 +160,7 @@ const Navbar = () => {
         { label: "Dashboard", path: "/dashboard" },
         { label: "Discover", path: "/discover-job" },
         { label: "Availability", path: "/calendar" },
-        { label: "Messages", path: "/chat-sp" },
+        { label: "Messages", path: "/messages" },
         { label: "Badges", path: "/badge-sp" },
         { label: "Wallet", path: "/wallet" },
       ]

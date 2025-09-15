@@ -188,45 +188,65 @@ const Chat = () => {
               )}
 
               {selectedChatId ? (
-                <div className="py-6 space-y-6 overflow-y-auto text-sm text-gray-800 h-[500px] pr-2">
-                  {Array.isArray(messages?.[selectedChatId]) &&
-                  messages[selectedChatId].length > 0 ? (
-                    messages[selectedChatId].map((msg) => (
-                      <div
-                        key={msg.id}
-                        className={`flex flex-col ${
-                          msg.senderId === user_data?.id
-                            ? "items-end"
-                            : "items-start"
-                        }`}
-                      >
+                <>
+                  <div className="py-6 space-y-6 overflow-y-auto text-sm text-gray-800 h-[500px] pr-2">
+                    {Array.isArray(messages?.[selectedChatId]) &&
+                    messages[selectedChatId].length > 0 ? (
+                      messages[selectedChatId].map((msg) => (
                         <div
-                          className={`max-w-xs px-4 py-2 rounded-xl ${
+                          key={msg.id}
+                          className={`flex flex-col ${
                             msg.senderId === user_data?.id
-                              ? "bg-gradient-to-l from-[#00034A] to-[#27A8E2] text-white rounded-tr-none"
-                              : "bg-[#E6E6E6] text-[#181818] rounded-tl-none"
+                              ? "items-end"
+                              : "items-start"
                           }`}
                         >
-                          {msg.text}
+                          <div
+                            className={`max-w-xs px-4 py-2 rounded-xl ${
+                              msg.senderId === user_data?.id
+                                ? "bg-gradient-to-l from-[#00034A] to-[#27A8E2] text-white rounded-tr-none"
+                                : "bg-[#E6E6E6] text-[#181818] rounded-tl-none"
+                            }`}
+                          >
+                            {msg.text}
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1">
+                            {msg.createdAt
+                              ? new Date(
+                                  msg.createdAt.seconds * 1000
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })
+                              : ""}
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-400 mt-1">
-                          {msg.createdAt
-                            ? new Date(
-                                msg.createdAt.seconds * 1000
-                              ).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
-                            : ""}
-                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center text-gray-400">
+                        No messages yet, start chatting...
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center text-gray-400">
-                      No messages yet, start chatting...
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                  <div className="flex items-center h-[50px] bg-[#EEEEEE] gap-3 rounded-[12px] border-t mt-3">
+                    <input
+                      type="text"
+                      placeholder="Type Here..."
+                      className="flex-1 px-4 outline-none bg-transparent border-none py-2 text-sm"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={(e) =>
+                        e.key === "Enter" && handleSendMessage()
+                      }
+                    />
+                    <button
+                      className="mr-2 flex justify-center items-center bg-gradient-to-r from-[#00034A] to-[#27A8E2] h-[40px] rounded-[8px] w-[40px]"
+                      onClick={handleSendMessage}
+                    >
+                      <IoSend size={24} color="white" />
+                    </button>
+                  </div>
+                </>
               ) : (
                 <div className="flex justify-center items-center h-full text-gray-400">
                   Select a chat to start messaging
@@ -234,22 +254,6 @@ const Chat = () => {
               )}
 
               {/* Input */}
-              <div className="flex items-center h-[50px] bg-[#EEEEEE] gap-3 rounded-[12px] border-t mt-3">
-                <input
-                  type="text"
-                  placeholder="Type Here..."
-                  className="flex-1 px-4 outline-none bg-transparent border-none py-2 text-sm"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                />
-                <button
-                  className="mr-2 flex justify-center items-center bg-gradient-to-r from-[#00034A] to-[#27A8E2] h-[40px] rounded-[8px] w-[40px]"
-                  onClick={handleSendMessage}
-                >
-                  <IoSend size={24} color="white" />
-                </button>
-              </div>
             </div>
           </div>
         </div>

@@ -29,7 +29,7 @@ const Dashboard = () => {
   const [rejectedreqcomplete, setRejectedreqcomplete] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const dispatch = useDispatch();
-  const { bookingRequest, bookingRequestLoader,isLoading } = useSelector(
+  const { bookingRequest, bookingRequestLoader, isLoading } = useSelector(
     (state) => state.provider
   );
   useEffect(() => {
@@ -40,9 +40,6 @@ const Dashboard = () => {
     }
   }, [dispatch, activeTab]);
   console.log(statusFilter, "booking request ");
-
-
-  console.log(bookingRequest,"bookingRequestdata")
 
   // Filtered bookings based on search query
   const filteredBookings = Array.isArray(bookingRequest)
@@ -177,32 +174,36 @@ const Dashboard = () => {
                     </button>
                   )
                 )
-              : ["All", "Upcoming", "In Progress", "Completed", "Canceled"].map(
-                  (status, index) => (
-                    <button
-                      key={index}
-                      onClick={() =>
-                        setStatusFilter(
-                          status === "Upcoming"
-                            ? "waiting"
-                            : status.replaceAll(" ", "").toLowerCase()
-                        )
-                      }
-                      className={`px-4 py-2 text-sm font-medium text-[#3F3F3F] hover:text-[#00AEEF] focus:outline-none border-b-2 ${
-                        statusFilter.replaceAll(" ", "").toLowerCase() ===
-                          status.replaceAll(" ", "").toLowerCase() ||
-                        statusFilter === status ||
-                        (status === "Upcoming" && statusFilter === "waiting") // ✅ special case
-                          ? "border-[#00AEEF] text-gradient"
-                          : "border-transparent"
-                      }`}
-                    >
-                      {status === "waiting"
-                        ? "Waiting Requests"
-                        : status + " Jobs"}
-                    </button>
-                  )
-                )}
+              : [
+                  "All",
+                  "Upcoming",
+                  "In Progress",
+                  "Completed",
+                  "Cancelled",
+                ].map((status, index) => (
+                  <button
+                    key={index}
+                    onClick={() =>
+                      setStatusFilter(
+                        status === "Upcoming"
+                          ? "waiting"
+                          : status.replaceAll(" ", "").toLowerCase()
+                      )
+                    }
+                    className={`px-4 py-2 text-sm font-medium text-[#3F3F3F] hover:text-[#00AEEF] focus:outline-none border-b-2 ${
+                      statusFilter.replaceAll(" ", "").toLowerCase() ===
+                        status.replaceAll(" ", "").toLowerCase() ||
+                      statusFilter === status ||
+                      (status === "Upcoming" && statusFilter === "waiting") // ✅ special case
+                        ? "border-[#00AEEF] text-gradient"
+                        : "border-transparent"
+                    }`}
+                  >
+                    {status === "waiting"
+                      ? "Waiting Requests"
+                      : status + " Jobs"}
+                  </button>
+                ))}
           </div>
 
           {/* Table */}
@@ -406,7 +407,12 @@ const Dashboard = () => {
 
       {rejectedreqcomplete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-xl p-10 md:w-[26em] shadow-2xl text-center">
+          <div className="bg-white rounded-xl p-5 md:w-[26em] shadow-2xl text-center">
+            <div className="flex justify-end w-full">
+              <button onClick={() => setRejectedreqcomplete(false)}>
+                <HiXMark size={25} />
+              </button>
+            </div>
             {/* Checkmark Icon */}
             <div className="mb-4 flex justify-center items-center">
               <div className="bg-gradient-to-r from-[#27A8E2] to-[#00034A] w-[70px] h-[70px] rounded-full flex justify-center items-center">

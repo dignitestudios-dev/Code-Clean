@@ -22,6 +22,8 @@ const initialState = {
   badges: null,
   widrawData: null,
   getUserProfileDetail: null,
+  CalendarBooking: null,
+  CurrentBooking: null,
 };
 // ================= THUNKS =================
 
@@ -145,6 +147,22 @@ export const getBookingRequest = createAsyncThunk(
     }
   }
 );
+
+
+export const getCurrentBooking = createAsyncThunk(
+  "/provider/current-bookings",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axios.get(`/${_}`);
+      console.log(response, "data-item");
+      return response?.data?.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Verification failed"
+      );
+    }
+  }
+);
 export const getDiscoverJobs = createAsyncThunk(
   "/provider/discover/jobs",
   async (_, thunkAPI) => {
@@ -170,6 +188,18 @@ export const getRequestDetail = createAsyncThunk(
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Verification failed"
       );
+    }
+  }
+);
+export const CancelBookingRequest = createAsyncThunk(
+  "/provider/booking/cancel",
+  async (payload, thunkAPI) => {
+    try {
+      const res = await axios.post("/provider/booking/cancel", payload);
+      SuccessToast("Booking Canceled Successfull");
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch services");
     }
   }
 );
@@ -312,6 +342,21 @@ export const getPaymentMethod = createAsyncThunk(
       return response.data; // Assuming the API returns the user profile data
     } catch (error) {
       const msg = error?.response?.data?.message || "Failed to Payment Method";
+      ErrorToast(msg); // Show error toast
+      return thunkAPI.rejectWithValue(msg); // Handle rejection
+    }
+  }
+);
+export const getCalendar = createAsyncThunk(
+  "/provider/bookings", // The action type
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.get(
+        `/provider/bookings/monthly?${payload && `month=${payload}`} `
+      ); // API request to fetch the profile
+      return response.data; // Assuming the API returns the user profile data
+    } catch (error) {
+      const msg = error?.response?.data?.message || "Failed to Calendar";
       ErrorToast(msg); // Show error toast
       return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
@@ -464,6 +509,20 @@ const providerSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+      .addCase(getCalendar.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getCalendar.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.CalendarBooking = action.payload;
+        state.success = action.payload.message;
+      })
+      .addCase(getCalendar.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       .addCase(ReportAnIssue.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -591,6 +650,33 @@ const providerSlice = createSlice({
         state.success = "Booking Request Get Successfully";
       })
       .addCase(getBookingRequest.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(getCurrentBooking.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getCurrentBooking.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.CurrentBooking = action.payload;
+        state.success = "Booking Get Successfully";
+      })
+      .addCase(getCurrentBooking.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      // Booking Cancel
+      .addCase(CancelBookingRequest.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(CancelBookingRequest.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(CancelBookingRequest.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
