@@ -90,7 +90,6 @@ export const sendMessage = createAsyncThunk(
           lastMessage: null,
         });
       }
-
       const messagesRef = collection(db, "chats", finalChatId, "messages");
       const msgDoc = await addDoc(messagesRef, {
         senderId,
