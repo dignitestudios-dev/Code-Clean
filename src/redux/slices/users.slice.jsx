@@ -9,7 +9,9 @@ const initialState = {
   userProfile: null,
   allservices: null,
   currentbookingdata: null,
+  requestDetails:null,
   error: null,
+  requestisLoading:false,
   success: null,
   updateLoading: false,
   updateError: null,
@@ -84,6 +86,21 @@ export const RequestCustomService = createAsyncThunk(
   }
 );
 
+
+// Fetch request details based on ID
+export const fetchRequestDetails = createAsyncThunk(
+  '/user/requests/{id}/details', // Action type
+  async (id, thunkAPI) => {
+    try {
+      const res = await axios.get(`/user/requests/${id}/details`); // API request to fetch the request details
+      return res.data; // Return the response data
+    } catch (error) {
+      return thunkAPI.rejectWithValue('Failed to fetch request details'); // Handle rejection
+    }
+  }
+);
+
+
 //Get Payment Method
 export const getPaymentMethoduser = createAsyncThunk(
   "/payment-methods", // The action type
@@ -116,38 +133,35 @@ export const getPaymentMethoduser = createAsyncThunk(
 
 // Fetch user profile — page/per_page optional; agar na do to plain /profile hit hoga
 export const fetchUserProfile = createAsyncThunk(
-  "user/fetchUserProfile",
+  'user/fetchUserProfile',
   async (args, thunkAPI) => {
     try {
       const hasPaging =
         args &&
-        (typeof args.page !== "undefined" ||
-          typeof args.per_page !== "undefined");
+        (typeof args.page !== 'undefined' || typeof args.per_page !== 'undefined');
 
       const config = { signal: thunkAPI.signal };
 
       if (hasPaging) {
         config.params = {};
-        if (typeof args.page !== "undefined") config.params.page = args.page;
-        if (typeof args.per_page !== "undefined")
-          config.params.per_page = args.per_page;
+        if (typeof args.page !== 'undefined') config.params.page = args.page;
+        if (typeof args.per_page !== 'undefined') config.params.per_page = args.per_page;
       }
 
       // If hasPaging=false => no params sent (pure /profile)
-      const res = await axios.get("/profile", config);
+      const res = await axios.get('/profile', config);
       return res.data;
     } catch (error) {
       if (axios.isCancel?.(error)) {
-        return thunkAPI.rejectWithValue("Request cancelled");
+        return thunkAPI.rejectWithValue('Request cancelled');
       }
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch profile"
+        error?.response?.data?.message || error?.message || 'Failed to fetch profile'
       );
     }
   }
 );
+
 
 //Get Payment getuserfavorites
 export const getuserfavorites = createAsyncThunk(
@@ -625,6 +639,21 @@ const userSlice = createSlice({
         state.CustomserviceproviderLoading = false;
         state.CustomserviceproviderError = action.payload;
         ErrorToast(state.CustomserviceproviderError);
+      })
+
+       .addCase(fetchRequestDetails.pending, (state) => {
+        state.requestisLoading = true; // Set loading state to true
+        state.error = null; // Clear any previous errors
+        state.success = null; // Clear any previous success messages
+      })
+      .addCase(fetchRequestDetails.fulfilled, (state, action) => {
+        state.requestisLoading = false; // Set loading state to false
+        state.requestDetails = action.payload; // Store the fetched request details in the state
+        state.success = "Successfully fetched request details!"; // Set success message
+      })
+      .addCase(fetchRequestDetails.rejected, (state, action) => {
+        state.requestisLoading = false; // Set loading state to false
+        state.error = action.payload || "Failed to fetch request details"; // Set error message
       })
 
       // ----- update profile -----

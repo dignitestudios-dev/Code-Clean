@@ -81,6 +81,13 @@ const Navbar = () => {
 
   const [notifications, setNotifications] = useState([]);
 
+  const handleLogoClick = () => {
+  if (!isLoggedIn) return navigate("/app/landing");
+  if (role === "service_provider") return navigate("/dashboard");
+  if (role === "user") return navigate("/home");
+  return navigate("/app/landing");
+};
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -187,6 +194,7 @@ console.log(role,"role--->")
             src={LogoWhite}
             alt="Logo"
             className="w-[236px] h-[67px] cursor-pointer"
+            onClick={handleLogoClick}
           />
         </div>
 
