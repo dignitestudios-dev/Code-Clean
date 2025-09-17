@@ -237,14 +237,15 @@ const ServiceproviderProfile = () => {
               {/* Earned Badges */}
               <div className="mt-4 text-sm text-gray-700 border-t-2 pt-3">
                 <h3 className="font-semibold mb-1 text-black">Earned Badges</h3>
-                {badges?.alloted_badges?.map((item, i) => (
-                  <div key={i} className="mt-2 grid grid-cols-3 gap-4">
+                <div className="mt-2 grid grid-cols-10 gap-4">
+                  {badges?.alloted_badges?.map((item, i) => (
                     <img
+                      key={i}
                       src={import.meta.env.VITE_APP_AWS_URL + item?.url}
                       alt="badgesImage"
                     />
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
 
               {/* Bio */}

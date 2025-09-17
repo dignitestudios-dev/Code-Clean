@@ -24,6 +24,8 @@ const initialState = {
   getUserProfileDetail: null,
   CalendarBooking: null,
   CurrentBooking: null,
+  StartJobLoading: false,
+  DailyAvaliablity: null,
 };
 // ================= THUNKS =================
 
@@ -361,6 +363,19 @@ export const getCalendar = createAsyncThunk(
     }
   }
 );
+export const getDailyAvaliablity = createAsyncThunk(
+  "/provider/availability", // The action type
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.get(payload); // API request to fetch the profile
+      return response.data; // Assuming the API returns the user profile data
+    } catch (error) {
+      const msg = error?.response?.data?.message || "Failed to Calendar";
+      ErrorToast(msg); // Show error toast
+      return thunkAPI.rejectWithValue(msg); // Handle rejection
+    }
+  }
+);
 
 export const DeletePaymentMethod = createAsyncThunk(
   "/payment-method/{payment_method_id}",
@@ -517,6 +532,20 @@ const providerSlice = createSlice({
       })
       .addCase(getCalendar.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(getDailyAvaliablity.pending, (state) => {
+        state.bookingRequestLoader = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getDailyAvaliablity.fulfilled, (state, action) => {
+        state.bookingRequestLoader = false;
+        state.DailyAvaliablity = action.payload;
+        state.success = action.payload.message;
+      })
+      .addCase(getDailyAvaliablity.rejected, (state, action) => {
+        state.bookingRequestLoader = false;
         state.error = action.payload;
       })
       .addCase(ReportAnIssue.pending, (state) => {
@@ -813,16 +842,16 @@ const providerSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(MarkStartJob.pending, (state) => {
-        state.isLoading = true;
+        state.StartJobLoading = true;
         state.error = null;
         state.success = null;
       })
       .addCase(MarkStartJob.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.StartJobLoading = false;
         state.success = "Job Start Successfully";
       })
       .addCase(MarkStartJob.rejected, (state, action) => {
-        state.isLoading = false;
+        state.StartJobLoading = false;
         state.error = action.payload;
       })
       //Accept Booking Req

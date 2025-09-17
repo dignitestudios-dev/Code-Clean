@@ -15,10 +15,10 @@ const UserProvider = () => {
   const loc = useLocation();
   const dispatch = useDispatch();
   const { getUserProfileDetail } = useSelector((state) => state?.provider);
-  console.log(getUserProfileDetail, "testing");
-  useEffect(() => {
-    dispatch(getUserProfile(loc?.state?.id));
-  }, []);
+  console.log(loc?.state?.user, "testing");
+  // useEffect(() => {
+  //   // dispatch(getUserProfile(loc?.state?.id));
+  // }, []);
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -58,12 +58,12 @@ const UserProvider = () => {
           {/* Avatar + Name */}
           <div className="flex items-center gap-4">
             <img
-              src={import.meta.env.VITE_APP_AWS_URL+getUserProfileDetail?.avatar}
+              src={import.meta.env.VITE_APP_AWS_URL+loc?.state?.user?.avatar}
               alt="User"
               className="w-20 h-20 rounded-full object-cover"
             />
             <h3 className="text-xl font-semibold text-gray-800">
-              {getUserProfileDetail?.name}
+              {loc?.state?.user?.name}
             </h3>
           </div>
 
@@ -98,18 +98,18 @@ const UserProvider = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-700">
             <div>
               <p className="font-medium">Email Address</p>
-              <p className="text-gray-500">{getUserProfileDetail?.email}</p>
+              <p className="text-gray-500">{loc?.state?.user?.email}</p>
             </div>
             <div>
               <p className="font-medium">Phone Number</p>
               <p className="text-gray-500">
-                {getUserProfileDetail?.phone_number}
+                {loc?.state?.user?.phone_number}
               </p>
             </div>
             <div>
               <p className="font-medium">Location</p>
               <p className="text-gray-500">
-                {getUserProfileDetail?.city}, {getUserProfileDetail?.country}
+                {loc?.state?.user?.city}, {loc?.state?.user?.country}
               </p>
             </div>
           </div>
@@ -117,7 +117,7 @@ const UserProvider = () => {
       </div>
       <Reportuser
         isOpen={isReport}
-        userId={getUserProfileDetail?.uid}
+        userId={loc?.state?.user?.uid}
         setIsOpen={setIsReport}
       />
     </div>

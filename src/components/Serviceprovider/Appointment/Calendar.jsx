@@ -60,16 +60,22 @@ const AppointmentCalendar = () => {
 
   const renderCellContent = (day) => {
     if (!day) return null;
+
     const dateKey =
       currentMonth.format("YYYY-MM") + `-${String(day).padStart(2, "0")}`;
-    const data = CalendarBooking?.bookings[dateKey];
+
+    // ✅ Safe lookup
+    const data = CalendarBooking?.bookings?.[dateKey];
+
     console.log(day, dateKey, "data-comes");
+
     return (
       <div className="relative p-1 text-sm overflow-y-auto h-full">
         <div
           onClick={() => {
             setIsModal("avaliable");
             setIsOpen(!isOpen);
+            setSelectedDate(dateKey);
           }}
           className="font-semibold cursor-pointer mb-1 text-end"
         >
@@ -96,17 +102,6 @@ const AppointmentCalendar = () => {
                 {item?.type} ({String(item?.count).padStart(2, "0")})
               </div>
             ))}
-          {/* {data?.upcomingJobs && (
-            <div
-              onClick={() => {
-                setIsModal("book");
-                setIsOpen(!isOpen);
-              }}
-              className="text-[10px] cursor-pointer  mt-1 px-1 py-[2px] rounded-sm"
-            >
-              Upcoming Jobs ({String(data.upcomingJobs).padStart(2, "0")})
-            </div>
-          )} */}
         </div>
       </div>
     );
@@ -216,7 +211,11 @@ const AppointmentCalendar = () => {
         />
       )}
       {isModal == "avaliable" && (
-        <BookingAvaliable isOpen={isOpen} setIsOpen={setIsOpen} />
+        <BookingAvaliable
+          date={selectedDate}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+        />
       )}
 
       <Footer />

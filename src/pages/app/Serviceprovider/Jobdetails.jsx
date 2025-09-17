@@ -23,6 +23,7 @@ import {
 } from "../../../redux/slices/provider.slice";
 import { Button } from "../../../components/global/GlobalButton";
 import { ErrorToast } from "../../../components/global/Toaster";
+import BookingCountdown from "../../../components/Serviceprovider/Appointment/BookingStartTimer";
 const Jobdetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,7 +41,7 @@ const Jobdetails = () => {
   const [cancelReasonText, setCancelReasonText] = useState();
   const [role, SetRole] = useState("");
   const dispatch = useDispatch("");
-  const { bookingRequestDetail, isLoading } = useSelector(
+  const { bookingRequestDetail, isLoading, StartJobLoading } = useSelector(
     (state) => state.provider
   );
   const { user_data } = useSelector((state) => state.auth);
@@ -70,7 +71,59 @@ const Jobdetails = () => {
     await dispatch(CancelBookingRequest(data));
     navigate("/dashboard");
   };
-  console.log(status, bookingRequestDetail, "status--->debug");
+
+  //  ---------------- Start Job Button Dissabled------------------
+  const [canStart, setCanStart] = useState(false);
+
+  // Parse booking date + time safely
+  const parseBookingDateTime = (dateStr, timeStr) => {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return null;
+
+    let [time, modifier] = timeStr.trim().split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+
+    if (modifier) {
+      modifier = modifier.toUpperCase();
+      if (modifier === "PM" && hours < 12) hours += 12;
+      if (modifier === "AM" && hours === 12) hours = 0;
+    }
+
+    if (hours > 12 && modifier) {
+      modifier = null; // case "13:00 PM"
+    }
+
+    date.setHours(hours);
+    date.setMinutes(minutes || 0);
+    date.setSeconds(0);
+
+    return date;
+  };
+
+  useEffect(() => {
+    if (!bookingRequestDetail?.date || !bookingRequestDetail?.time) return;
+
+    const bookingDateTime = parseBookingDateTime(
+      bookingRequestDetail.date,
+      bookingRequestDetail.time
+    );
+    if (!bookingDateTime) return;
+
+    const checkTime = () => {
+      const now = new Date();
+      if (now >= bookingDateTime) {
+        setCanStart(true);
+      } else {
+        setCanStart(false);
+      }
+    };
+
+    checkTime();
+    const interval = setInterval(checkTime, 1000); // check every second
+
+    return () => clearInterval(interval);
+  }, [bookingRequestDetail]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar type="serviceprovider" />
@@ -184,7 +237,7 @@ const Jobdetails = () => {
                           {
                             state: {
                               fromViewProfile: true,
-                              id: bookingRequestDetail?.user?.id,
+                              user: bookingRequestDetail?.user,
                             },
                           }
                         );
@@ -235,11 +288,11 @@ const Jobdetails = () => {
                       : status && status[0]?.toUpperCase() + status.slice(1)}
                   </div>
 
-                  {status !== "completed" && status !== "Pending" && (
-                    <div className="inline-block text-[#808080] h-[44px] border-2 px-10 pt-2 rounded-[8px] text-[20px] font-bold mb-2 w-full text-center">
-                      00:00:00
-                    </div>
-                  )}
+                  {
+                    <BookingCountdown
+                      bookingRequestDetail={bookingRequestDetail}
+                    />
+                  }
                 </div>
 
                 {/* Message Button */}
@@ -410,7 +463,8 @@ const Jobdetails = () => {
                 {status == "waiting" && (
                   <Button
                     text={"Start Job"}
-                    loading={isLoading}
+                    disabled={!canStart} // ✅ disabled until time reached
+                    loading={StartJobLoading}
                     onClick={() =>
                       handleJob(bookingRequestDetail?.booking_id, "start")
                     }
@@ -419,7 +473,7 @@ const Jobdetails = () => {
                 {status == "inprogress" && (
                   <Button
                     text={"Mark Job Completed"}
-                    loading={isLoading}
+                    loading={StartJobLoading}
                     onClick={() =>
                       handleJob(bookingRequestDetail?.booking_id, "end")
                     }

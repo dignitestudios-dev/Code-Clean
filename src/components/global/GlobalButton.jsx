@@ -1,10 +1,12 @@
 import { RiLoader5Line } from "react-icons/ri";
 
-export const Button = ({ text, onClick, loading, type }) => {
+export const Button = ({ text, onClick, loading, type, disabled }) => {
+  const isDisabled = loading || disabled; // ✅ combine both
+
   return (
     <div className="w-full">
       <button
-        disabled={loading}
+        disabled={isDisabled}
         type={type}
         onClick={onClick}
         // background: linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%);
@@ -12,7 +14,7 @@ export const Button = ({ text, onClick, loading, type }) => {
           background:
             " linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",
         }}
-        className=" px-3 rounded-[12px] w-full text-white  font-[500] text-[16px] h-[49px] "
+        className={`px-3 rounded-[12px] w-full text-white  font-[500] text-[16px] h-[49px] ${isDisabled&&"cursor-not-allowed"} `}
       >
         <div className="flex justify-center text-center w-full items-center">
           <span className="mr-1 text-nowrap">{text}</span>
