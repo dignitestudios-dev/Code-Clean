@@ -30,10 +30,12 @@ export default function SignUp() {
   const role = location.state?.role || "user";
   const [email, setEmail] = useState("");
   // const stripePromise = loadStripe(import.meta.env.VITE_APP_STRIPE_KEY);
-    const stripePromise = loadStripe('pk_test_51R35dTRu13l5i5sUEtVltwn9P4R1bByNOlamVhR0Vq8xVSG4kMMuFjNAXfQ0swFl3qxbuKtdRLcouiGA0I6rw7i900oTZUOMeu');
-  
+  const stripePromise = loadStripe(
+    "pk_test_51R35dTRu13l5i5sUEtVltwn9P4R1bByNOlamVhR0Vq8xVSG4kMMuFjNAXfQ0swFl3qxbuKtdRLcouiGA0I6rw7i900oTZUOMeu"
+  );
+
   // Step Data for Service Provider
-  const providerSteps = [ 
+  const providerSteps = [
     { icon: FaUser, title: "Your details" },
     { icon: IoMailOutline, title: "Verify email" },
     { icon: LiaIdCard, title: "Personal details" },
@@ -49,7 +51,8 @@ export default function SignUp() {
     { icon: FaUser, title: "Your details" },
     { icon: IoMailOutline, title: "Verify email" },
     { icon: LiaIdCard, title: "Personal details" },
-    { icon: FaCreditCard, title: "Payment Method" },
+    { icon: RiMoneyDollarBoxLine, title: "Subscription Plan" },
+    { icon: MdOutlinePayment, title: "Payment Method" },
   ];
 
   const stepData = role === "provider" ? providerSteps : userSteps;
@@ -89,6 +92,8 @@ export default function SignUp() {
             ) : currentStep === 2 ? (
               <PersonalDetail handleNext={handleNext} />
             ) : currentStep === 3 ? (
+              <SubscriptionPlans handleNext={handleNext} />
+            ) : currentStep === 4 ? (
               <Elements stripe={stripePromise}>
                 <AddStripeAccount handleNext={handleNext} />
               </Elements>

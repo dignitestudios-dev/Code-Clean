@@ -36,7 +36,6 @@ const Login = () => {
   const { values, handleBlur, handleChange, handleSubmit, errors, touched } = useFormik({
     initialValues: loginValues,
     validationSchema: signInSchema,
-    
     onSubmit: async (values) => {
       const token = await getFCMToken();
       const data = { 
@@ -44,6 +43,7 @@ const Login = () => {
         password: values?.password, 
         fcm_token: token // Include FCM token in the login payload
       };
+      console.log(data)
       dispatch(login(data)); // Dispatch login action
     },
   });

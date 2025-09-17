@@ -28,6 +28,7 @@ const initialState = {
 export const login = createAsyncThunk(
   "/login",
   async (credentials, thunkAPI) => {
+    console.log(credentials,"after---login")
     try {
       const res = await axios.post("/login", credentials);
       const {

@@ -7,6 +7,7 @@ import Footer from "../../../components/layout/Footer";
 import { CiSearch } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBookinghistory } from "../../../redux/slices/users.slice";
+import Pagination from "../../../components/global/Pagination";
 
 const Bookinghistory = () => {
   const navigate = useNavigate();
@@ -19,16 +20,31 @@ const Bookinghistory = () => {
   const [activeTab, setActiveTab] = useState("All"); // Active tab state
 
   useEffect(() => {
-    dispatch(fetchBookinghistory());
+    dispatch(fetchBookinghistory("/user/booking-history"));
   }, [dispatch]);
+
+  const sliceBaseUrl = (url) => {
+    if (!url) return null;
+    try {
+      const base = "https://api.codecleanpros.com/api/";
+      return url.startsWith(base) ? url.replace(base, "") : url;
+    } catch {
+      return url;
+    }
+  };
+
+  const handlePageChange = (url) => {
+    const cleanUrl = sliceBaseUrl(url);
+    if (cleanUrl) {
+      dispatch(fetchBookinghistory(cleanUrl));
+    }
+  };
 
   useEffect(() => {
     if (bookinghistorydata && bookinghistorydata.data) {
       setBooking(bookinghistorydata.data); // Update with actual API data
     }
   }, [bookinghistorydata]);
-
-  console.log(bookinghistorydata, "bookinghistorydata===");
 
   // Filtered bookings based on search query and active tab
   const filteredBookings = booking.filter((booking) => {
@@ -138,7 +154,7 @@ const Bookinghistory = () => {
 
       {/* Booking Table Section */}
       <div className="px-[10em] py-[4em] bg-[#f5f8fb00] -mt-[18em] relative mb-10">
-        <div className="bg-white rounded-xl shadow-md overflow-x-auto">
+        <div className="bg-white rounded-xl shadow-md mb-4 overflow-x-auto">
           {/* Tabs */}
           <div className="flex border-b px-6 pt-6">
             {["All", "Completed Jobs", "Canceled Jobs"].map((tab, index) => (
@@ -231,8 +247,12 @@ const Bookinghistory = () => {
             </tbody>
           </table>
         </div>
+          <Pagination
+        links={bookinghistorydata?.links}
+        onPageChange={handlePageChange}
+      />
       </div>
-
+    
       <Footer />
     </div>
   );

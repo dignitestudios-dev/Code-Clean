@@ -3,9 +3,10 @@ import { HiMenu, HiX } from "react-icons/hi";
 import { Link, useLocation, useNavigate } from "react-router";
 import { LogoWhite, Avatar } from "../../assets/export";
 import { FaBell } from "react-icons/fa";
-import { logout, resetError, resetAuthState } from "../../redux/slices/auth.slice"; // Import login action from Redux
-import { IoLogOut, IoNotificationsOutline } from "react-icons/io5";
-import Cookies from "js-cookie";
+import {
+  logout,
+} from "../../redux/slices/auth.slice"; // Import login action from Redux
+import { IoNotificationsOutline } from "react-icons/io5";
 import LogOutModal from "../global/LogoutModal";
 import ReportAnIssueModal from "../app/Settings/ReportAnIssueModal";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,7 +26,11 @@ const Navbar = () => {
   const [logoutpopup, setLogoutpopup] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isReport, setIsReport] = useState(false);
-  const { user, user_data, accessToken, logoutLoading, logoutSuccess, logoutError } = useSelector((state) => state.auth);
+  const {
+    user_data,
+    accessToken,
+    logoutLoading,
+  } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   console.log(user_data, "navbar data");
@@ -45,7 +50,8 @@ const Navbar = () => {
 
   useEffect(() => {
     // Retrieve notifications from localStorage on component mount (after login)
-    const storedNotifications = JSON.parse(localStorage.getItem("notifications")) || [];
+    const storedNotifications =
+      JSON.parse(localStorage.getItem("notifications")) || [];
     setNotifications(storedNotifications);
 
     if (user_data?.role) {
@@ -54,9 +60,6 @@ const Navbar = () => {
   }, [user_data]);
 
 
-
-  console.log(user_data, "user_data")
-
   useEffect(() => {
     if (accessToken) {
       setIsLoggedIn(true);
@@ -64,7 +67,6 @@ const Navbar = () => {
       setIsLoggedIn(false);
     }
   }, [accessToken]);
-
 
   const dropdownRef = useRef(null);
 
@@ -79,8 +81,6 @@ const Navbar = () => {
 
   const [notifications, setNotifications] = useState([]);
 
-
-  // Detect click outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -108,7 +108,6 @@ const Navbar = () => {
   //   }
   // }, [location.pathname]); // re-check role on route change
 
-
   useEffect(() => {
     // Listen for foreground notifications
     onMessage(messaging, (payload) => {
@@ -123,11 +122,12 @@ const Navbar = () => {
       // Update notifications in state and localStorage
       const updatedNotifications = [newNotification, ...notifications];
       setNotifications(updatedNotifications);
-      localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+      localStorage.setItem(
+        "notifications",
+        JSON.stringify(updatedNotifications)
+      );
     });
   }, [notifications]);
-
-
 
   const togglePopup = () => {
     setUserPopup(false);
@@ -140,48 +140,46 @@ const Navbar = () => {
   };
 
   const markAsRead = (index) => {
-  // Make a copy of the notifications array to avoid directly mutating the state
-  const updatedNotifications = [...notifications];
-  
-  // Set the unreadCount of the clicked notification to 0
-  updatedNotifications[index].unreadCount = 0;
-  
-  // Update the state with the modified notifications array
-  setNotifications(updatedNotifications);
-  
-  // Also update the notifications in localStorage
-  localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
-};
+    // Make a copy of the notifications array to avoid directly mutating the state
+    const updatedNotifications = [...notifications];
 
+    // Set the unreadCount of the clicked notification to 0
+    updatedNotifications[index].unreadCount = 0;
 
+    // Update the state with the modified notifications array
+    setNotifications(updatedNotifications);
+
+    // Also update the notifications in localStorage
+    localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
+  };
+console.log(role,"role--->")
   const menuLinks =
     role === "service_provider"
       ? [
-        { label: "Dashboard", path: "/dashboard" },
-        { label: "Discover", path: "/discover-job" },
-        { label: "Availability", path: "/calendar" },
-        { label: "Messages", path: "/messages" },
-        { label: "Badges", path: "/badge-sp" },
-        { label: "Wallet", path: "/wallet" },
-      ]
+          { label: "Dashboard", path: "/dashboard" },
+          { label: "Discover", path: "/discover-job" },
+          { label: "Availability", path: "/calendar" },
+          { label: "Messages", path: "/messages" },
+          { label: "Badges", path: "/badge-sp" },
+          { label: "Wallet", path: "/wallet" },
+        ]
       : role === "user"
-        ? [
+      ? [
           { label: "Current Bookings", path: "/booking-requests" },
           { label: "Booking History", path: "/booking-history" },
           { label: "Badges", path: "/app/badge" },
           { label: "Favorites", path: "/favorites" },
           { label: "Messages", path: "/messages" },
         ]
-        : [];
-
-
+      : [];
 
   return (
     <nav
-      className={`w-full ${isMobileMenuOpen
-        ? "fixed top-0 left-0 min-h-screen bg-[#181818] z-50"
-        : ""
-        } text-white`}
+      className={`w-full ${
+        isMobileMenuOpen
+          ? "fixed top-0 left-0 min-h-screen bg-[#181818] z-50"
+          : ""
+      } text-white`}
     >
       <div className="max-w-7xl border-b border-white/40 mx-auto px-4 py-2 flex z-10 items-center justify-between relative">
         <div className="w-[60%]">
@@ -189,7 +187,6 @@ const Navbar = () => {
             src={LogoWhite}
             alt="Logo"
             className="w-[236px] h-[67px] cursor-pointer"
-            onClick={() => navigate("/")}
           />
         </div>
 
@@ -200,10 +197,11 @@ const Navbar = () => {
               <Link
                 key={link.label}
                 to={link.path}
-                className={`pb-1 relative text-[16px] font-[500] transition-all duration-300 ${currentPath === link.path
-                  ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
-                  : ""
-                  }`}
+                className={`pb-1 relative text-[16px] font-[500] transition-all duration-300 ${
+                  currentPath === link.path
+                    ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
+                    : ""
+                }`}
               >
                 {link.label}
               </Link>
@@ -221,18 +219,30 @@ const Navbar = () => {
               )}
               {isPopupOpen && (
                 <div className="absolute top-10 right-0 w-[400px] bg-white shadow-lg rounded-lg p-4 z-50">
-                  <h3 className="text-lg font-semibold text-black">Notifications</h3>
+                  <h3 className="text-lg font-semibold text-black">
+                    Notifications
+                  </h3>
                   <div className="mt-4 space-y-4 max-h-60 overflow-y-auto">
                     {notifications.length > 0 ? (
                       notifications.map((n, idx) => (
-                        <div key={idx} onClick={() => markAsRead(idx)} className="cursor-pointer">
+                        <div
+                          key={idx}
+                          onClick={() => markAsRead(idx)}
+                          className="cursor-pointer"
+                        >
                           <div className="flex justify-between">
                             <div>
-                              <span className="text-[14px] font-bold text-black">{n.title}</span>
-                              <p className="text-[13px] text-[#18181880]">{n.message}</p>
+                              <span className="text-[14px] font-bold text-black">
+                                {n.title}
+                              </span>
+                              <p className="text-[13px] text-[#18181880]">
+                                {n.message}
+                              </p>
                             </div>
                             <div>
-                              <div className="text-xs text-gray-600">{n.time}</div>
+                              <div className="text-xs text-gray-600">
+                                {n.time}
+                              </div>
                               {n.unreadCount > 0 && (
                                 <div className="bg-red-600 text-white text-xs rounded-full w-[19px] h-[19px] flex items-center justify-center">
                                   {n.unreadCount}
@@ -252,7 +262,11 @@ const Navbar = () => {
             </div>
 
             <img
-              src={user_data?.avatar ? `${import.meta.env.VITE_APP_AWS_URL}${user_data?.avatar}` : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ3AH9WTlcacKErfpKhk-lJ7serN0eQje6Qg&s"}
+              src={
+                user_data?.avatar
+                  ? `${import.meta.env.VITE_APP_AWS_URL}${user_data?.avatar}`
+                  : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ3AH9WTlcacKErfpKhk-lJ7serN0eQje6Qg&s"
+              }
               className="h-10 w-10 object-cover rounded-full cursor-pointer border-2"
               onClick={toggleUserpopup}
               alt="Avatar"
@@ -263,7 +277,9 @@ const Navbar = () => {
                   className="block font-[400] py-1 text-sm border-b  border-[#E4E4E4] cursor-pointer"
                   onClick={() =>
                     navigate(
-                      role == "service_provider" ? "/provider-profile" : "/app/profile"
+                      role == "service_provider"
+                        ? "/provider-profile"
+                        : "/app/profile"
                     )
                   }
                 >
@@ -295,23 +311,30 @@ const Navbar = () => {
             <ul className="flex gap-6">
               <li className="relative">
                 <Link
-                  className={`relative pb-1 text-[16px] font-[500] transition-all duration-300 ${currentPath === "/app/landing"
-                    ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
-                    : ""
-                    }`}
+                  className={`relative pb-1 text-[16px] font-[500] transition-all duration-300 ${
+                    currentPath === "/app/landing"
+                      ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
+                      : ""
+                  }`}
                   to="/app/landing"
                 >
                   Home
                 </Link>
               </li>
               <li>
-                <a href="#cleaners" className="text-[16px] font-[500]" >Cleaners</a>
+                <a href="#cleaners" className="text-[16px] font-[500]">
+                  Cleaners
+                </a>
               </li>
               <li>
-                <a href="#whyus" className="text-[16px] font-[500]" >Why Choose Us</a>
+                <a href="#whyus" className="text-[16px] font-[500]">
+                  Why Choose Us
+                </a>
               </li>
               <li>
-                <a href="#faq" className="text-[16px] font-[500]" >FAQs</a>
+                <a href="#faq" className="text-[16px] font-[500]">
+                  FAQs
+                </a>
               </li>
             </ul>
             <div className="flex gap-4">
@@ -430,7 +453,11 @@ const Navbar = () => {
               >
                 Why Choose Us
               </a>
-              <a href="#faq" className="block py-2 text-[16px] font-[500]" onClick={toggleMobileMenu}>
+              <a
+                href="#faq"
+                className="block py-2 text-[16px] font-[500]"
+                onClick={toggleMobileMenu}
+              >
                 FAQs
               </a>
               <button

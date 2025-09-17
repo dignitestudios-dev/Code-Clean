@@ -14,6 +14,8 @@ import {
 } from "../../../redux/slices/provider.slice";
 import { Button } from "../../../components/global/GlobalButton";
 import { ErrorToast } from "../../../components/global/Toaster";
+import SkeletonRows from "../../../components/global/Skellyton";
+import Pagination from "../../../components/global/Pagination";
 const BankSkeleton = ({ count = 2 }) => (
   <>
     {Array.from({ length: count }).map((_, i) => (
@@ -47,11 +49,32 @@ const Wallet = () => {
     widrawData,
   } = useSelector((state) => state.provider);
   useEffect(() => {
-    dispatch(getTransactions());
+    if (activeTab == "Transaction History") {
+      dispatch(getTransactions("provider/transactions"));
+    } else {
+      dispatch(getTransactions("provider/withdrawals"));
+    }
     dispatch(getWallet());
     dispatch(getPaymentMethod());
-  }, [dispatch]);
-  console.log(wallet, "wallets record");
+  }, [dispatch, activeTab]);
+
+  const sliceBaseUrl = (url) => {
+    if (!url) return null;
+    try {
+      const base = "https://api.codecleanpros.com/api/";
+      return url.startsWith(base) ? url.replace(base, "") : url;
+    } catch {
+      return url;
+    }
+  };
+
+  const handlePageChange = (url) => {
+    const cleanUrl = sliceBaseUrl(url);
+    if (cleanUrl) {
+      dispatch(getTransactions(cleanUrl));
+    }
+  };
+
   const [formData, setFormData] = useState({
     bankName: "",
     accountHolderName: "",
@@ -59,7 +82,6 @@ const Wallet = () => {
     routingNumber: "",
     saveDetails: false,
   });
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -383,12 +405,12 @@ const Wallet = () => {
         </h3>
 
         {/* Tabs */}
-        <div className="flex  border-b mb-0 px-5 bg-white rounded-t-2xl">
+        <div className="flex border-b mb-0 px-5 bg-white rounded-t-2xl">
           {["Transaction History", "Withdrawal History"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 relative py-3 mb-3  text-sm font-medium ${
+              className={`px-6 relative py-3 mb-3 text-sm font-medium ${
                 activeTab === tab
                   ? "text-gradient after:content-[''] after:absolute after:left-7 after:bottom-[5px] after:w-[17px] after:h-[1px] after:bg-[#3961ac] after:rounded"
                   : "text-[#595959] hover:text-[#003973]"
@@ -399,45 +421,121 @@ const Wallet = () => {
           ))}
         </div>
 
-        {/* Table */}
-        <div className="bg-white shadow overflow-x-auto rounded-b-2xl">
-          <table className="w-full text-sm text-left">
-            <thead className="bg-[#D2E8F4] text-gray-600 font-semibold">
-              <tr>
-                <th className="px-6 py-4 text-[#082166] ">#</th>
-                <th className="px-6 py-4 text-[#082166] ">Transactions ID</th>
-                <th className="px-6 py-4 text-[#082166] ">Card Holder Name</th>
-                <th className="px-6 py-4 text-[#082166] ">Account Number</th>
-                <th className="px-6 py-4 text-[#082166] ">Transfer Date</th>
-                <th className="px-6 py-4 text-[#082166] ">Transfer Time</th>
-                <th className="px-6 py-4 text-[#082166] ">Total Amount</th>
-              </tr>
-            </thead>
-            <tbody className="text-[#181818]">
-              {transaction?.transactions?.data?.map((t, index) => (
-                <tr key={index} className="border-t">
-                  <td className="px-6 py-4 text-[12px] font-[400]">
-                    {index + 1}
-                  </td>
-                  <td className="px-6 py-4 text-[12px] font-[400]">
-                    {t.transaction_id}
-                  </td>
-                  <td className="px-6 py-4 text-[12px] font-[400]">
-                    {t.account_name}
-                  </td>
-                  <td className="px-6 py-4 text-[12px] font-[400]">
-                    {t.account_number}
-                  </td>
-                  <td className="px-6 py-4 text-[12px] font-[400]">{t.date}</td>
-                  <td className="px-6 py-4 text-[12px] font-[400]">{t.time}</td>
-                  <td className="px-6 py-4 text-[12px] font-[400]">
-                    {t.amount}
-                  </td>
+        {/* Tables */}
+        {/* Tables */}
+        <div className="bg-white mb-4 shadow overflow-x-auto rounded-b-2xl">
+          {activeTab === "Transaction History" && (
+            <table className="w-full text-sm text-left">
+              <thead className="bg-[#D2E8F4] text-gray-600 font-semibold">
+                <tr>
+                  <th className="px-6 py-4 text-[#082166] ">#</th>
+                  <th className="px-6 py-4 text-[#082166] ">Transactions ID</th>
+                  <th className="px-6 py-4 text-[#082166] ">
+                    Card Holder Name
+                  </th>
+                  <th className="px-6 py-4 text-[#082166] ">Account Number</th>
+                  <th className="px-6 py-4 text-[#082166] ">Transfer Date</th>
+                  <th className="px-6 py-4 text-[#082166] ">Transfer Time</th>
+                  <th className="px-6 py-4 text-[#082166] ">Total Amount</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              {isLoading ? (
+                <SkeletonRows count={5} />
+              ) : (
+                <tbody className="text-[#181818]">
+                  {transaction?.transactions?.data?.map((t, index) => (
+                    <tr key={index} className="border-t">
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {index + 1}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {t.transaction_id}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {t.account_name}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {t.account_number}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {t.date}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {t.time}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {t.amount}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
+            </table>
+          )}
+
+          {activeTab === "Withdrawal History" && (
+            <table className="w-full text-sm text-left">
+              <thead className="bg-[#D2E8F4] text-gray-600 font-semibold">
+                <tr>
+                  <th className="px-6 py-4 text-[#082166] ">#</th>
+                  <th className="px-6 py-4 text-[#082166] ">Payout ID</th>
+                  <th className="px-6 py-4 text-[#082166] ">Bank Name</th>
+                  <th className="px-6 py-4 text-[#082166] ">Account Name</th>
+                  <th className="px-6 py-4 text-[#082166] ">Last Digits</th>
+                  <th className="px-6 py-4 text-[#082166] ">Type</th>
+                  <th className="px-6 py-4 text-[#082166] ">Date</th>
+                  <th className="px-6 py-4 text-[#082166] ">Amount</th>
+                  <th className="px-6 py-4 text-[#082166] ">Status</th>
+                </tr>
+              </thead>
+              {isLoading ? (
+                <SkeletonRows count={5} />
+              ) : (
+                <tbody className="text-[#181818]">
+                  {transaction?.withdrawals?.data?.map((w, index) => (
+                    <tr key={index} className="border-t">
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {index + 1}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {w.payout_id}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {w.bank_name}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {w.account_name}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {w.last_digits}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {w.type}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {w.date}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {w.amount}
+                      </td>
+                      <td className="px-6 py-4 text-[12px] font-[400]">
+                        {w.status}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
+            </table>
+          )}
         </div>
+        <Pagination
+          onPageChange={handlePageChange}
+          links={
+            activeTab === "Transaction History"
+              ? transaction?.transactions?.links
+              : transaction?.withdrawals?.links
+          }
+        />
       </div>
     </div>
   );

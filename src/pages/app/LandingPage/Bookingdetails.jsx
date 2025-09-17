@@ -210,6 +210,7 @@ const Bookingdetails = () => {
                           state: {
                             user: {
                               id: bookingDetail?.service_provider?.id,
+                              uid: bookingDetail?.service_provider?.uid,
                               name: bookingDetail?.service_provider?.name,
                               avatar: bookingDetail?.service_provider?.avatar,
                             },

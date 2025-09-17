@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentBooking } from "../../../redux/slices/provider.slice";
+import { useNavigate } from "react-router";
 const AppointmentBookModal = ({ isOpen, setIsOpen, date }) => {
   const [requests, setRequests] = useState([
     {
@@ -41,6 +42,7 @@ const AppointmentBookModal = ({ isOpen, setIsOpen, date }) => {
   ]);
   const { CurrentBooking, isLoading } = useSelector((state) => state?.provider);
   const dispatch = useDispatch();
+  const navigate = useNavigate("");
   useEffect(() => {
     dispatch(getCurrentBooking(`provider/current-bookings?date=${date}`));
   }, [date]);
@@ -142,7 +144,13 @@ const AppointmentBookModal = ({ isOpen, setIsOpen, date }) => {
 
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => handleApprove(index)}
+                        onClick={() =>
+                          navigate(
+                            `/job-details?id=${request?.request_id}&status=${
+                              request?.status
+                            }&type=${`provider/bookings/${request?.booking_id}/details`}`
+                          )
+                        }
                         className="w-8 h-8 bg-gradient-to-tr from-[#00034A] to-[#27A8E2] rounded-full flex items-center justify-center transition-colors"
                       >
                         <MdOutlineKeyboardArrowRight
@@ -161,7 +169,7 @@ const AppointmentBookModal = ({ isOpen, setIsOpen, date }) => {
             )}
           </div>
 
-          {CurrentBooking.length === 0 && (
+          {CurrentBooking?.length === 0 && (
             <div className="px-6 pb-6 text-center text-gray-500">
               No booking requests at the moment.
             </div>

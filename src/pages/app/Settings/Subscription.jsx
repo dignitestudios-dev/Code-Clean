@@ -10,6 +10,8 @@ import CancelSubscription from "../../../components/app/Settings/CancelSubscript
 import { getBillings, getPlans } from "../../../redux/slices/provider.slice";
 import { useDispatch, useSelector } from "react-redux";
 import { RiLoader5Line } from "react-icons/ri";
+import Pagination from "../../../components/global/Pagination";
+import SkeletonRows from "../../../components/global/Skellyton";
 
 export default function Subscription() {
   const navigate = useNavigate("");
@@ -18,77 +20,31 @@ export default function Subscription() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedPlane, setSelectedPlane] = useState(null);
   const dispatch = useDispatch();
-  const { plans, billings, bookingRequestLoader } = useSelector(
+  const { plans, billings, isLoading } = useSelector(
     (state) => state?.provider
   );
   useEffect(() => {
-    dispatch(getBillings());
+    dispatch(getBillings("/billings"));
     dispatch(getPlans());
   }, []);
-  const invoiceData = [
-    {
-      date: "Feb 19, 2024",
-      description: "Subscription plan",
-      total: "$150.00",
-      status: "Paid",
-    },
-    {
-      date: "Feb 07, 2024",
-      description: "Subscription plan",
-      total: "$150.00",
-      status: "Paid",
-    },
-    {
-      date: "Feb 02, 2024",
-      description: "Subscription plan",
-      total: "$150.00",
-      status: "Paid",
-    },
-    {
-      date: "Jan 30, 2024",
-      description: "Subscription plan",
-      total: "$150.00",
-      status: "Paid",
-    },
-    {
-      date: "Feb 07, 2024",
-      description: "Subscription plan",
-      total: "$150.00",
-      status: "Paid",
-    },
-    {
-      date: "Feb 02, 2024",
-      description: "Subscription plan",
-      total: "$150.00",
-      status: "Paid",
-    },
-    {
-      date: "Jan 30, 2024",
-      description: "Subscription plan",
-      total: "$150.00",
-      status: "Paid",
-    },
-    {
-      date: "Feb 07, 2024",
-      description: "Subscription plan",
-      total: "$150.00",
-      status: "Paid",
-    },
-    {
-      date: "Feb 02, 2024",
-      description: "Subscription plan",
-      total: "$150.00",
-      status: "Paid",
-    },
-    {
-      date: "Jan 30, 2024",
-      description: "Subscription plan",
-      total: "$150.00",
-      status: "Paid",
-    },
-  ];
-  console.log(billings, "billings");
 
+  console.log(billings, "billings");
+  const sliceBaseUrl = (url) => {
+    if (!url) return null;
+    try {
+      const base = "https://api.codecleanpros.com/api/";
+      return url.startsWith(base) ? url.replace(base, "") : url;
+    } catch {
+      return url;
+    }
+  };
+
+  const handlePageChange = (url) => {
+    const cleanUrl = sliceBaseUrl(url);
+    if (cleanUrl) {
+      dispatch(getBillings(cleanUrl));
+    }
+  };
   return (
     <div>
       <Navbar type="serviceprovider" />
@@ -106,7 +62,7 @@ export default function Subscription() {
           <h1 className="text-2xl font-semibold text-white">Subscription</h1>
         </div>
         <div className="bg-[#F9FAFA] shadow-lg p-5 rounded-[8px]">
-          <div className="bg-[white] flex flex-col gap-3 pt-6 rounded-[16px] mt-3">
+          <div className="bg-[white] mb-3 flex flex-col gap-3 pt-6 rounded-[16px] mt-3">
             <div className="mb-8 border-b border-[#E2E2E2] px-10">
               <div className="flex space-x-8">
                 <button
@@ -143,7 +99,11 @@ export default function Subscription() {
                       Next Invoice Issue Date
                     </h3>
                     <p className="text-2xl font-bold text-gray-900">
-                      {billings?.next_invoice_date}
+                      {isLoading ? (
+                        <span className="h-6 w-40 bg-gray-200 rounded animate-pulse inline-block" />
+                      ) : (
+                        billings?.next_invoice_date
+                      )}
                     </p>
                   </div>
 
@@ -153,11 +113,16 @@ export default function Subscription() {
                       Invoice Total
                     </h3>
                     <p className="text-2xl font-bold text-gray-900">
-                      $ {billings?.total_invoice_amount}
+                      {isLoading ? (
+                        <span className="h-6 w-28 bg-gray-200 rounded animate-pulse inline-block" />
+                      ) : (
+                        `$ ${billings?.total_invoice_amount}`
+                      )}
                     </p>
                   </div>
                 </div>
 
+                {/* Table Header */}
                 <div className="bg-[#D2E8F4] rounded-[3px] px-10 py-4">
                   <div className="grid grid-cols-4 gap-4">
                     <div className="text-sm font-medium text-[#082166]">
@@ -174,26 +139,32 @@ export default function Subscription() {
                     </div>
                   </div>
                 </div>
+
                 {/* Table Body */}
                 <div className="divide-y px-10 divide-gray-200">
-                  {billings?.billings?.data?.map((invoice, index) => (
-                    <div key={index} className="py-4 hover:bg-gray-50">
-                      <div className="grid grid-cols-4 gap-4 items-center">
-                        <div className="text-sm text-gray-900">
-                          {invoice.date}
-                        </div>
-                        <div className="text-sm text-gray-900">
-                          {invoice.description}
-                        </div>
-                        <div className="text-sm text-gray-900">
-                          {invoice.amount}
-                        </div>
-                        <div className="text-sm text-gray-900">
-                          {invoice.status}
+                  {isLoading ? (
+                    // Skeleton Rows
+                    <SkeletonRows count={3} />
+                  ) : (
+                    billings?.billings?.data?.map((invoice, index) => (
+                      <div key={index} className="py-4 hover:bg-gray-50">
+                        <div className="grid grid-cols-4 gap-4 items-center">
+                          <div className="text-sm text-gray-900">
+                            {invoice.date}
+                          </div>
+                          <div className="text-sm text-gray-900">
+                            {invoice.description}
+                          </div>
+                          <div className="text-sm text-gray-900">
+                            {invoice.amount}
+                          </div>
+                          <div className="text-sm text-gray-900">
+                            {invoice.status}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </>
             )}
@@ -276,6 +247,12 @@ export default function Subscription() {
               </>
             )}
           </div>
+          {activeTab === "billing" &&billings?.billings?.length>0 && (
+            <Pagination
+              onPageChange={handlePageChange}
+              links={billings?.billings?.links}
+            />
+          )}
         </div>
       </div>
       {SubscriptionModal == "upgrade" && (

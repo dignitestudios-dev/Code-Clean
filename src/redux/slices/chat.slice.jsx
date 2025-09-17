@@ -12,6 +12,8 @@ import {
   doc,
   getDoc,
   setDoc,
+  getDocs,
+  writeBatch,
 } from "../../firebase/firebase";
 
 const initialState = {
@@ -23,7 +25,6 @@ const initialState = {
   status: "idle",
 };
 
-// ✅ Listen to all chats where user is a member
 export const listenUserChats = createAsyncThunk(
   "chat/listenUserChats",
   async ({ userId }, { dispatch, rejectWithValue }) => {
@@ -41,6 +42,21 @@ export const listenUserChats = createAsyncThunk(
             ...doc.data(),
           }));
           dispatch(setChats(chats));
+
+          // 🔥 For each chat, listen unseen messages count
+          chats.forEach((chat) => {
+            const messagesRef = collection(db, "chats", chat.id, "messages");
+            const unseenQuery = query(
+              messagesRef,
+              where("receiverId", "==", userId)
+            );
+            onSnapshot(unseenQuery, (msgSnap) => {
+              const unseen = msgSnap.docs.filter(
+                (d) => !(d.data().seenBy || []).includes(userId)
+              ).length;
+              dispatch(setUnseenCount({ chatId: chat.id, count: unseen }));
+            });
+          });
         });
         resolve(unsubscribe);
       });
@@ -58,50 +74,73 @@ export const sendMessage = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      let finalChatId = chatId || [senderId, receiverId].sort().join("_");
-
-
+      const finalChatId = chatId || [senderId, receiverId].sort().join("_");
       const chatRef = doc(db, "chats", finalChatId);
       const chatSnap = await getDoc(chatRef);
 
-
       if (!chatSnap.exists()) {
-        try {
-          await setDoc(chatRef, {
-            members: [senderId, receiverId],
-            memberInfo: {
-              [senderId]: senderInfo,
-              [receiverId]: receiverInfo,
-            },
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          });
-        } catch (e) {
-          console.error("setDoc failed ❌", e);
-        }
+        await setDoc(chatRef, {
+          members: [senderId, receiverId],
+          memberInfo: {
+            [senderId]: senderInfo,
+            [receiverId]: receiverInfo,
+          },
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          lastMessage: null,
+        });
       }
 
       const messagesRef = collection(db, "chats", finalChatId, "messages");
-
-      console.log("Before addDoc");
-      await addDoc(messagesRef, {
+      const msgDoc = await addDoc(messagesRef, {
         senderId,
+        receiverId,
         text,
         createdAt: serverTimestamp(),
+        seenBy: [senderId],
       });
-      console.log("After addDoc");
 
-      try {
-        await updateDoc(chatRef, { updatedAt: serverTimestamp() });
-      } catch (e) {
-        console.warn("updateDoc failed", e);
-      }
+      await updateDoc(chatRef, {
+        updatedAt: serverTimestamp(),
+        lastMessage: {
+          id: msgDoc.id,
+          text,
+          senderId,
+          createdAt: serverTimestamp(),
+        },
+      });
 
-      console.log("✅ Message send complete");
       return true;
     } catch (error) {
-      console.error("❌ sendMessage error", error);
       return rejectWithValue(error.message);
+    }
+  }
+);
+
+// ✅ Mark messages as seen
+export const markMessagesAsSeen = createAsyncThunk(
+  "chat/markMessagesAsSeen",
+  async ({ chatId, userId }, { rejectWithValue }) => {
+    try {
+      const q = query(
+        collection(db, "chats", chatId, "messages"),
+        where("receiverId", "==", userId)
+      );
+
+      const snap = await getDocs(q);
+      const batch = writeBatch(db);
+
+      snap.forEach((docSnap) => {
+        if (!docSnap.data().seenBy?.includes(userId)) {
+          batch.update(docSnap.ref, {
+            seenBy: [...(docSnap.data().seenBy || []), userId],
+          });
+        }
+      });
+
+      await batch.commit();
+    } catch (err) {
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -149,7 +188,6 @@ const chatSlice = createSlice({
     },
     setMessages: (state, action) => {
       const { chatId, messages } = action.payload;
-      console.log(chatId);
       state.messages = {
         ...state.messages,
         [chatId]: messages,
@@ -162,6 +200,12 @@ const chatSlice = createSlice({
         delete newMessages[chatId];
         state.messages = newMessages;
       }
+    },
+    setUnseenCount: (state, action) => {
+      const { chatId, count } = action.payload;
+      state.chats = state.chats.map((chat) =>
+        chat.id === chatId ? { ...chat, unseenCount: count } : chat
+      );
     },
   },
   extraReducers: (builder) => {
@@ -185,6 +229,7 @@ export const {
   setChats,
   setMessages,
   clearChat,
+  setUnseenCount,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

@@ -44,7 +44,7 @@ export const getUserProfile = createAsyncThunk(
   "/user/profile",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get(`/profile?user_id=${_}}`);
+      const response = await axios.get(`/profile?user_id=${_}`);
       return response.data; // Return entire API response
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -68,7 +68,7 @@ export const getBillings = createAsyncThunk(
   "/provider/billings",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("/provider/billings");
+      const response = await axios.get(_);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -81,7 +81,7 @@ export const getTransactions = createAsyncThunk(
   "/provider/transactions",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("/provider/transactions");
+      const response = await axios.get(_);
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -139,7 +139,7 @@ export const getBookingRequest = createAsyncThunk(
     try {
       const response = await axios.get(`/${_}`);
       console.log(response, "data-item");
-      return response?.data?.data;
+      return response?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Verification failed"
@@ -147,7 +147,6 @@ export const getBookingRequest = createAsyncThunk(
     }
   }
 );
-
 
 export const getCurrentBooking = createAsyncThunk(
   "/provider/current-bookings",
@@ -381,13 +380,10 @@ export const DeletePaymentMethod = createAsyncThunk(
   }
 );
 export const SubscriptionCancel = createAsyncThunk(
-  "/provider/subscriptions/cancel",
+  "/subscriptions/cancel",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.post(
-        `provider/subscriptions/cancel`,
-        payload
-      );
+      const response = await axios.post(`subscriptions/cancel`, payload);
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {
@@ -401,10 +397,10 @@ export const SubscriptionCancel = createAsyncThunk(
   }
 );
 export const SubscriptionUpgrade = createAsyncThunk(
-  "/provider/plan/subscribe",
+  "/plan/subscribe",
   async (payload, thunkAPI) => {
     try {
-      const response = await axios.post(`provider/plan/subscribe`, payload);
+      const response = await axios.post(`plan/subscribe`, payload);
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {

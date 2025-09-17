@@ -11,6 +11,7 @@ import {
   fetchBookingRequest,
   fetchCurrentBooking,
 } from "../../../redux/slices/users.slice";
+import Pagination from "../../../components/global/Pagination";
 
 const PLACEHOLDER_AVATAR = "https://via.placeholder.com/40";
 
@@ -65,9 +66,9 @@ const Bookingsrequests = () => {
   const { currentbookingdata, currentbookingLoading, requestbookingdata } =
     useSelector((s) => s.user);
   const loading = !!currentbookingLoading;
-
+  console.log(currentbookingdata, requestbookingdata, "request-booking-data");
   useEffect(() => {
-    dispatch(fetchBookingRequest());
+    dispatch(fetchBookingRequest("/user/booking/requests"));
   }, [dispatch]);
 
   useEffect(() => {
@@ -79,7 +80,7 @@ const Bookingsrequests = () => {
   console.log(bookingrequest, "bookingrequest");
 
   useEffect(() => {
-    dispatch(fetchCurrentBooking());
+    dispatch(fetchCurrentBooking("/user/current-bookings"));
   }, [dispatch]);
 
   const isCurrent = activeTab === "Current Bookings";
@@ -209,6 +210,27 @@ const Bookingsrequests = () => {
       if (statusFilter === "All") return true;
       return row.statusUi === statusFilter;
     });
+
+  const sliceBaseUrl = (url) => {
+    if (!url) return null;
+    try {
+      const base = "https://api.codecleanpros.com/api/";
+      return url.startsWith(base) ? url.replace(base, "") : url;
+    } catch {
+      return url;
+    }
+  };
+
+  const handlePageChange = (url) => {
+    const cleanUrl = sliceBaseUrl(url);
+    if (cleanUrl) {
+      if (activeTab == "Current Bookings") {
+        dispatch(fetchCurrentBooking(cleanUrl));
+      } else {
+        dispatch(fetchBookingRequest(cleanUrl));
+      }
+    }
+  };
 
   return (
     <div>
@@ -373,6 +395,14 @@ const Bookingsrequests = () => {
           </table>
         </div>
       </div>
+      <Pagination
+        links={
+          activeTab == "Current Bookings"
+            ? currentbookingdata?.links
+            : requestbookingdata?.links
+        }
+        onPageChange={handlePageChange}
+      />
 
       <Footer />
     </div>

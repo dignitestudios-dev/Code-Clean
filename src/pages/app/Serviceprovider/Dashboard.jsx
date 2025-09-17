@@ -34,50 +34,43 @@ const Dashboard = () => {
   );
   useEffect(() => {
     if (activeTab == "Booking Request") {
-      dispatch(getBookingRequest("provider/booking/requests"));
-    } else {
-      dispatch(getBookingRequest("provider/current-bookings"));
-    }
-  }, [dispatch, activeTab]);
-  console.log(statusFilter, "booking request ");
-
-  // Filtered bookings based on search query
-  const filteredBookings = Array.isArray(bookingRequest)
-    ? bookingRequest
-        .filter(
-          (booking) =>
-            booking?.user?.name
-              ?.toLowerCase()
-              .includes(searchQuery.toLowerCase()) ||
-            booking?.date?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            booking?.status?.toLowerCase().includes(searchQuery.toLowerCase())
+      dispatch(
+        getBookingRequest(
+          `provider/booking/requests?${
+            statusFilter != "all" && `search=${statusFilter}`
+          } `
         )
-        .filter((booking) => {
-          if (activeTab === "Booking Request") {
-            return (
-              booking.status === "pending" ||
-              booking.status === "accepted" ||
-              booking.status === "rejected"
-            );
-          } else if (activeTab === "Current Bookings") {
-            return (
-              booking.status === "inprogress" ||
-              booking.status === "waiting" ||
-              booking.status === "completed" || // fixed
-              booking.status === "cancelled" // fixed
-            );
-          }
+      );
+    } else {
+      dispatch(
+        getBookingRequest(
+          `provider/current-bookings?${
+            statusFilter != "all" && `search=${statusFilter}`
+          } `
+        )
+      );
+    }
+  }, [dispatch, activeTab, statusFilter]);
 
-          return true;
-        })
-        .filter((booking) => {
-          if (statusFilter == "all") return true;
-          return booking.status === statusFilter;
-        })
-    : [];
+  const sliceBaseUrl = (url) => {
+    if (!url) return null;
+    try {
+      const base = "https://api.codecleanpros.com/api/";
+      return url.startsWith(base) ? url.replace(base, "") : url;
+    } catch {
+      return url;
+    }
+  };
 
+  const handlePageChange = (url) => {
+    const cleanUrl = sliceBaseUrl(url);
+    if (cleanUrl) {
+      dispatch(getBookingRequest(cleanUrl));
+    }
+  };
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
+    setStatusFilter(e.target.value)
   };
 
   const handleTabClick = (tab) => {
@@ -101,7 +94,6 @@ const Dashboard = () => {
     <div>
       <Navbar type="serviceprovider" />
 
-      {/* Hero Section */}
       <div
         className="flex items-center bg-cover bg-center -mt-[6em] pt-[10em] pb-[18em] z-50"
         style={{
@@ -222,8 +214,8 @@ const Dashboard = () => {
             <tbody className="text-sm text-[#3F3F3F]">
               {isLoading ? (
                 <SkeletonRows count={6} />
-              ) : filteredBookings?.length > 0 ? (
-                filteredBookings.map((row, index) => (
+              ) : bookingRequest?.data?.length > 0 ? (
+                bookingRequest?.data.map((row, index) => (
                   <tr
                     key={index}
                     className="border-t cursor-pointer"
@@ -432,7 +424,10 @@ const Dashboard = () => {
         </div>
       )}
 
-      <Pagination filteredBookings={filteredBookings} />
+      <Pagination
+        links={bookingRequest?.links}
+        onPageChange={handlePageChange}
+      />
 
       <Footer />
     </div>

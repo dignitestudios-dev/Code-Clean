@@ -11,6 +11,7 @@ import {
   clearChat,
   listenMessages,
   listenUserChats,
+  markMessagesAsSeen,
   sendMessage,
 } from "../../../redux/slices/chat.slice";
 
@@ -22,20 +23,22 @@ const Chat = () => {
 
   const loc = useLocation();
   const user = loc?.state?.user;
+  console.log(user, "userIds");
   const [selectedChatId, setSelectedChatId] = useState(null);
-  const [recieverId, setRecieverId] = useState(null);
+  const [receiverId, setReceiverId] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [input, setInput] = useState("");
-  console.log(user, "user-Data");
-  // ✅ Create chatId (same for both users)
+
   useEffect(() => {
-    setRecieverId(user?.id);
-    if (recieverId && user_data?.id) {
-      const chatId = [recieverId, user_data.id].sort().join("_");
+    if (user?.uid && user_data?.uid) {
+      setReceiverId(user.uid);
+      const chatId = [user.uid, user_data.uid].sort().join("_");
       setSelectedChatId(chatId);
-      dispatch(listenUserChats({ userId: user_data.id }));
     }
-  }, [dispatch, recieverId, user_data?.id]);
+    if (user_data?.uid) {
+      dispatch(listenUserChats({ userId: user_data.uid }));
+    }
+  }, [dispatch, user?.uid, user_data?.uid]);
 
   // ✅ Listen to messages of selected chat
   useEffect(() => {
@@ -48,14 +51,33 @@ const Chat = () => {
     }
   }, [dispatch, selectedChatId]);
 
+  // ✅ Mark messages as seen
+  useEffect(() => {
+    if (selectedChatId && user_data?.uid) {
+      dispatch(
+        markMessagesAsSeen({ chatId: selectedChatId, userId: user_data.uid })
+      );
+    }
+  }, [dispatch, selectedChatId, user_data?.uid]);
+
+  const getUnseenCount = (chatId) => {
+    console.log(messages, "messages,-->");
+    if (!messages?.[chatId]) return 0;
+    return messages[chatId].filter(
+      (msg) =>
+        msg.receiverId === user_data?.uid &&
+        !msg.seenBy?.includes(user_data?.uid)
+    ).length;
+  };
+
   const handleSendMessage = () => {
-    if (!input.trim()) return;
-    if (!recieverId && !selectedChatId) return;
+    if (!input.trim() || !receiverId || !selectedChatId) return;
+
     dispatch(
       sendMessage({
         chatId: selectedChatId,
-        senderId: user_data?.id,
-        recieverId,
+        senderId: user_data?.uid,
+        receiverId, // 👈 fixed spelling
         senderInfo: {
           name: user_data?.name,
           avatar: user_data?.avatar,
@@ -71,7 +93,7 @@ const Chat = () => {
 
     setInput("");
   };
-  console.log(selectedUser, selectedChatId, "selectedUser");
+
   return (
     <>
       <div className="bg-[#F6FAFF] min-h-screen">
@@ -83,7 +105,7 @@ const Chat = () => {
           }}
         ></div>
 
-        <div className="max-w-[1260px] mb-0 -mt-80 bottom-0 mx-auto px-6 py-10">
+        <div className="max-w-[1260px] mb-0 -mt-80 mx-auto px-6 py-10">
           <div className="flex items-center gap-2 mb-6">
             <button type="button" onClick={() => navigate(-1)}>
               <FaArrowLeft color="white" size={16} />
@@ -93,7 +115,7 @@ const Chat = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Sidebar */}
-            <div className="bg-white rounded-2xl shadow-sm">
+            <div className="bg-white rounded-2xl  p-3 shadow-sm">
               <div className="px-4 py-4 relative">
                 <CiSearch
                   className="absolute left-[20px] top-7 text-[#18181880]"
@@ -108,33 +130,43 @@ const Chat = () => {
 
               <div className="space-y-3">
                 {chats?.map((chat) => {
-                  const lastMessage =
-                    Array.isArray(messages?.[chat.id]) &&
-                    messages[chat.id][messages[chat.id].length - 1];
-
+                  // const lastMessage =
+                  //   Array.isArray(messages?.[chat.id]) &&
+                  //   messages[chat.id][messages[chat.id].length - 1];
                   const otherMemberId = chat.members.find(
-                    (id) => id !== user_data.id
+                    (id) => id !== user_data?.uid
                   );
                   const otherMember = chat.memberInfo?.[otherMemberId] || {};
-
+                  console.log(
+                    getUnseenCount(chat.id),
+                    chat.id,
+                    chat,
+                    "chatCount"
+                  );
                   return (
                     <div
                       key={chat.id}
                       onClick={() => {
                         setSelectedChatId(chat.id);
                         setSelectedUser(otherMember);
-                        setRecieverId(otherMemberId);
+                        setReceiverId(otherMemberId);
                       }}
                       className={`flex items-start gap-3 p-4 cursor-pointer transition-all ${
                         selectedChatId === chat.id
-                          ? "bg-[#E8F0FE]"
-                          : "hover:bg-gray-100"
-                      }`}
+                          ? "bg-[#E8F0FE] rounded-md"
+                          : "hover:bg-gray-100"                          
+                      }
+                       ${
+                        chat.unseenCount > 0&&"bg-[#E8F0FE] rounded-md"
+                       }
+                      `}
                     >
                       <img
                         src={
-                          import.meta.env.VITE_APP_AWS_URL +
-                            otherMember.avatar || "/default-avatar.png"
+                          otherMember.avatar
+                            ? import.meta.env.VITE_APP_AWS_URL +
+                              otherMember.avatar
+                            : "/default-avatar.png"
                         }
                         alt="avatar"
                         className="w-10 h-10 rounded-full object-cover"
@@ -144,9 +176,20 @@ const Chat = () => {
                           {otherMember.name || "Chat"}
                         </h4>
                         <p className="text-xs text-gray-600">
-                          {lastMessage?.text?.slice(0, 25) || "No messages yet"}
+                          {chat.lastMessage?.text
+                            ? `${
+                                chat.lastMessage.senderId === user_data.uid
+                                  ? "You: "
+                                  : ""
+                              }${chat.lastMessage.text.slice(0, 25)}`
+                            : "No messages yet"}
                         </p>
                       </div>
+                      {chat.unseenCount > 0 && (
+                        <span className="bg-[#208BC733] text-[#082166] text-xs font-semibold w-[20px] flex justify-center items-center h-[20px] rounded-full">
+                          {chat.unseenCount}
+                        </span>
+                      )}
                     </div>
                   );
                 })}
@@ -164,17 +207,17 @@ const Chat = () => {
                         <img
                           className="w-full h-full rounded-full"
                           src={
-                            user?.avatar
-                              ? import.meta.env.VITE_APP_AWS_URL + user.avatar
-                              : import.meta.env.VITE_APP_AWS_URL +
-                                selectedUser?.avatar
+                            selectedUser?.avatar
+                              ? import.meta.env.VITE_APP_AWS_URL +
+                                selectedUser.avatar
+                              : import.meta.env.VITE_APP_AWS_URL + user.avatar
                           }
                           alt=""
                         />
                       </div>
                       <div>
                         <h4 className="text-sm font-semibold">
-                          {user?.name || selectedUser?.name}
+                          {selectedUser?.name || user?.name}
                         </h4>
                       </div>
                     </div>
@@ -196,21 +239,21 @@ const Chat = () => {
                         <div
                           key={msg.id}
                           className={`flex flex-col ${
-                            msg.senderId === user_data?.id
+                            msg.senderId === user_data?.uid
                               ? "items-end"
                               : "items-start"
                           }`}
                         >
                           <div
                             className={`max-w-xs px-4 py-2 rounded-xl ${
-                              msg.senderId === user_data?.id
+                              msg.senderId === user_data?.uid
                                 ? "bg-gradient-to-l from-[#00034A] to-[#27A8E2] text-white rounded-tr-none"
                                 : "bg-[#E6E6E6] text-[#181818] rounded-tl-none"
                             }`}
                           >
                             {msg.text}
                           </div>
-                          <div className="text-xs text-gray-400 mt-1">
+                          <div className="text-xs text-gray-400 mt-1 flex items-center gap-1">
                             {msg.createdAt
                               ? new Date(
                                   msg.createdAt.seconds * 1000
@@ -219,6 +262,9 @@ const Chat = () => {
                                   minute: "2-digit",
                                 })
                               : ""}
+                            {msg.senderId === user_data.uid && (
+                              <span>{msg.seenBy?.length > 1 ? "✓✓" : "✓"}</span>
+                            )}
                           </div>
                         </div>
                       ))
@@ -252,8 +298,6 @@ const Chat = () => {
                   Select a chat to start messaging
                 </div>
               )}
-
-              {/* Input */}
             </div>
           </div>
         </div>

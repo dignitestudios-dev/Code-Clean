@@ -39,6 +39,7 @@ const initialState = {
   favoritesLoading: false,
   favoritesError: null,
   bookingDetail: null,
+  userPreference: null,
 };
 // ================= THUNKS =================
 
@@ -115,35 +116,38 @@ export const getPaymentMethoduser = createAsyncThunk(
 
 // Fetch user profile — page/per_page optional; agar na do to plain /profile hit hoga
 export const fetchUserProfile = createAsyncThunk(
-  'user/fetchUserProfile',
+  "user/fetchUserProfile",
   async (args, thunkAPI) => {
     try {
       const hasPaging =
         args &&
-        (typeof args.page !== 'undefined' || typeof args.per_page !== 'undefined');
+        (typeof args.page !== "undefined" ||
+          typeof args.per_page !== "undefined");
 
       const config = { signal: thunkAPI.signal };
 
       if (hasPaging) {
         config.params = {};
-        if (typeof args.page !== 'undefined') config.params.page = args.page;
-        if (typeof args.per_page !== 'undefined') config.params.per_page = args.per_page;
+        if (typeof args.page !== "undefined") config.params.page = args.page;
+        if (typeof args.per_page !== "undefined")
+          config.params.per_page = args.per_page;
       }
 
       // If hasPaging=false => no params sent (pure /profile)
-      const res = await axios.get('/profile', config);
+      const res = await axios.get("/profile", config);
       return res.data;
     } catch (error) {
       if (axios.isCancel?.(error)) {
-        return thunkAPI.rejectWithValue('Request cancelled');
+        return thunkAPI.rejectWithValue("Request cancelled");
       }
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || error?.message || 'Failed to fetch profile'
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to fetch profile"
       );
     }
   }
 );
-
 
 //Get Payment getuserfavorites
 export const getuserfavorites = createAsyncThunk(
@@ -177,9 +181,7 @@ export const unfavoriteProvider = createAsyncThunk(
 
       // Prefer an explicit boolean if the API provides it
       const isFavorite =
-        typeof data?.is_favorite === "boolean"
-          ? data.is_favorite
-          : false; // DELETE should mean not favorite
+        typeof data?.is_favorite === "boolean" ? data.is_favorite : false; // DELETE should mean not favorite
 
       return {
         providerId,
@@ -204,7 +206,7 @@ export const unfavoriteProvider = createAsyncThunk(
           isFavorite === false
             ? serverMsg || "Your favorite has been removed successfully."
             : // if server says it's still favorite, force a sane message
-            "Your favorite has been removed successfully.";
+              "Your favorite has been removed successfully.";
 
         return {
           providerId,
@@ -228,7 +230,7 @@ export const fetchCurrentBooking = createAsyncThunk(
   "/user/current-bookings",
   async (_, thunkAPI) => {
     try {
-      const res = await axios.get("/user/current-bookings");
+      const res = await axios.get(_);
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue("Failed to fetch profile");
@@ -241,7 +243,7 @@ export const fetchBookingRequest = createAsyncThunk(
   "/user/booking/requests",
   async (_, thunkAPI) => {
     try {
-      const res = await axios.get("/user/booking/requests");
+      const res = await axios.get(_);
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue("Failed to fetch profile");
@@ -260,12 +262,38 @@ export const fetchBookingDetail = createAsyncThunk(
   }
 );
 
+// User Prefrence
+
+export const fetchUserPreferences = createAsyncThunk(
+  "/user/preferences",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.get(`/user/preferences`);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch profile");
+    }
+  }
+);
+
+export const updateUserPreferences = createAsyncThunk(
+  "/user/preferences/update",
+  async (payload, thunkAPI) => {
+    try {
+      const res = await axios.post(`/user/preferences`, payload);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to update preferences");
+    }
+  }
+);
+
 //Fetch Booking History
 export const fetchBookinghistory = createAsyncThunk(
   "/user/booking-history",
   async (_, thunkAPI) => {
     try {
-      const res = await axios.get("/user/booking-history");
+      const res = await axios.get(_);
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue("Failed to fetch profile");
@@ -374,6 +402,32 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload;
+      })
+      // ----- fetch Preference -----
+      .addCase(fetchUserPreferences.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(fetchUserPreferences.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.userPreference = action.payload;
+      })
+      .addCase(fetchUserPreferences.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateUserPreferences.pending, (state) => {
+        state.bookinghistoryLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(updateUserPreferences.fulfilled, (state, action) => {
+        state.bookinghistoryLoading = false;
+      })
+      .addCase(updateUserPreferences.rejected, (state, action) => {
+        state.bookinghistoryLoading = false;
         state.error = action.payload;
       })
 
@@ -521,10 +575,13 @@ const userSlice = createSlice({
         const { providerId, message } = action.payload || {};
 
         if (providerId != null) {
-          state.favoritesData = (state.favoritesData || []).filter(p => p.id !== providerId);
+          state.favoritesData = (state.favoritesData || []).filter(
+            (p) => p.id !== providerId
+          );
         }
 
-        state.favoritesSuccess = message || "Your favorite has been removed successfully.";
+        state.favoritesSuccess =
+          message || "Your favorite has been removed successfully.";
         SuccessToast(state.favoritesSuccess);
       })
       .addCase(unfavoriteProvider.rejected, (state, action) => {
@@ -536,64 +593,63 @@ const userSlice = createSlice({
         ErrorToast(msg);
       })
 
-
       .addCase(HireServiceProvider.pending, (state) => {
         state.hireProviderLoading = true;
         state.hireProviderSuccess = null;
         state.hireProviderError = null;
       })
-    .addCase(HireServiceProvider.fulfilled, (state, action) => {
-      state.hireProviderLoading = false;
-      state.hireProviderSuccess = "Service provider hired successfully!";
-      SuccessToast(state.hireProviderSuccess);
-    })
-    .addCase(HireServiceProvider.rejected, (state, action) => {
-      state.hireProviderLoading = false;
-      state.hireProviderError = action.payload;
-      ErrorToast(state.hireProviderError);
-    })
+      .addCase(HireServiceProvider.fulfilled, (state, action) => {
+        state.hireProviderLoading = false;
+        state.hireProviderSuccess = "Service provider hired successfully!";
+        SuccessToast(state.hireProviderSuccess);
+      })
+      .addCase(HireServiceProvider.rejected, (state, action) => {
+        state.hireProviderLoading = false;
+        state.hireProviderError = action.payload;
+        ErrorToast(state.hireProviderError);
+      })
 
-    //Custom Service Data
-    .addCase(RequestCustomService.pending, (state) => {
-      state.CustomserviceproviderLoading = true;
-      state.CustomserviceproviderSuccess = null;
-      state.CustomserviceproviderError = null;
-    })
-    .addCase(RequestCustomService.fulfilled, (state, action) => {
-      state.CustomserviceproviderLoading = false;
-      state.CustomserviceproviderSuccess =
-        "Custom Service provider hired successfully!";
-      SuccessToast(state.CustomserviceproviderSuccess);
-    })
-    .addCase(RequestCustomService.rejected, (state, action) => {
-      state.CustomserviceproviderLoading = false;
-      state.CustomserviceproviderError = action.payload;
-      ErrorToast(state.CustomserviceproviderError);
-    })
+      //Custom Service Data
+      .addCase(RequestCustomService.pending, (state) => {
+        state.CustomserviceproviderLoading = true;
+        state.CustomserviceproviderSuccess = null;
+        state.CustomserviceproviderError = null;
+      })
+      .addCase(RequestCustomService.fulfilled, (state, action) => {
+        state.CustomserviceproviderLoading = false;
+        state.CustomserviceproviderSuccess =
+          "Custom Service provider hired successfully!";
+        SuccessToast(state.CustomserviceproviderSuccess);
+      })
+      .addCase(RequestCustomService.rejected, (state, action) => {
+        state.CustomserviceproviderLoading = false;
+        state.CustomserviceproviderError = action.payload;
+        ErrorToast(state.CustomserviceproviderError);
+      })
 
-    // ----- update profile -----
-    .addCase(updateUserProfile.pending, (state) => {
-      state.updateLoading = true;
-      state.updateError = null;
-      state.updateSuccess = null;
-    })
-    .addCase(updateUserProfile.fulfilled, (state, action) => {
-      state.updateLoading = false;
+      // ----- update profile -----
+      .addCase(updateUserProfile.pending, (state) => {
+        state.updateLoading = true;
+        state.updateError = null;
+        state.updateSuccess = null;
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+        state.updateLoading = false;
 
-      // Merge updated fields into userProfile
-      state.userProfile = {
-        ...(state.userProfile || {}),
-        ...(action.payload || {}),
-      };
+        // Merge updated fields into userProfile
+        state.userProfile = {
+          ...(state.userProfile || {}),
+          ...(action.payload || {}),
+        };
 
-      state.updateSuccess = "Profile updated successfully";
-      SuccessToast(state.updateSuccess);
-    })
-    .addCase(updateUserProfile.rejected, (state, action) => {
-      state.updateLoading = false;
-      state.updateError = action.payload;
-    });
-},
+        state.updateSuccess = "Profile updated successfully";
+        SuccessToast(state.updateSuccess);
+      })
+      .addCase(updateUserProfile.rejected, (state, action) => {
+        state.updateLoading = false;
+        state.updateError = action.payload;
+      });
+  },
 });
 
 export const { resetUserState } = userSlice.actions;

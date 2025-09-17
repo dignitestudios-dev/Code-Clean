@@ -45,10 +45,13 @@ const Jobdetails = () => {
   );
   const { user_data } = useSelector((state) => state.auth);
   const status = bookingRequestDetail?.status;
-  useEffect(() => {
-    dispatch(getRequestDetail(queryParams.get("type")));
+  const getRequestDetailData = async () => {
+    await dispatch(getRequestDetail(queryParams.get("type"))).unwrap();
     SetRole(Cookies.get("role"));
-  }, []);
+  };
+  useEffect(() => {
+    getRequestDetailData();
+  }, [dispatch]);
 
   const handleJob = async (id, sts) => {
     const data = {
@@ -67,6 +70,7 @@ const Jobdetails = () => {
     await dispatch(CancelBookingRequest(data));
     navigate("/dashboard");
   };
+  console.log(status, bookingRequestDetail, "status--->debug");
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar type="serviceprovider" />
@@ -228,7 +232,7 @@ const Jobdetails = () => {
                       ? "Waiting"
                       : status === "cancelled"
                       ? "cancelled"
-                      : status[0].toUpperCase() + status.slice(1)}
+                      : status && status[0]?.toUpperCase() + status.slice(1)}
                   </div>
 
                   {status !== "completed" && status !== "Pending" && (
@@ -249,6 +253,7 @@ const Jobdetails = () => {
                           state: {
                             user: {
                               id: bookingRequestDetail?.user?.id,
+                              uid: bookingRequestDetail?.user?.uid,
                               name: bookingRequestDetail?.user?.name,
                               avatar: bookingRequestDetail?.user?.avatar,
                             },

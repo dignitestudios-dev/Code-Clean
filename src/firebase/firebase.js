@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, OAuthProvider } from "firebase/auth";
-import { getFirestore,serverTimestamp,addDoc,collection,onSnapshot,orderBy,query,where,doc,updateDoc,getDoc,setDoc } from "firebase/firestore";
+import { getFirestore,serverTimestamp,addDoc,collection,onSnapshot,orderBy,query,where,doc,updateDoc,getDoc,setDoc,writeBatch,getDocs } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getMessaging } from "firebase/messaging";
 
@@ -25,6 +25,6 @@ export const storage = getStorage(app);
 
 const messaging = getMessaging(app);
 
-export { messaging,collection,addDoc,serverTimestamp,onSnapshot,orderBy,query,where,doc,updateDoc,getDoc,setDoc };
+export { messaging,collection,addDoc,serverTimestamp,onSnapshot,orderBy,query,where,doc,updateDoc,getDoc,setDoc,writeBatch,getDocs };
 
 export default app; // Export the app for use in other parts of your app
