@@ -63,45 +63,89 @@ const Serviceprovider = () => {
     });
 
     // Function to handle place change
+    // const handlePlaceChangeds = () => {
+    //     if (autocomplete) {
+    //         const place = autocomplete.getPlace();
+    //         setLocations(place.formatted_address); // Set the location with the formatted address
+    //         // Geocoding to get lat, long, city, state, country
+    //         const geocoder = new window.google.maps.Geocoder();
+    //         geocoder.geocode({ address: place.formatted_address }, (results, status) => {
+    //             if (status === 'OK' && results[0]) {
+    //                 const addressComponents = results[0].address_components;
+    //                 const lat = results[0].geometry.location.lat();
+    //                 const lng = results[0].geometry.location.lng();
+
+    //                 // Extract city, state, country
+    //                 let city = '';
+    //                 let state = '';
+    //                 let country = '';
+
+    //                 for (let i = 0; i < addressComponents.length; i++) {
+    //                     const component = addressComponents[i];
+    //                     if (component.types.includes('locality')) {
+    //                         city = component.long_name;
+    //                     } else if (component.types.includes('administrative_area_level_1')) {
+    //                         state = component.long_name;
+    //                     } else if (component.types.includes('country')) {
+    //                         country = component.long_name;
+    //                     }
+    //                 }
+    //                 setFormData(prev => ({
+    //                     ...prev,
+    //                     lat,
+    //                     long: lng,
+    //                     city,
+    //                     state,
+    //                     country,
+    //                 }));
+    //             }
+    //         });
+    //     }
+    // };
+
+
     const handlePlaceChangeds = () => {
         if (autocomplete) {
             const place = autocomplete.getPlace();
-            setLocations(place.formatted_address); // Set the location with the formatted address
-            // Geocoding to get lat, long, city, state, country
-            const geocoder = new window.google.maps.Geocoder();
-            geocoder.geocode({ address: place.formatted_address }, (results, status) => {
-                if (status === 'OK' && results[0]) {
-                    const addressComponents = results[0].address_components;
-                    const lat = results[0].geometry.location.lat();
-                    const lng = results[0].geometry.location.lng();
+            if (place && place.formatted_address) {
+                setLocations(place.formatted_address); // Set the location with the formatted address
 
-                    // Extract city, state, country
-                    let city = '';
-                    let state = '';
-                    let country = '';
+                // Geocoding to get lat, long, city, state, country
+                const geocoder = new window.google.maps.Geocoder();
+                geocoder.geocode({ address: place.formatted_address }, (results, status) => {
+                    if (status === 'OK' && results[0]) {
+                        const addressComponents = results[0].address_components;
+                        const lat = results[0].geometry.location.lat();
+                        const lng = results[0].geometry.location.lng();
 
-                    for (let i = 0; i < addressComponents.length; i++) {
-                        const component = addressComponents[i];
-                        if (component.types.includes('locality')) {
-                            city = component.long_name;
-                        } else if (component.types.includes('administrative_area_level_1')) {
-                            state = component.long_name;
-                        } else if (component.types.includes('country')) {
-                            country = component.long_name;
-                        }
+                        let city = '';
+                        let state = '';
+                        let country = '';
+
+                        // Loop through address components and extract city, state, country
+                        addressComponents.forEach(component => {
+                            const types = component.types;
+                            if (types.includes('locality')) city = component.long_name;
+                            if (types.includes('administrative_area_level_1')) state = component.long_name;
+                            if (types.includes('country')) country = component.long_name;
+                        });
+
+                        // Update the form data with location details
+                        setFormData(prev => ({
+                            ...prev,
+                            lat,
+                            long: lng,
+                            city,
+                            state,
+                            country,
+                            location: place.formatted_address, // Set the full address in form data
+                        }));
                     }
-                    setFormData(prev => ({
-                        ...prev,
-                        lat,
-                        long: lng,
-                        city,
-                        state,
-                        country,
-                    }));
-                }
-            });
+                });
+            }
         }
     };
+
 
     const handleSubmit = () => {
         const customserviceData = {
@@ -131,9 +175,14 @@ const Serviceprovider = () => {
     const { allservices, paymentMethoduser } = useSelector((s) => s.user);
 
 
+    // const handleOnLoad = (autocomplete) => {
+    //     setAutocomplete(autocomplete);
+    // };
+
     const handleOnLoad = (autocomplete) => {
         setAutocomplete(autocomplete);
     };
+
 
     const handleNextStep = () => {
         // Check if the required fields are filled
@@ -245,7 +294,7 @@ const Serviceprovider = () => {
     };
 
     useEffect(() => {
-          dispatch(fetchallservices("/users/providers")); // pass page to API
+        dispatch(fetchallservices("/users/providers")); // pass page to API
     }, [dispatch]);
 
     const alldata = allservices?.data;
@@ -279,11 +328,39 @@ const Serviceprovider = () => {
     console.log(data, "filtered services data");
 
 
+    // const handleInputChange = (e) => {
+    //     const { name, value, files } = e.target;
+    //     if (name === "file") {
+    //         setFormData({ ...formData, file: files[0] });
+    //     } else {
+    //         setFormData({ ...formData, [name]: value });
+    //     }   
+    // };
+
+
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
-        if (name === "file") {
+
+        if (name === 'duration') {
+            // Allow only numeric input for duration
+            const numericValue = value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+
+            // Validate the duration
+            if (parseInt(numericValue) > 15 && numericValue !== '') {
+                ErrorToast('Duration cannot be more than 15');
+                return; // Prevent further state update if validation fails
+            }
+
+            // Update the form data with the validated duration
+            setFormData({
+                ...formData,
+                [name]: numericValue, // Only update numeric value
+            });
+        } else if (name === 'file') {
+            // Handle file input (e.g., updating the file in form data)
             setFormData({ ...formData, file: files[0] });
         } else {
+            // Handle other input fields normally
             setFormData({ ...formData, [name]: value });
         }
     };
@@ -555,6 +632,55 @@ const Serviceprovider = () => {
     }, [paymentMethoduser])
 
 
+    const handleFileChangeimage = (e) => {
+        const selectedFiles = Array.from(e.target.files); // Get selected files
+
+        // Check if the number of files exceeds 3
+        if (selectedFiles.length + files.length > 3) {
+            ErrorToast("You can upload a maximum of 3 images.");
+            return; // Prevent further action if the limit is exceeded
+        }
+
+        const updatedFiles = selectedFiles.map((file) => {
+            const fileType = file.type.split("/")[0]; // Check file type (image)
+            let preview = null;
+
+            return new Promise((resolve) => {
+                if (fileType === "image") {
+                    // If it's an image, create a preview
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        preview = reader.result; // Base64 image preview
+                        resolve({
+                            file, // Actual file object
+                            preview, // Preview for UI
+                            name: file.name,
+                            size: `${(file.size / 1024).toFixed(3)}KB`, // File size in KB
+                        });
+                    };
+                    reader.readAsDataURL(file); // Read image as base64
+                } else {
+                    resolve({
+                        file,
+                        preview: null,
+                        name: file.name,
+                        size: `${(file.size / 1024).toFixed(3)}KB`,
+                    });
+                }
+            });
+        });
+
+        // Wait for all promises to resolve before updating the state
+        Promise.all(updatedFiles).then((resolvedFiles) => {
+            setFiles((prevFiles) => [...prevFiles, ...resolvedFiles]);
+        });
+    };
+
+    const handleRemoveFileimage = (index) => {
+        setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index)); // Remove file at the specified index
+    };
+
+
     const { dailyAvailability } = useSelector((state) => state.user)
 
     useEffect(() => {
@@ -563,13 +689,13 @@ const Serviceprovider = () => {
 
     const [todaytime, setTodaytime] = useState("");
 
-useEffect(() => {
-    if (dailyAvailability) {
-        // Filter out the available slots
-        const availableSlots = dailyAvailability?.slots?.filter(slot => slot.status === "Available");
-        setTodaytime(availableSlots || []); // Set only available slots
-    }
-}, [dailyAvailability]);
+    useEffect(() => {
+        if (dailyAvailability) {
+            // Filter out the available slots
+            const availableSlots = dailyAvailability?.slots?.filter(slot => slot.status === "Available");
+            setTodaytime(availableSlots || []); // Set only available slots
+        }
+    }, [dailyAvailability]);
 
     console.log(todaytime, "dailyAvailability")
 
@@ -906,14 +1032,52 @@ useEffect(() => {
                             </div>
 
                             <div className='space-y-3'>
-                                <label className="font-semibold text-gray-700">Upload Images <span className="text-sm text-gray-400">(Optional)</span></label>
+                                <label className="font-semibold text-gray-700">
+                                    Upload Images <span className="text-sm text-gray-400">(Optional)</span>
+                                </label>
                                 <div className="border-dashed border-2 border-gray-300 p-20 rounded-lg text-center cursor-pointer">
-                                    <input type="file" accept="image/png, image/jpeg" onChange={handleFileChange} className="hidden" id="fileInput" />
+                                    <input
+                                        type="file"
+                                        accept="image/png, image/jpeg"
+                                        onChange={handleFileChangeimage}
+                                        className="hidden"
+                                        id="fileInput"
+                                        multiple
+                                    />
                                     <label htmlFor="fileInput" className="cursor-pointer text-gray-500">
                                         Upload "document name"<br />
-                                        <span className="text-xs text-gray-400">Upto 20mbps JPG, PNG</span>
+                                        <span className="text-xs text-gray-400">Up to 3 images (JPG, PNG)</span>
                                     </label>
                                 </div>
+
+                                {/* Preview Images */}
+                                {files.length > 0 && (
+                                    <div className="grid grid-cols-3 gap-4 mt-4">
+                                        {files.map((file, index) => (
+                                            <div key={index} className="relative">
+                                                <img
+                                                    src={file.preview}
+                                                    alt={file.name}
+                                                    className="h-[120px] w-[120px] object-cover rounded-lg"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleRemoveFileimage(index)}
+                                                    className="absolute top-0 right-0 bg-white p-1 rounded-full text-gray-500 hover:text-red-500"
+                                                >
+                                                    <MdDelete />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Optionally, display a message if there are already 3 images */}
+                                {files.length === 3 && (
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        You can upload a maximum of 3 images.
+                                    </p>
+                                )}
                             </div>
 
                             <div>
@@ -1490,7 +1654,6 @@ useEffect(() => {
                             <div>
                                 <label className="block mb-1 font-medium">Location*</label>
                                 <div className="relative mt-1">
-
                                     <Autocomplete onLoad={handleOnLoad} onPlaceChanged={handlePlaceChangeds}>
                                         <input
                                             type="text"
@@ -1542,6 +1705,7 @@ useEffect(() => {
                                             required
                                             className="w-full py-2 ml-1 focus:outline-none"
                                         />
+
                                     </div>
                                 </div>
                             </div>
