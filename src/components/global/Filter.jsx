@@ -158,7 +158,7 @@ export default function Filter({ endPoint, setIsFilter }) {
               miles: 20,
             })
             if (endPoint=="providers/filter") {
-              dispatch(fetchallservices())
+              dispatch(fetchallservices("/users/providers"))
             }else{
               dispatch(getDiscoverJobs("/provider/discover/jobs"))
             }
