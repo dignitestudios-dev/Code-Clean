@@ -198,13 +198,13 @@ const BroadcastServiceRequests = ({ setCustombooking, setIsOpen, setIsRestrict }
                                                 </div>
                                             </div>
                                             <div className="flex gap-2">
-                                                <button
+                                                {/* <button
                                                     onClick={() => setCustombooking?.(true)}
                                                     className="p-2 bg-gradient-to-r from-[#00034A] to-[#27A8E2] rounded-lg transition-colors"
                                                     title="Edit"
                                                 >
                                                     <CiEdit color="white" className="w-5 h-5" />
-                                                </button>
+                                                </button> */}
                                                 <button
                                                     onClick={() => handleDelete(req)}
                                                     className={`p-2 rounded-lg transition-colors ${canDelete(req) ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-500'
@@ -242,7 +242,7 @@ const BroadcastServiceRequests = ({ setCustombooking, setIsOpen, setIsRestrict }
                                                     navigate(
                                                         req.booking_id
                                                             ? `/service-detail/${req.booking_id}`
-                                                            : `/broadcast-request/${req.request_id}`
+                                                            : `/service-detail/${req.request_id}`
                                                     )
                                                 }
                                                 className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white p-3 rounded-lg hover:opacity-90 transition"
