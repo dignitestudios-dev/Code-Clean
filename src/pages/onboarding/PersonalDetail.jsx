@@ -1,26 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
-import { useLogin } from "../../hooks/api/Post";
 import { useFormik } from "formik";
 import { personalDetailsValues } from "../../init/authentication/AuthValues";
 import { personalDetailsSchema } from "../../schema/authentication/AuthSchema";
-import { MapImg } from "../../assets/export";
 import { useDispatch, useSelector } from "react-redux";
 import {
   CompleteUserProfile,
   resetAuthState,
 } from "../../redux/slices/auth.slice";
 import { ErrorToast } from "../../components/global/Toaster";
+import { Autocomplete, GoogleMap, Marker } from "@react-google-maps/api";
 
 export default function PersonalDetail({ handleNext }) {
-  const { loading, postData } = useLogin();
-  const [previewImage, setPreviewImage] = useState(); // Default image
-  const { isLoading, error, userData, success, accessToken } = useSelector(
-    (state) => state.auth
-  ); // Get loading, error, and user data from Redux
+  const [previewImage, setPreviewImage] = useState();
+  const [mapCenter, setMapCenter] = useState({ lat: 24.8607, lng: 67.0011 }); // Default Karachi
+  const { isLoading, error } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
+  const autocompleteRef = useRef(null);
+
   const formik = useFormik({
     initialValues: personalDetailsValues,
     validationSchema: personalDetailsSchema,
@@ -29,27 +28,22 @@ export default function PersonalDetail({ handleNext }) {
     onSubmit: async (values, action) => {
       try {
         const formData = new FormData();
-
-        // Append form values
         formData.append("name", values.fullName);
         formData.append("phone_number", values.phone);
         formData.append("location", values.location);
+        formData.append("country", values.country);
+        formData.append("state", values.state);
+        formData.append("city", values.city);
 
-        // Append file/image
         if (values.profilePic) {
           formData.append("avatar", values.profilePic);
         }
 
-        // Append extra fields
-        formData.append("lat", 24.8607);
-        formData.append("long", 67.0011);
-        formData.append("state", "Florida");
-        formData.append("country", "Us");
-        formData.append("city", "Miami");
+        // Send actual selected lat/lng
+        formData.append("lat", mapCenter.lat);
+        formData.append("long", mapCenter.lng);
 
-        // Dispatch with FormData
         await dispatch(CompleteUserProfile(formData)).unwrap();
-
         handleNext();
         action.resetForm();
       } catch (err) {
@@ -67,16 +61,16 @@ export default function PersonalDetail({ handleNext }) {
     errors,
     touched,
   } = formik;
+
   useEffect(() => {
-    dispatch(resetAuthState()); // reset success, error, and loading
+    dispatch(resetAuthState());
     return () => dispatch(resetAuthState());
   }, [dispatch]);
 
-  // useEffect for Error Toast
   useEffect(() => {
     if (error) {
-      ErrorToast(error); // Show error toast if there's an error
-      dispatch(resetAuthState()); // clear error after toast
+      ErrorToast(error);
+      dispatch(resetAuthState());
     }
   }, [error]);
 
@@ -86,6 +80,50 @@ export default function PersonalDetail({ handleNext }) {
       setFieldValue("profilePic", file);
       const imageUrl = URL.createObjectURL(file);
       setPreviewImage(imageUrl);
+    }
+  };
+
+  const handlePlaceChanged = () => {
+    if (autocompleteRef.current) {
+      const place = autocompleteRef.current.getPlace();
+
+      if (place?.formatted_address) {
+        setFieldValue("location", place.formatted_address);
+
+        // update map center
+        if (place.geometry?.location) {
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+          setMapCenter({ lat, lng });
+        }
+
+        // Extract city, state, country
+        let city = "";
+        let state = "";
+        let country = "";
+
+        if (place.address_components) {
+          for (const component of place.address_components) {
+            if (component.types.includes("locality")) {
+              city = component.long_name;
+            }
+            if (
+              component.types.includes("administrative_area_level_1") ||
+              component.types.includes("administrative_area_level_2")
+            ) {
+              state = component.long_name;
+            }
+            if (component.types.includes("country")) {
+              country = component.long_name;
+            }
+          }
+        }
+
+        // Save extra fields into Formik
+        setFieldValue("city", city);
+        setFieldValue("state", state);
+        setFieldValue("country", country);
+      }
     }
   };
 
@@ -105,6 +143,7 @@ export default function PersonalDetail({ handleNext }) {
         }}
         className="w-full mx-auto  md:w-[393px] mt-5 flex flex-col justify-start items-start gap-4"
       >
+        {/* Profile Picture Upload */}
         <div>
           <label htmlFor="profilePic" className="cursor-pointer">
             <div className="flex items-center gap-4">
@@ -151,6 +190,7 @@ export default function PersonalDetail({ handleNext }) {
           )}
         </div>
 
+        {/* Full Name */}
         <Input
           text="Full Name"
           name="fullName"
@@ -163,6 +203,7 @@ export default function PersonalDetail({ handleNext }) {
           touched={touched.fullName}
         />
 
+        {/* Phone */}
         <Input
           text="Phone Number"
           name="phone"
@@ -180,19 +221,44 @@ export default function PersonalDetail({ handleNext }) {
           touched={touched.phone}
         />
 
-        <Input
-          text="Location"
-          name="location"
-          type="text"
-          holder="Enter address here"
-          value={values.location}
-          handleBlur={handleBlur}
-          handleChange={handleChange}
-          error={errors.location}
-          touched={touched.location}
-        />
+        {/* Location with Google Autocomplete */}
+        <div className="w-full">
+          <label className="block mb-1 text-sm font-medium">Location</label>
 
-        <img src={MapImg} alt="map.png" />
+          <Autocomplete
+            onLoad={(ref) => (autocompleteRef.current = ref)}
+            onPlaceChanged={handlePlaceChanged}
+          >
+            <input
+              type="text"
+              name="location"
+              defaultValue={values.location} // ✅ use defaultValue instead of value
+              onBlur={handleBlur}
+              placeholder="Enter address here"
+              className="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </Autocomplete>
+
+          {/* Google Map replaces static image */}
+          <div className="mt-3 w-full h-[100px] rounded-[7px]  md:h-[150px]">
+            <GoogleMap
+              center={mapCenter}
+              zoom={10}
+              mapContainerStyle={{
+                width: "100%",
+                height: "100%",
+                borderRadius: "7px",
+              }}
+            >
+              <Marker position={mapCenter} />
+            </GoogleMap>
+          </div>
+
+          {errors.location && touched.location && (
+            <p className="text-red-500 text-sm mt-1">{errors.location}</p>
+          )}
+        </div>
+
         <div className="w-[100%] mx-auto">
           <Button text="Next" loading={isLoading} />
         </div>

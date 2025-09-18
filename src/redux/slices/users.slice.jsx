@@ -9,9 +9,10 @@ const initialState = {
   userProfile: null,
   allservices: null,
   currentbookingdata: null,
-  requestDetails:null,
+  requestDetails: null,
   error: null,
-  requestisLoading:false,
+  dailyAvailability:null,
+  requestisLoading: false,
   success: null,
   updateLoading: false,
   updateError: null,
@@ -86,20 +87,18 @@ export const RequestCustomService = createAsyncThunk(
   }
 );
 
-
 // Fetch request details based on ID
 export const fetchRequestDetails = createAsyncThunk(
-  '/user/requests/{id}/details', // Action type
+  "/user/requests/{id}/details", // Action type
   async (id, thunkAPI) => {
     try {
       const res = await axios.get(`/user/requests/${id}/details`); // API request to fetch the request details
       return res.data; // Return the response data
     } catch (error) {
-      return thunkAPI.rejectWithValue('Failed to fetch request details'); // Handle rejection
+      return thunkAPI.rejectWithValue("Failed to fetch request details"); // Handle rejection
     }
   }
 );
-
 
 //Get Payment Method
 export const getPaymentMethoduser = createAsyncThunk(
@@ -130,6 +129,19 @@ export const getPaymentMethoduser = createAsyncThunk(
 //     }
 //   }
 // );
+
+// Fetch daily availability for a provider
+export const fetchDailyAvailability = createAsyncThunk(
+  "/user/availability", // Action type
+  async (providerId, thunkAPI) => {
+    try {
+      const res = await axios.get(`/availability?provider_id=${providerId}`); // API request to fetch the daily availability
+      return res.data; // Return the response data (availability)
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch daily availability");
+    }
+  }
+);
 
 // Fetch user profile — page/per_page optional; agar na do to plain /profile hit hoga
 export const fetchUserProfile = createAsyncThunk(
@@ -325,6 +337,17 @@ export const fetchallservices = createAsyncThunk(
     }
   }
 );
+export const filterAllService = createAsyncThunk(
+  "/search/providers",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.post("/search/providers", _);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch services");
+    }
+  }
+);
 export const CancelBookingRequest = createAsyncThunk(
   "/user/booking/cancel",
   async (payload, thunkAPI) => {
@@ -500,6 +523,20 @@ const userSlice = createSlice({
         state.allservicesloading = false;
         state.allserviceserror = action.payload;
       })
+      .addCase(filterAllService.pending, (state) => {
+        state.allservicesloading = true;
+        state.allserviceserror = null;
+        state.allservicessuccess = null;
+      })
+      .addCase(filterAllService.fulfilled, (state, action) => {
+        state.allservicesloading = false;
+        state.allservices = action.payload;
+        state.allservicessuccess = "Successfully fetched services!";
+      })
+      .addCase(filterAllService.rejected, (state, action) => {
+        state.allservicesloading = false;
+        state.allserviceserror = action.payload;
+      })
 
       // ----- Fetch all Current Booking -----
       .addCase(fetchCurrentBooking.pending, (state) => {
@@ -557,6 +594,22 @@ const userSlice = createSlice({
       .addCase(getPaymentMethoduser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+
+      //GET FetchDailyAvailability
+       .addCase(fetchDailyAvailability.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(fetchDailyAvailability.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.dailyAvailability = action.payload; // Store the availability response in the state
+        state.success = "Successfully fetched daily availability!";
+      })
+      .addCase(fetchDailyAvailability.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload; // Handle the error state
       })
 
       // ----- Fetch all Current Booking -----
@@ -667,7 +720,7 @@ const userSlice = createSlice({
         ErrorToast(state.CustomserviceproviderError);
       })
 
-       .addCase(fetchRequestDetails.pending, (state) => {
+      .addCase(fetchRequestDetails.pending, (state) => {
         state.requestisLoading = true; // Set loading state to true
         state.error = null; // Clear any previous errors
         state.success = null; // Clear any previous success messages

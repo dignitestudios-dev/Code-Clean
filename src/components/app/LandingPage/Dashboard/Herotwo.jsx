@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { HeroBg } from "../../../../assets/export";
 import { CiSearch } from "react-icons/ci";
 import { useDispatch } from "react-redux";
-import { fetchallservices } from "../../../../redux/slices/users.slice";
+import { filterAllService } from "../../../../redux/slices/users.slice";
 
 export default function Herotwo() {
   const dispatch = useDispatch();
@@ -11,11 +11,7 @@ export default function Herotwo() {
   const handleSearch = () => {
     if (!searchTerm.trim()) return;
     // ✅ Pass search query
-    dispatch(
-      fetchallservices(
-        `/users/providers?search=${encodeURIComponent(searchTerm)}`
-      )
-    );
+    dispatch(filterAllService({ search: searchTerm }));
   };
 
   const handleKeyPress = (e) => {
