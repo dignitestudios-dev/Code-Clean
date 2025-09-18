@@ -8,11 +8,14 @@ import JoinAs from "../../../components/app/LandingPage/JoinAs";
 import Hero from "../../../components/app/LandingPage/Hero";
 import { HeroBg } from "../../../assets/export";
 import LandingNavbar from "../../../components/app/LandingPage/Navbar";
+import Navbar from "../../../components/layout/Navbar";
+import { useSelector } from "react-redux";
 
 export default function LandingPage() {
+  const { user_data } = useSelector((state) => state?.auth);
   return (
     <div>
-      <LandingNavbar />
+      {user_data ? <Navbar /> : <LandingNavbar />}
       <div className="relative -mt-[6em] pt-[13em] pb-[10em]">
         <div
           className="absolute inset-0 bg-cover bg-center "

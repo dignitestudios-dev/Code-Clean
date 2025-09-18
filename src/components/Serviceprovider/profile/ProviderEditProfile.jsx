@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Modal from "react-modal";
-import { useLogin } from "../../../hooks/api/Post";
 import { useFormik } from "formik";
 import { updateProviderDetailsSchema } from "../../../schema/authentication/AuthSchema";
 import { MapImg, usertwo } from "../../../assets/export";
@@ -12,11 +11,10 @@ import { HiOutlineXMark } from "react-icons/hi2";
 import { FiTrash2 } from "react-icons/fi";
 import SuccessModal from "../../global/SuccessModal";
 import { useDispatch, useSelector } from "react-redux";
-import { UpdateProviderProfile } from "../../../redux/slices/auth.slice";
+import { fetchUserProfile, UpdateProviderProfile } from "../../../redux/slices/auth.slice";
 
 export default function ProviderEditProfile({ isOpen, setIsOpen }) {
-  const { loading } = useLogin();
-  const { user_data } = useSelector((state) => state?.auth);
+  const { user_data, isLoading } = useSelector((state) => state?.auth);
   const [previewImage, setPreviewImage] = useState(
     `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${user_data?.avatar}`
   );
@@ -71,7 +69,7 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
             formData.append(`availability[0][days][${index}]`, day);
           });
         }
-        await dispatch(UpdateProviderProfile(formData)).unwrap();
+        await dispatch(UpdateProviderProfile(formData)).unwrap();      
         setIsOpen(!isOpen);
         setSuccessModal(true);
       } catch (err) {
@@ -296,7 +294,7 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
             </div>
 
             <div className="mt-3 w-[360px] mx-auto">
-              <Button text="Update" type={"submit"} loading={loading} />
+              <Button text="Update" type={"submit"} loading={isLoading} />
             </div>
           </form>
 

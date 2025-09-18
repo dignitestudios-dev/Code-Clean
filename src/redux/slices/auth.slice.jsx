@@ -28,7 +28,7 @@ const initialState = {
 export const login = createAsyncThunk(
   "/login",
   async (credentials, thunkAPI) => {
-    console.log(credentials,"after---login")
+    console.log(credentials, "after---login");
     try {
       const res = await axios.post("/login", credentials);
       const {
@@ -464,6 +464,39 @@ export const CreateVerification = createAsyncThunk(
     }
   }
 );
+export const fetchUserProfile = createAsyncThunk(
+  "user/fetchUserProfile",
+  async (args, thunkAPI) => {
+    try {
+      const hasPaging =
+        args &&
+        (typeof args.page !== "undefined" ||
+          typeof args.per_page !== "undefined");
+
+      const config = { signal: thunkAPI.signal };
+
+      if (hasPaging) {
+        config.params = {};
+        if (typeof args.page !== "undefined") config.params.page = args.page;
+        if (typeof args.per_page !== "undefined")
+          config.params.per_page = args.per_page;
+      }
+
+      // If hasPaging=false => no params sent (pure /profile)
+      const res = await axios.get("/profile", config);
+      return res.data;
+    } catch (error) {
+      if (axios.isCancel?.(error)) {
+        return thunkAPI.rejectWithValue("Request cancelled");
+      }
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to fetch profile"
+      );
+    }
+  }
+);
 
 // VERIFY EMAIL
 export const verifyEmail = createAsyncThunk(
@@ -559,6 +592,32 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // LOGIN
+      // ----- fetch profile -----
+      .addCase(fetchUserProfile.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(fetchUserProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user_data = action.payload;
+      })
+      .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(UpdateCertificate.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(UpdateCertificate.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(UpdateCertificate.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       .addCase(login.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -613,7 +672,12 @@ const authSlice = createSlice({
       .addCase(UpdateProviderProfile.fulfilled, (state, action) => {
         state.isLoading = false;
         state.success = "Profile Update Successfully";
-        state.user_data = action.payload;
+
+        // Optional: optimistic update (merge with old state)
+        state.user_data = {
+          ...(state.user_data || {}),
+          ...(action.payload || {}),
+        };
       })
       .addCase(UpdateProviderProfile.rejected, (state, action) => {
         state.isLoading = false;

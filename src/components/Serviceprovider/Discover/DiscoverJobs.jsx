@@ -13,7 +13,11 @@ import { CiLocationOn, CiSearch } from "react-icons/ci";
 import Filter from "../../global/Filter";
 import { LuSettings2 } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
-import { getDiscoverJobs } from "../../../redux/slices/provider.slice";
+import {
+  getDiscoverJobs,
+  getFilteredJobs,
+} from "../../../redux/slices/provider.slice";
+import Pagination from "../../global/Pagination";
 const getStatusColor = (status) => {
   switch (status?.toLowerCase()) {
     case "pending":
@@ -31,54 +35,29 @@ export default function DiscoverJobs() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilter, setIsFilter] = useState(false);
   const dispatch = useDispatch();
-  const { discoverJobs } = useSelector((state) => state?.provider);
+  const { discoverJobs, isLoading } = useSelector((state) => state?.provider);
   useEffect(() => {
-    dispatch(getDiscoverJobs());
+    dispatch(getDiscoverJobs("provider/discover/jobs"));
   }, []);
-  const serviceRequests = [
-    {
-      id: 1,
-      title: "Deep Cleaning for a 2-Bedroom Apartment",
-      location: "Downtown, Los Angeles",
-      status: "Avaliable",
-      statusColor: "bg-green-100 text-green-600",
-      description:
-        "Looking for eco-friendly cleaning products. 2 Bedrooms, 1 Bathroom, Kitchen, and Living Room. Vacuuming, mopping, and dusting. Kitchen and bathroom sanitization. Window and glass cleaning expected duration: 4-5 hours",
-      price: "$300",
-      date: "Saturday, 10 AM",
-      images: [ServiceImg1, ServiceImg2, ServiceImg3],
-    },
-    {
-      id: 2,
-      title: "Move-Out Cleaning for a 1-Bedroom Apartment",
-      location: "Miami, FL",
-      status: "Already taken",
-      statusColor: "bg-[#FF990026] text-[#FF9900]",
-      description:
-        "Need this done before the lease ends next week. Deep cleaning of all rooms, Carpet steam cleaning, Wall and cabinet cleaning, Kitchen and bathroom sanitization.",
-      price: "$250",
-      date: "Sunday, 2 PM",
-      images: [],
-    },
-    {
-      id: 3,
-      title: "Cleaning for a Small Office (10 Desks)",
-      location: "Miami, FL",
-      status: "Avaliable",
-      statusColor: "bg-green-100 text-green-600",
-      description:
-        "Need this done before the lease ends next week. Deep cleaning of all rooms, Carpet steam cleaning, Wall and cabinet cleaning, Kitchen and bathroom sanitization.",
-      price: "$200",
-      date: "Sunday, 2 PM",
-      images: [],
-    },
-  ];
 
-  const filteredRequests = serviceRequests.filter(
-    (request) =>
-      request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.location.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const sliceBaseUrl = (url) => {
+    if (!url) return null;
+    try {
+      const base = "https://api.codecleanpros.com/api/";
+      return url.startsWith(base) ? url.replace(base, "") : url;
+    } catch {
+      return url;
+    }
+  };
+
+  const handlePageChange = (url) => {
+    const cleanUrl = sliceBaseUrl(url);
+    if (cleanUrl) {
+      dispatch(getDiscoverJobs(cleanUrl));
+    }
+  };
+  console.log(discoverJobs, "jobss");
+
   return (
     <div>
       <Navbar />
@@ -104,10 +83,21 @@ export default function DiscoverJobs() {
                 </div>
                 <input
                   type="text"
+                  value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={async (e) => {
+                    if (e.key === "Enter") {
+                      await dispatch(
+                        getDiscoverJobs(
+                          `provider/discover/jobs?search=${searchTerm}`
+                        )
+                      );
+                    }
+                  }}
                   className="bg-[#FFFFFF4D] blur-[40] outline-none p-2 px-7 rounded-[8px] text-white"
                 />
               </div>
+
               <button
                 onClick={() => setIsFilter(!isFilter)}
                 className="bg-[#FFFFFF4D] text-white p-3 rounded-md"
@@ -116,105 +106,158 @@ export default function DiscoverJobs() {
               </button>
             </div>
             <div className="relative top-12 left-20">
-              {isFilter && <Filter setIsFilter={setIsFilter} />}
+              {isFilter && <Filter endPoint={""} setIsFilter={setIsFilter} />}
             </div>
           </div>
         </div>
 
         <div className="bg-[#F9FAFA] shadow-lg mb-48 rounded-[8px] p-10 mt-3">
           {/* Service Request Cards */}
-          <div className="space-y-6">
-            {discoverJobs?.map((request) => (
-              <div
-                key={request.request_id}
-                className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
-              >
-                <div className="p-6">
-                  {/* Header with title and actions */}
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h2 className="text-xl font-semibold text-gray-900">
-                          {request.title}
-                        </h2>
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                            request.status
-                          )}`}
-                        >
-                          {request.status}
-                        </span>
-                      </div>
-                      <div className="flex items-center text-gray-500 text-sm">
-                        <CiLocationOn color="#00034A" />
-                        {request.location}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Images */}
-                  {request.images && request.images.length > 0 && (
-                    <div className="flex gap-3 mb-4">
-                      {request.images.map((image, index) => (
-                        <div
-                          key={index}
-                          className="w-20 h-15 bg-gray-200 rounded-lg overflow-hidden"
-                        >
-                          <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400"></div>
+          <div className="space-y-6 mb-4">
+            {isLoading ? (
+              // Skeleton loader (show while fetching data)
+              Array.from({ length: 3 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden animate-pulse"
+                >
+                  <div className="p-6">
+                    {/* Title + Status */}
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="h-6 w-40 bg-gray-300 rounded"></div>
+                          <div className="h-6 w-16 bg-gray-200 rounded-full"></div>
                         </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Description */}
-                  <p className="text-gray-600 mb-6 leading-relaxed">
-                    {request.description}
-                  </p>
-
-                  {/* Price and Date */}
-                  <div className="flex justify-between items-center">
-                    <div className="flex gap-12">
-                      <div>
-                        <p className="text-sm text-gray-500 mb-1">
-                          Proposed Price
-                        </p>
-                        <p className="text-xl font-semibold text-gray-900">
-                          {request.amount}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-500 mb-1">
-                          Preferred Date & Time
-                        </p>
-                        <p className="text-lg font-medium text-gray-900">
-                          {request.date}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 bg-gray-200 rounded"></div>
+                          <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                        </div>
                       </div>
                     </div>
-                    <button
-                      onClick={() =>
-                        navigate(
-                          `/discover-detail/${request.request_id}?id=${request.request_id}`
-                        )
-                      }
-                      className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white p-3 rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      <FaChevronRight className="w-5 h-5" />
-                    </button>
+
+                    {/* Images placeholder */}
+                    <div className="flex gap-3 mb-4">
+                      <div className="w-20 h-16 bg-gray-200 rounded-lg"></div>
+                      <div className="w-20 h-16 bg-gray-200 rounded-lg"></div>
+                      <div className="w-20 h-16 bg-gray-200 rounded-lg"></div>
+                    </div>
+
+                    {/* Description */}
+                    <div className="space-y-2 mb-6">
+                      <div className="h-4 bg-gray-200 rounded w-full"></div>
+                      <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                    </div>
+
+                    {/* Price & Date */}
+                    <div className="flex justify-between items-center">
+                      <div className="flex gap-12">
+                        <div>
+                          <div className="h-4 bg-gray-200 w-24 mb-2 rounded"></div>
+                          <div className="h-6 bg-gray-300 w-16 rounded"></div>
+                        </div>
+                        <div>
+                          <div className="h-4 bg-gray-200 w-32 mb-2 rounded"></div>
+                          <div className="h-6 bg-gray-300 w-20 rounded"></div>
+                        </div>
+                      </div>
+                      <div className="w-10 h-10 bg-gray-300 rounded-lg"></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))
+            ) : discoverJobs?.data?.length > 0 ? (
+              discoverJobs?.data.map((request) => (
+                <div
+                  key={request.request_id}
+                  className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+                >
+                  <div className="p-6">
+                    {/* Header with title and actions */}
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h2 className="text-xl font-semibold text-gray-900">
+                            {request.title}
+                          </h2>
+                          <span
+                            className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                              request.status
+                            )}`}
+                          >
+                            {request.status}
+                          </span>
+                        </div>
+                        <div className="flex items-center text-gray-500 text-sm">
+                          <CiLocationOn color="#00034A" />
+                          {request.location}
+                        </div>
+                      </div>
+                    </div>
 
-          {/* Empty state */}
-          {discoverJobs?.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-lg">
-                No service requests found.
-              </p>
-            </div>
-          )}
+                    {/* Images */}
+                    {request.images && request.images.length > 0 && (
+                      <div className="flex gap-3 mb-4">
+                        {request.images.map((image, index) => (
+                          <div
+                            key={index}
+                            className="w-20 h-15 bg-gray-200 rounded-lg overflow-hidden"
+                          >
+                            <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400"></div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Description */}
+                    <p className="text-gray-600 mb-6 leading-relaxed">
+                      {request.description}
+                    </p>
+
+                    {/* Price and Date */}
+                    <div className="flex justify-between items-center">
+                      <div className="flex gap-12">
+                        <div>
+                          <p className="text-sm text-gray-500 mb-1">
+                            Proposed Price
+                          </p>
+                          <p className="text-xl font-semibold text-gray-900">
+                            {request.amount}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500 mb-1">
+                            Preferred Date & Time
+                          </p>
+                          <p className="text-lg font-medium text-gray-900">
+                            {request.date}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() =>
+                          navigate(
+                            `/discover-detail/${request.request_id}?id=${request.request_id}`
+                          )
+                        }
+                        className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white p-3 rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        <FaChevronRight className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-lg">No service requests found.</p>
+              </div>
+            )}
+          </div>
+        <Pagination
+          links={discoverJobs?.links}
+          onPageChange={handlePageChange}
+        />
         </div>
       </div>
       <Footer />

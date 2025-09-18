@@ -2,14 +2,10 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../../components/layout/Navbar";
 import Herotwo from "../../components/app/LandingPage/Dashboard/Herotwo";
 import {
-  FaMapMarkerAlt,
-  FaBriefcase,
-  FaShieldAlt,
   FaStar,
   FaRegHeart,
   FaChevronRight,
   FaChevronLeft,
-  FaSpinner,
   FaHeart,
 } from "react-icons/fa";
 import { LuSettings2 } from "react-icons/lu";
@@ -19,7 +15,33 @@ import Filter from "../../components/global/Filter";
 import { useNavigate } from "react-router";
 import Footer from "../../components/layout/Footer";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchallservices, unfavoriteProvider } from "../../redux/slices/users.slice";
+import {
+  fetchallservices,
+  unfavoriteProvider,
+} from "../../redux/slices/users.slice";
+const SkeletonCard = () => (
+  <div className="p-5 rounded-xl shadow-xl bg-white animate-pulse">
+    <div className="flex items-start justify-between mb-4">
+      <div className="flex items-center gap-3">
+        <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
+        <div>
+          <div className="h-4 bg-gray-300 rounded w-24 mb-2"></div>
+          <div className="h-3 bg-gray-300 rounded w-16"></div>
+        </div>
+      </div>
+      <div className="w-5 h-5 bg-gray-300 rounded-full"></div>
+    </div>
+
+    <div className="space-y-2 mb-4">
+      <div className="h-3 bg-gray-300 rounded w-32"></div>
+      <div className="h-3 bg-gray-300 rounded w-28"></div>
+      <div className="h-3 bg-gray-300 rounded w-24"></div>
+    </div>
+
+    <div className="h-3 bg-gray-300 rounded w-full mb-2"></div>
+    <div className="h-3 bg-gray-300 rounded w-2/3"></div>
+  </div>
+);
 
 const itemsPerPage = 6;
 
@@ -30,41 +52,41 @@ const Home = () => {
   const [data, setData] = useState([]);
   const totalPages = Math.ceil(data.length / itemsPerPage); // Dynamically calculate total pages based on the fetched data
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentProfessionals = data.slice(startIndex, startIndex + itemsPerPage); // Slice data for pagination
-  const { allservices, allservicesloading } = useSelector((s) => s.user);
+  const currentProfessionals = data.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  ); // Slice data for pagination
+  const { allservices, allservicesloading } = useSelector(
+    (s) => s.user
+  );
   const dispatch = useDispatch();
   const navigate = useNavigate("");
   const [pending, setPending] = useState({}); // { [id]: true }
 
   const onToggleFavorite = async (pro) => {
     if (!pro?.id || pending[pro?.id]) return;
-    setPending(p => ({ ...p, [pro?.id]: true }));
+    setPending((p) => ({ ...p, [pro?.id]: true }));
     try {
       const result = await dispatch(unfavoriteProvider(pro?.id)).unwrap();
-      const nextVal = typeof result?.is_favorite === "boolean"
-        ? result.is_favorite
-        : !pro?.is_favorite;
-
-      // local list me flip (taake turant reflect ho)
-      setData(prev => prev.map(x => x.id === pro?.id ? { ...x, is_favorite: nextVal } : x));
-
-      // optional: re-fetch current page to stay in sync with server
-      // dispatch(fetchallservices(currentPage));
+      const nextVal =
+        typeof result?.is_favorite === "boolean"
+          ? result.is_favorite
+          : !pro?.is_favorite;
+      setData((prev) =>
+        prev.map((x) => (x.id === pro?.id ? { ...x, is_favorite: nextVal } : x))
+      );
     } catch (e) {
-      // ErrorToast("Could not update favorite. Please try again.");
       console.error(e);
     } finally {
-      setPending(p => {
+      setPending((p) => {
         const { [pro?.id]: _, ...rest } = p;
         return rest;
       });
     }
   };
 
-
-
   useEffect(() => {
-    dispatch(fetchallservices(currentPage)); // pass page to API
+    dispatch(fetchallservices("/users/providers")); // pass page to API
   }, [dispatch, currentPage]);
 
   useEffect(() => {
@@ -72,9 +94,6 @@ const Home = () => {
       setData(allservices.data); // use only the providers array
     }
   }, [allservices]);
-
-
-
 
   return (
     <div>
@@ -106,14 +125,17 @@ const Home = () => {
               </button>
             </div>
           </div>
+          {isFilter && <Filter endPoint={"providers/filter"} />}
           {/* Show loading spinner when data is being fetched */}
           {allservicesloading ? (
-            <div className="flex justify-center items-center pt-10 pb-10">
-              <img src="/spinner.gif" height={100} width={100} alt="Loading..." />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {Array.from({ length: itemsPerPage }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           ) : (
             <>
-              {isFilter && <Filter />}
+              
 
               {currentProfessionals.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -122,18 +144,29 @@ const Home = () => {
                     const isPend = !!pending[pro?.id];
 
                     return (
-                      <div key={pro?.id ?? idx} className="p-5 rounded-xl shadow-xl bg-white hover:shadow-md transition-all">
+                      <div
+                        key={pro?.id ?? idx}
+                        className="p-5 rounded-xl shadow-xl bg-white hover:shadow-md transition-all"
+                      >
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex items-center gap-3">
                             <img
-                              src={pro?.avatar ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${pro?.avatar}` : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"}
+                              src={
+                                pro?.avatar
+                                  ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${pro?.avatar}`
+                                  : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"
+                              }
                               alt={pro?.name}
                               className="w-12 h-12 rounded-full object-cover"
                             />
                             <div>
                               <h2
                                 className="font-semibold text-md text-gray-800 cursor-pointer"
-                                onClick={() => navigate("/service-provider", { state: { id: pro?.id } })}
+                                onClick={() =>
+                                  navigate("/service-provider", {
+                                    state: { id: pro?.id },
+                                  })
+                                }
                               >
                                 {pro?.name}
                               </h2>
@@ -150,13 +183,38 @@ const Home = () => {
                             onClick={() => onToggleFavorite(pro)}
                             disabled={isPend}
                             aria-label={isFav ? "Unfavorite" : "Favorite"}
-                            className={`transition ${isPend ? "opacity-70 cursor-not-allowed" : "hover:scale-110"}`}
-                            title={isPend ? "Updating…" : isFav ? "Remove from favorites" : "Add to favorites"}
+                            className={`transition ${
+                              isPend
+                                ? "opacity-70 cursor-not-allowed"
+                                : "hover:scale-110"
+                            }`}
+                            title={
+                              isPend
+                                ? "Updating…"
+                                : isFav
+                                ? "Remove from favorites"
+                                : "Add to favorites"
+                            }
                           >
                             {isPend ? (
-                              <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4A4 4 0 008 12H4z"></path>
+                              <svg
+                                className="h-5 w-5 animate-spin"
+                                viewBox="0 0 24 24"
+                              >
+                                <circle
+                                  className="opacity-25"
+                                  cx="12"
+                                  cy="12"
+                                  r="10"
+                                  stroke="currentColor"
+                                  strokeWidth="4"
+                                  fill="none"
+                                ></circle>
+                                <path
+                                  className="opacity-75"
+                                  fill="currentColor"
+                                  d="M4 12a8 8 0 018-8v4A4 4 0 008 12H4z"
+                                ></path>
                               </svg>
                             ) : isFav ? (
                               <FaHeart className="text-red-500" />
@@ -166,42 +224,60 @@ const Home = () => {
                           </button>
                         </div>
 
-                          <div className="text-sm text-gray-600 space-y-1 mb-4">
-                        <div className="text-sm text-gray-600 space-y-1 mb-2">
-                          <div className="flex items-center gap-2">
-                            <img src={LocationIcon} alt="LocationIcon" className="w-3" />
-                            Location: {pro?.city}, {pro?.state}, {pro?.country}
-                          </div>
-                          <div className="flex items-center gap-2 ">
-                            <img src={WorkIcon} alt="WorkIcon" className="w-3" />
-                            Experience: {pro?.experience} yrs
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <img src={awardIcon} alt="AwardIcon" className="w-3" />
-                            Job Success: {pro?.complete_jobs} jobs
+                        <div className="text-sm text-gray-600 space-y-1 mb-4">
+                          <div className="text-sm text-gray-600 space-y-1 mb-2">
+                            <div className="flex items-center gap-2">
+                              <img
+                                src={LocationIcon}
+                                alt="LocationIcon"
+                                className="w-3"
+                              />
+                              Location: {pro?.city}, {pro?.state},{" "}
+                              {pro?.country}
+                            </div>
+                            <div className="flex items-center gap-2 ">
+                              <img
+                                src={WorkIcon}
+                                alt="WorkIcon"
+                                className="w-3"
+                              />
+                              Experience: {pro?.experience} yrs
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <img
+                                src={awardIcon}
+                                alt="AwardIcon"
+                                className="w-3"
+                              />
+                              Job Success: {pro?.complete_jobs} jobs
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <hr className="mb-2" />
+                        <hr className="mb-2" />
 
-                      <h3 className="font-semibold text-[#00034A] mb-1">Biography</h3>
-                      <p className="text-sm text-gray-700 line-clamp-3">{pro?.biography}</p>
+                        <h3 className="font-semibold text-[#00034A] mb-1">
+                          Biography
+                        </h3>
+                        <p className="text-sm text-gray-700 line-clamp-3">
+                          {pro?.biography}
+                        </p>
                       </div>
                     );
                   })}
-
                 </div>
               ) : (
                 <div className="flex justify-center items-center py-20">
-                  <p className="text-gray-500 text-lg font-semibold">No Data Found</p>
+                  <p className="text-gray-500 text-lg font-semibold">
+                    No Data Found
+                  </p>
                 </div>
               )}
 
               {/* Pagination bhi tabhi dikhana jab data ho */}
               {currentProfessionals.length > 0 && (
                 <div className="flex justify-center mt-8 gap-2">
-                  <div className=' flex gap-3 bg-white shadow-2xl rounded-xl'>
+                  <div className=" flex gap-3 bg-white shadow-2xl rounded-xl">
                     {/* <button
                       onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
                       disabled={currentPage === 1}
@@ -211,12 +287,10 @@ const Home = () => {
                       Previous
                     </button> */}
 
-
                     <button
-                      onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                      onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                       disabled={currentPage === 1}
                       className="px-4 py-2 bg-white text-[16px] text-[#B7B7B7] font-[500] rounded-md disabled:opacity-50 flex items-center gap-2"
-
                     >
                       <FaChevronLeft size={20} />
                       Previous
@@ -226,7 +300,11 @@ const Home = () => {
                       <button
                         key={i}
                         onClick={() => setCurrentPage(i + 1)}
-                        className={`px-4 py-2 ${currentPage === i + 1 ? 'bg-[#00034A]/10 text-[#00034A] border-2 border-[#27A8E2]' : 'bg-white'}`}
+                        className={`px-4 py-2 ${
+                          currentPage === i + 1
+                            ? "bg-[#00034A]/10 text-[#00034A] border-2 border-[#27A8E2]"
+                            : "bg-white"
+                        }`}
                       >
                         {i + 1}
                       </button>
@@ -242,13 +320,16 @@ const Home = () => {
                     </button> */}
 
                     <button
-                      onClick={() => setCurrentPage(p => Math.min(p + 1, allservices?.last_page || 1))}
+                      onClick={() =>
+                        setCurrentPage((p) =>
+                          Math.min(p + 1, allservices?.last_page || 1)
+                        )
+                      }
                       disabled={currentPage === allservices?.last_page}
                       className="px-4 py-2 bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white flex items-center gap-2 rounded-md disabled:opacity-50"
-
                     >
                       Next
-                      <FaChevronRight color='#00034A' size={10} />
+                      <FaChevronRight color="#00034A" size={10} />
                     </button>
                   </div>
                 </div>

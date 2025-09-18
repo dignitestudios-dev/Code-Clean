@@ -8,8 +8,7 @@ export default function Pagination({ links, onPageChange }) {
         {links?.map((item, i) => (
           <button
             key={i}
-            onClick={() => item.url && onPageChange(item.url)}
-            disabled={item.active}
+            onClick={() => item.active && onPageChange(item.url)}            
             className={`px-4 py-2 text-[16px] font-[500] rounded-md flex items-center gap-2 transition-colors
               ${
                 item.active

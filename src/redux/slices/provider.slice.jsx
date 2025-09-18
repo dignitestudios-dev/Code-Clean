@@ -168,9 +168,9 @@ export const getDiscoverJobs = createAsyncThunk(
   "/provider/discover/jobs",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get(`/provider/discover/jobs`);
+      const response = await axios.get(_);
       console.log(response, "data-item");
-      return response?.data?.data;
+      return response?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Verification failed"
@@ -178,6 +178,21 @@ export const getDiscoverJobs = createAsyncThunk(
     }
   }
 );
+export const getFilteredJobs = createAsyncThunk(
+  "/filter/jobs",
+  async (body, thunkAPI) => {
+    try {
+      const response = await axios.post("/filter/jobs", body);
+      console.log(response, "filter-data");
+      return response?.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Filter request failed"
+      );
+    }
+  }
+);
+
 export const getRequestDetail = createAsyncThunk(
   "/provider/requests/4/details",
   async (_, thunkAPI) => {
@@ -734,6 +749,20 @@ const providerSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+      .addCase(getFilteredJobs.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getFilteredJobs.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.discoverJobs = action.payload;
+        state.success = "Filtered Discover Jobs Get Successfully";
+      })
+      .addCase(getFilteredJobs.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })      
       //Add Card
       .addCase(AddBank.pending, (state) => {
         state.isLoading = true;

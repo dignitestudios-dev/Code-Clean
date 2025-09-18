@@ -116,35 +116,38 @@ export const getPaymentMethoduser = createAsyncThunk(
 
 // Fetch user profile — page/per_page optional; agar na do to plain /profile hit hoga
 export const fetchUserProfile = createAsyncThunk(
-  'user/fetchUserProfile',
+  "user/fetchUserProfile",
   async (args, thunkAPI) => {
     try {
       const hasPaging =
         args &&
-        (typeof args.page !== 'undefined' || typeof args.per_page !== 'undefined');
+        (typeof args.page !== "undefined" ||
+          typeof args.per_page !== "undefined");
 
       const config = { signal: thunkAPI.signal };
 
       if (hasPaging) {
         config.params = {};
-        if (typeof args.page !== 'undefined') config.params.page = args.page;
-        if (typeof args.per_page !== 'undefined') config.params.per_page = args.per_page;
+        if (typeof args.page !== "undefined") config.params.page = args.page;
+        if (typeof args.per_page !== "undefined")
+          config.params.per_page = args.per_page;
       }
 
       // If hasPaging=false => no params sent (pure /profile)
-      const res = await axios.get('/profile', config);
+      const res = await axios.get("/profile", config);
       return res.data;
     } catch (error) {
       if (axios.isCancel?.(error)) {
-        return thunkAPI.rejectWithValue('Request cancelled');
+        return thunkAPI.rejectWithValue("Request cancelled");
       }
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || error?.message || 'Failed to fetch profile'
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to fetch profile"
       );
     }
   }
 );
-
 
 //Get Payment getuserfavorites
 export const getuserfavorites = createAsyncThunk(
@@ -302,7 +305,7 @@ export const fetchallservices = createAsyncThunk(
   "/users/providers",
   async (_, thunkAPI) => {
     try {
-      const res = await axios.get("/users/providers");
+      const res = await axios.get(_);
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue("Failed to fetch services");
@@ -321,7 +324,20 @@ export const CancelBookingRequest = createAsyncThunk(
     }
   }
 );
-
+export const getFilteredProviders = createAsyncThunk(
+  "/providers/filter",
+  async (body, thunkAPI) => {
+    try {
+      const response = await axios.post("/providers/filter", body);
+      console.log(response, "filter-data");
+      return response?.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Filter request failed"
+      );
+    }
+  }
+);
 // Update user profile and fetch updated profile
 export const updateUserProfile = createAsyncThunk(
   "/user/updateProfile",
@@ -399,6 +415,20 @@ const userSlice = createSlice({
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(getFilteredProviders.pending, (state) => {
+        state.allservicesloading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(getFilteredProviders.fulfilled, (state, action) => {
+        state.allservicesloading = false;
+        state.allservices = action.payload;
+        state.success = "Filtered Discover Jobs Get Successfully";
+      })
+      .addCase(getFilteredProviders.rejected, (state, action) => {
+        state.allservicesloading = false;
         state.error = action.payload;
       })
       // ----- fetch Preference -----

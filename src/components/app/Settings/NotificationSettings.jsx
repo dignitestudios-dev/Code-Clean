@@ -75,6 +75,7 @@ export default function NotificationSettings({ isOpen, setIsOpen }) {
 
     await dispatch(updateUserPreferences(payload));
     dispatch(fetchUserPreferences());
+    setIsOpen(false)
   };
 
   return (

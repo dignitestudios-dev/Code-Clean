@@ -38,9 +38,7 @@ export default function ProviderEditCertificate({ isOpen, setIsOpen }) {
   const handleAddService = (newService) => {
     setServices((prev) => [...prev, newService]);
   };
-  const handleDelete = (index) => {
-    setServices((prev) => prev.filter((_, i) => i !== index));
-  };
+ 
   return (
     <>
       <Modal
@@ -100,6 +98,7 @@ export default function ProviderEditCertificate({ isOpen, setIsOpen }) {
               }}
               dell={"certificate"}
               setIsOpen={setShowModal}
+              selectedItem={selectedItem}
               isOpen={showModal}
             />
           )}
