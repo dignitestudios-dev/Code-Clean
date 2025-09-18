@@ -14,7 +14,7 @@ import { RiEditLine } from "react-icons/ri";
 import { MdDelete } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router';
 import { RxCross2 } from "react-icons/rx";
-import { fetchallservices, getPaymentMethoduser, HireServiceProvider, RequestCustomService } from '../../../redux/slices/users.slice';
+import { fetchallservices, fetchDailyAvailability, getPaymentMethoduser, HireServiceProvider, RequestCustomService } from '../../../redux/slices/users.slice';
 import { useDispatch, useSelector } from 'react-redux';
 import { GoogleMap, LoadScript, Autocomplete } from '@react-google-maps/api';
 import { ErrorToast } from '../../../components/global/Toaster';
@@ -245,7 +245,7 @@ const Serviceprovider = () => {
     };
 
     useEffect(() => {
-        dispatch(fetchallservices());
+          dispatch(fetchallservices("/users/providers")); // pass page to API
     }, [dispatch]);
 
     const alldata = allservices?.data;
@@ -255,7 +255,6 @@ const Serviceprovider = () => {
         if (alldata && id) {
             // Step 1: Find the provider jiska id match kare
             const provider = alldata.find(item => item.id === id);
-
             // Step 2: Agar mila to uske services ko state me set karo
             if (provider) {
                 setData(provider || []);
@@ -264,7 +263,7 @@ const Serviceprovider = () => {
     }, [alldata, id]);
 
 
-     const handleDurationChange = (e) => {
+    const handleDurationChange = (e) => {
         const value = e.target.value;
 
         // Validate if the entered value is more than 15
@@ -555,7 +554,24 @@ const Serviceprovider = () => {
         }
     }, [paymentMethoduser])
 
-    console.log(paymentmethoduser, "paymentMethoduser")
+
+    const { dailyAvailability } = useSelector((state) => state.user)
+
+    useEffect(() => {
+        dispatch(fetchDailyAvailability(providerId))
+    }, [dispatch])
+
+    const [todaytime, setTodaytime] = useState("");
+
+useEffect(() => {
+    if (dailyAvailability) {
+        // Filter out the available slots
+        const availableSlots = dailyAvailability?.slots?.filter(slot => slot.status === "Available");
+        setTodaytime(availableSlots || []); // Set only available slots
+    }
+}, [dailyAvailability]);
+
+    console.log(todaytime, "dailyAvailability")
 
 
     return (
@@ -802,17 +818,17 @@ const Serviceprovider = () => {
                         <div className="mb-6">
                             <h3 className="text-lg font-semibold mb-2">Select Time</h3>
                             <div className="grid grid-cols-4 gap-3">
-                                {times.map((time, idx) => (
+                                {todaytime.map((slot, idx) => (
                                     <button
                                         key={idx}
-                                        onClick={() => handleSelect(time)}
+                                        onClick={() => handleSelect(slot.time)} // Use slot.time as the time to select
                                         className={`px-4 py-2 rounded-lg border text-sm transition 
-                                         ${selectedTime === time
+                ${selectedTime === slot.time
                                                 ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
                                                 : "bg-white text-gray-800"
                                             }`}
                                     >
-                                        {time}
+                                        {slot.time} {/* Display the available time */}
                                     </button>
                                 ))}
                             </div>
@@ -872,17 +888,17 @@ const Serviceprovider = () => {
                             <div>
                                 <label className="font-semibold">Job Location</label>
                                 <div className="relative mt-1">
-                                   
-                                        <Autocomplete onLoad={handleOnLoads} onPlaceChanged={handlePlaceChangeded}>
-                                            <input
-                                                type="text"
-                                                value={locations}
-                                                onChange={(e) => setLocations(e.target.value)}
-                                                placeholder="Abc, suite CN"
-                                                className="w-full border rounded-lg px-4 py-2 pr-10"
-                                            />
-                                        </Autocomplete>
-                                
+
+                                    <Autocomplete onLoad={handleOnLoads} onPlaceChanged={handlePlaceChangeded}>
+                                        <input
+                                            type="text"
+                                            value={locations}
+                                            onChange={(e) => setLocations(e.target.value)}
+                                            placeholder="Abc, suite CN"
+                                            className="w-full border rounded-lg px-4 py-2 pr-10"
+                                        />
+                                    </Autocomplete>
+
                                     <span className="absolute right-3 top-2.5 text-blue-500">
                                         <IoLocationOutline size={20} />
                                     </span>
@@ -1474,19 +1490,19 @@ const Serviceprovider = () => {
                             <div>
                                 <label className="block mb-1 font-medium">Location*</label>
                                 <div className="relative mt-1">
-                                  
-                                        <Autocomplete onLoad={handleOnLoad} onPlaceChanged={handlePlaceChangeds}>
-                                            <input
-                                                type="text"
-                                                name="location"
-                                                value={formData.location}
-                                                onChange={handleInputChange}
-                                                placeholder="Enter your location"
-                                                required
-                                                className="w-full border rounded p-2 focus:outline-none"
-                                            />
-                                        </Autocomplete>
-                                    
+
+                                    <Autocomplete onLoad={handleOnLoad} onPlaceChanged={handlePlaceChangeds}>
+                                        <input
+                                            type="text"
+                                            name="location"
+                                            value={formData.location}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter your location"
+                                            required
+                                            className="w-full border rounded p-2 focus:outline-none"
+                                        />
+                                    </Autocomplete>
+
                                     <span className="absolute right-3 top-2.5 text-blue-500">
                                         <IoLocationOutline size={20} />
                                     </span>

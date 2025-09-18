@@ -11,6 +11,7 @@ const initialState = {
   currentbookingdata: null,
   requestDetails: null,
   error: null,
+  dailyAvailability:null,
   requestisLoading: false,
   success: null,
   updateLoading: false,
@@ -128,6 +129,19 @@ export const getPaymentMethoduser = createAsyncThunk(
 //     }
 //   }
 // );
+
+// Fetch daily availability for a provider
+export const fetchDailyAvailability = createAsyncThunk(
+  "/user/availability", // Action type
+  async (providerId, thunkAPI) => {
+    try {
+      const res = await axios.get(`/availability?provider_id=${providerId}`); // API request to fetch the daily availability
+      return res.data; // Return the response data (availability)
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch daily availability");
+    }
+  }
+);
 
 // Fetch user profile — page/per_page optional; agar na do to plain /profile hit hoga
 export const fetchUserProfile = createAsyncThunk(
@@ -580,6 +594,22 @@ const userSlice = createSlice({
       .addCase(getPaymentMethoduser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+
+      //GET FetchDailyAvailability
+       .addCase(fetchDailyAvailability.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(fetchDailyAvailability.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.dailyAvailability = action.payload; // Store the availability response in the state
+        state.success = "Successfully fetched daily availability!";
+      })
+      .addCase(fetchDailyAvailability.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload; // Handle the error state
       })
 
       // ----- Fetch all Current Booking -----
