@@ -1,21 +1,28 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
 import { useFormik } from "formik";
 import { providerDetailsValues } from "../../init/authentication/AuthValues";
 import { providerDetailsSchema } from "../../schema/authentication/AuthSchema";
-import { MapImg } from "../../assets/export";
 import { FaPlus } from "react-icons/fa";
 import AddAvailabilityModal from "../../components/onboarding/AddAvaliabilityModal";
 import { FiTrash2 } from "react-icons/fi";
-import { useDispatch } from "react-redux";
-import { CompleteProviderProfile } from "../../redux/slices/auth.slice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  CompleteProviderProfile,
+  resetAuthState,
+} from "../../redux/slices/auth.slice";
+import { Autocomplete, GoogleMap, Marker } from "@react-google-maps/api";
+import { ErrorToast } from "../../components/global/Toaster";
 
 export default function ProviderDetail({ handleNext }) {
   const [previewImage, setPreviewImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [availability, setAvailability] = useState(null); // store availability data
+  const [availability, setAvailability] = useState(null);
+  const [mapCenter, setMapCenter] = useState({ lat: 24.8607, lng: 67.0011 }); // default Karachi
+  const autocompleteRef = useRef(null);
   const dispatch = useDispatch();
+  const { error, isLoading } = useSelector((state) => state.auth);
 
   const formik = useFormik({
     initialValues: providerDetailsValues,
@@ -24,26 +31,25 @@ export default function ProviderDetail({ handleNext }) {
       try {
         const formData = new FormData();
 
-        // Append simple fields
+        // Basic info
         formData.append("name", values.fullName);
         formData.append("working_radius", values.radius);
         formData.append("phone_number", values.phone);
-        formData.append("lat", 24.8607);
-        formData.append("long", 67.0011);
-        formData.append("city", "miami");
-        formData.append("state", "Florida");
-        formData.append("country", "US");
+        formData.append("lat", mapCenter.lat);
+        formData.append("long", mapCenter.lng);
+        formData.append("city", values.city);
+        formData.append("state", values.state);
+        formData.append("country", values.country);
         formData.append("location", values.location);
         formData.append("experience", Number(values.experience));
         formData.append("biography", values.biography);
 
-        // Avatar file (agar image/file hai to)
+        // Avatar
         if (values.profilePic) {
           formData.append("avatar", values.profilePic);
-        } else {
-          formData.append("avatar", "");
         }
-        console.log(availability, "avaliabilty");
+
+        // Availability
         if (availability) {
           formData.append("availability[start_time]", availability.start_time);
           formData.append("availability[end_time]", availability.end_time);
@@ -55,13 +61,11 @@ export default function ProviderDetail({ handleNext }) {
           }
         }
 
-        // Dispatch with form data
         await dispatch(CompleteProviderProfile(formData)).unwrap();
-
         handleNext();
         action.resetForm();
-      } catch (error) {
-        console.error("Profile submission failed:", error);
+      } catch (err) {
+        console.error("Profile submission failed:", err);
       }
     },
   });
@@ -75,7 +79,14 @@ export default function ProviderDetail({ handleNext }) {
     errors,
     touched,
   } = formik;
-  console.log(errors);
+
+  useEffect(() => {
+    if (error) {
+      ErrorToast(error);
+      dispatch(resetAuthState());
+    }
+  }, [error]);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -85,19 +96,52 @@ export default function ProviderDetail({ handleNext }) {
     }
   };
 
+  const handlePlaceChanged = () => {
+    if (autocompleteRef.current) {
+      const place = autocompleteRef.current.getPlace();
+
+      if (place?.formatted_address) {
+        setFieldValue("location", place.formatted_address);
+
+        // update map center
+        if (place.geometry?.location) {
+          const lat = place.geometry.location.lat();
+          const lng = place.geometry.location.lng();
+          setMapCenter({ lat, lng });
+        }
+
+        // extract city, state, country
+        let city = "";
+        let state = "";
+        let country = "";
+
+        if (place.address_components) {
+          for (const comp of place.address_components) {
+            if (comp.types.includes("locality")) city = comp.long_name;
+            if (comp.types.includes("administrative_area_level_1"))
+              state = comp.long_name;
+            if (comp.types.includes("country")) country = comp.long_name;
+          }
+        }
+
+        setFieldValue("city", city);
+        setFieldValue("state", state);
+        setFieldValue("country", country);
+      }
+    }
+  };
+
   return (
     <div className="w-auto h-[98%]">
       <h3 className="font-[600] text-center text-[36px] text-[#181818]">
-        Personal Details
+        Provider Details
       </h3>
       <p className="text-[#565656] mt-3 text-center font-[400] text-[16px]">
         Please enter your details to create an account.
       </p>
 
       <form
-        onSubmit={(e) => {
-          handleSubmit(e);
-        }}
+        onSubmit={handleSubmit}
         className="w-full md:w-[700px] mx-auto mt-5 gap-4"
       >
         {/* Profile Pic */}
@@ -138,9 +182,10 @@ export default function ProviderDetail({ handleNext }) {
           )}
         </div>
 
-        {/* Left Column */}
+        {/* Form Fields */}
         <div className="grid mt-4 grid-cols-2 gap-4">
-          <div className="flex flex-col items-center gap-4">
+          {/* Left column */}
+          <div className="flex flex-col gap-4">
             <Input
               text="Full Name"
               name="fullName"
@@ -152,6 +197,7 @@ export default function ProviderDetail({ handleNext }) {
               error={errors.fullName}
               touched={touched.fullName}
             />
+
             <Input
               text="Phone Number"
               name="phone"
@@ -168,21 +214,46 @@ export default function ProviderDetail({ handleNext }) {
               error={errors.phone}
               touched={touched.phone}
             />
-            <Input
-              text="Location"
-              name="location"
-              type="text"
-              holder="Enter address here"
-              value={values.location}
-              handleBlur={handleBlur}
-              handleChange={handleChange}
-              error={errors.location}
-              touched={touched.location}
-            />
-            <img src={MapImg} alt="map.png" className="mt-4 h-[150px]" />
+
+            {/* Location with Google Autocomplete */}
+            <div className="w-full">
+              <label className="font-[700] text-[12px]">Location</label>
+              <Autocomplete
+                onLoad={(ref) => (autocompleteRef.current = ref)}
+                onPlaceChanged={handlePlaceChanged}
+              >
+                <input
+                  type="text"
+                  name="location"
+                  defaultValue={values.location}
+                  onBlur={handleBlur}
+                  placeholder="Enter address here"
+                  className="w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </Autocomplete>
+
+              {/* Live Google Map */}
+              <div className="mt-10 w-full h-[150px] rounded-[7px]">
+                <GoogleMap
+                  center={mapCenter}
+                  zoom={12}
+                  mapContainerStyle={{
+                    width: "100%",
+                    height: "100%",
+                    borderRadius: "7px",
+                  }}
+                >
+                  <Marker position={mapCenter} />
+                </GoogleMap>
+              </div>
+
+              {errors.location && touched.location && (
+                <p className="text-red-500 text-sm mt-1">{errors.location}</p>
+              )}
+            </div>
           </div>
 
-          {/* Right Column */}
+          {/* Right column */}
           <div>
             <Input
               text="Working Radius"
@@ -195,6 +266,7 @@ export default function ProviderDetail({ handleNext }) {
               error={errors.radius}
               touched={touched.radius}
             />
+
             <div className="mt-4">
               <Input
                 text="Experience (Years)"
@@ -217,7 +289,7 @@ export default function ProviderDetail({ handleNext }) {
                   <div className="bg-[#F1F1F1D1] flex gap-2 items-center p-2 h-[38px] rounded-[8px] ml-1">
                     <p className="text-[14px]">
                       {availability.start_time} - {availability.end_time} (
-                      {availability.days.join(", ")?.slice(0, 15)},...)
+                      {availability.days.join(", ")}
                     </p>
                     <FiTrash2
                       color={"#F01A1A"}
@@ -234,7 +306,7 @@ export default function ProviderDetail({ handleNext }) {
                     background:
                       "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",
                   }}
-                  className="w-[13%]  ml-auto rounded-[8px] h-[38px]   mr-2 bg-transparent text-md text-[#959393] flex items-center justify-center"
+                  className="w-[13%] ml-auto rounded-[8px] h-[38px] mr-2 flex items-center justify-center"
                 >
                   <FaPlus color="white" />
                 </button>
@@ -252,17 +324,17 @@ export default function ProviderDetail({ handleNext }) {
                 onBlur={handleBlur}
                 className="px-3 py-3 resize-none bg-[#FFFFFF] w-full border border-[#D9D9D9] rounded-[8px]"
               />
-              {errors.biography && touched.biography ? (
+              {errors.biography && touched.biography && (
                 <p className="text-red-700 text-sm font-medium">
                   {errors.biography}
                 </p>
-              ) : null}
+              )}
             </div>
           </div>
         </div>
 
         <div className="w-[360px] mt-10 mx-auto">
-          <Button text="Next" type={"submit"} />
+          <Button text="Next" type="submit" loading={isLoading} />
         </div>
       </form>
 

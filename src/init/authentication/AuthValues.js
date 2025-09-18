@@ -37,6 +37,9 @@ export const personalDetailsValues = {
   fullName: "",
   phone: "",
   location: "",
+  city: "",
+  state: "",
+  country: "",
   profilePic: null,
 };
 export const providerDetailsValues = {
@@ -45,6 +48,9 @@ export const providerDetailsValues = {
   avaliabilty: "",
   phone: "",
   location: "",
+  city: "",
+  state: "",
+  country: "",
   profilePic: null,
   biography: "",
   experience: "",
