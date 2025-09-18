@@ -9,9 +9,9 @@ const initialState = {
   userProfile: null,
   allservices: null,
   currentbookingdata: null,
-  requestDetails:null,
+  requestDetails: null,
   error: null,
-  requestisLoading:false,
+  requestisLoading: false,
   success: null,
   updateLoading: false,
   updateError: null,
@@ -86,20 +86,18 @@ export const RequestCustomService = createAsyncThunk(
   }
 );
 
-
 // Fetch request details based on ID
 export const fetchRequestDetails = createAsyncThunk(
-  '/user/requests/{id}/details', // Action type
+  "/user/requests/{id}/details", // Action type
   async (id, thunkAPI) => {
     try {
       const res = await axios.get(`/user/requests/${id}/details`); // API request to fetch the request details
       return res.data; // Return the response data
     } catch (error) {
-      return thunkAPI.rejectWithValue('Failed to fetch request details'); // Handle rejection
+      return thunkAPI.rejectWithValue("Failed to fetch request details"); // Handle rejection
     }
   }
 );
-
 
 //Get Payment Method
 export const getPaymentMethoduser = createAsyncThunk(
@@ -133,30 +131,34 @@ export const getPaymentMethoduser = createAsyncThunk(
 
 // Fetch user profile — page/per_page optional; agar na do to plain /profile hit hoga
 export const fetchUserProfile = createAsyncThunk(
-  'user/fetchUserProfile',
+  "user/fetchUserProfile",
   async (args, thunkAPI) => {
     try {
       const hasPaging =
         args &&
-        (typeof args.page !== 'undefined' || typeof args.per_page !== 'undefined');
+        (typeof args.page !== "undefined" ||
+          typeof args.per_page !== "undefined");
 
       const config = { signal: thunkAPI.signal };
 
       if (hasPaging) {
         config.params = {};
-        if (typeof args.page !== 'undefined') config.params.page = args.page;
-        if (typeof args.per_page !== 'undefined') config.params.per_page = args.per_page;
+        if (typeof args.page !== "undefined") config.params.page = args.page;
+        if (typeof args.per_page !== "undefined")
+          config.params.per_page = args.per_page;
       }
 
       // If hasPaging=false => no params sent (pure /profile)
-      const res = await axios.get('/profile', config);
+      const res = await axios.get("/profile", config);
       return res.data;
     } catch (error) {
       if (axios.isCancel?.(error)) {
-        return thunkAPI.rejectWithValue('Request cancelled');
+        return thunkAPI.rejectWithValue("Request cancelled");
       }
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || error?.message || 'Failed to fetch profile'
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to fetch profile"
       );
     }
   }
@@ -319,6 +321,17 @@ export const fetchallservices = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await axios.get(_);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch services");
+    }
+  }
+);
+export const filterAllService = createAsyncThunk(
+  "/search/providers",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.post("/search/providers", _);
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue("Failed to fetch services");
@@ -500,6 +513,20 @@ const userSlice = createSlice({
         state.allservicesloading = false;
         state.allserviceserror = action.payload;
       })
+      .addCase(filterAllService.pending, (state) => {
+        state.allservicesloading = true;
+        state.allserviceserror = null;
+        state.allservicessuccess = null;
+      })
+      .addCase(filterAllService.fulfilled, (state, action) => {
+        state.allservicesloading = false;
+        state.allservices = action.payload;
+        state.allservicessuccess = "Successfully fetched services!";
+      })
+      .addCase(filterAllService.rejected, (state, action) => {
+        state.allservicesloading = false;
+        state.allserviceserror = action.payload;
+      })
 
       // ----- Fetch all Current Booking -----
       .addCase(fetchCurrentBooking.pending, (state) => {
@@ -667,7 +694,7 @@ const userSlice = createSlice({
         ErrorToast(state.CustomserviceproviderError);
       })
 
-       .addCase(fetchRequestDetails.pending, (state) => {
+      .addCase(fetchRequestDetails.pending, (state) => {
         state.requestisLoading = true; // Set loading state to true
         state.error = null; // Clear any previous errors
         state.success = null; // Clear any previous success messages
