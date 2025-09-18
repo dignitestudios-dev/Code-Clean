@@ -84,6 +84,23 @@ export const login = createAsyncThunk(
     }
   }
 );
+export const SocialLogin = createAsyncThunk(
+  "/social/auth",
+  async (credentials, thunkAPI) => {
+    try {
+      const res = await axios.post("/social/auth", credentials);
+      console.log(res?.data,"response");
+
+      return {
+        message: "Login successful",
+      };
+    } catch (e) {
+      return thunkAPI.rejectWithValue(
+        e.response?.data?.message || "Login failed"
+      );
+    }
+  }
+);
 
 // RESET PASSWORD
 export const resetPassword = createAsyncThunk(

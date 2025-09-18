@@ -67,14 +67,11 @@ export default function CreateCard() {
       try {
         setLoading(true);
         const data = {
-          url: "/payment-methods",
-          payload: {
-            card_token: token?.id,
-            last_digits: paymentMethod?.card?.last4,
-            expiry_month: paymentMethod?.card?.exp_month,
-            expiry_year: paymentMethod?.card?.exp_year,
-            brand: paymentMethod?.card?.brand,
-          },
+          card_token: token?.id,
+          last_digits: paymentMethod?.card?.last4,
+          expiry_month: paymentMethod?.card?.exp_month,
+          expiry_year: paymentMethod?.card?.exp_year,
+          brand: paymentMethod?.card?.brand,
         };
         await dispatch(AddCard(data)).unwrap();
         navigate("/app/payment-method");

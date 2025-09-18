@@ -401,10 +401,27 @@ export const DeletePaymentMethod = createAsyncThunk(
       return { success: true, message: response?.data?.message };
     } catch (error) {
       ErrorToast(
-        error.response?.data?.message || "Booking Request Accept failed"
+        error.response?.data?.message || "Delete Payment Method failed"
       );
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Booking Request Accept failed"
+        error.response?.data?.message || "Delete Payment Method failed"
+      );
+    }
+  }
+);
+export const DeleteBank = createAsyncThunk(
+  "/provider/bank-details/id",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.delete(`/provider/bank-details/${payload}`);
+      SuccessToast(response?.data?.message);
+      return { success: true, message: response?.data?.message };
+    } catch (error) {
+      ErrorToast(
+        error.response?.data?.message || "Delete Bank failed"
+      );
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Delete Bank failed"
       );
     }
   }
@@ -828,6 +845,19 @@ const providerSlice = createSlice({
       })
       .addCase(DeletePaymentMethod.rejected, (state, action) => {
         state.bookingRequestLoader = false;
+        state.error = action.payload;
+      })
+      .addCase(DeleteBank.pending, (state) => {
+        state.StartJobLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(DeleteBank.fulfilled, (state, action) => {
+        state.StartJobLoading = false;
+        state.success = "Delete Successfully";
+      })
+      .addCase(DeleteBank.rejected, (state, action) => {
+        state.StartJobLoading = false;
         state.error = action.payload;
       })
       .addCase(SubscriptionCancel.pending, (state) => {

@@ -1,52 +1,59 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux"; // Import useDispatch and useSelector
-import { login, resetError, resetAuthState } from "../../redux/slices/auth.slice"; // Import login action from Redux
+import {
+  login,
+  resetAuthState,
+  SocialLogin,
+} from "../../redux/slices/auth.slice"; // Import login action from Redux
 import { useFormik } from "formik";
 import { loginValues } from "../../init/authentication/AuthValues";
 import { signInSchema } from "../../schema/authentication/AuthSchema";
-import { NavLink, useNavigate } from "react-router"; // Corrected to react-router-dom
-import { FiLoader } from "react-icons/fi";
+import { NavLink, useNavigate } from "react-router";
 import { Button } from "../../components/global/GlobalButton";
 import Input from "../../components/global/Input";
 import { ErrorToast, SuccessToast } from "../../components/global/Toaster"; // Import custom toast functions
 import Cookies from "js-cookie";
 import { AppleImage, GoogleImage, LoginRight, Logo } from "../../assets/export";
 import getFCMToken from "../../firebase/getFcmToken"; // Import the FCM token function
+import { useGoogleLogin } from "@react-oauth/google";
+import RoleSelectModal from "../../components/global/RoleSelect";
 
 const Login = () => {
   const dispatch = useDispatch(); // Initialize dispatch
   const navigate = useNavigate(); // Initialize navigate
-  const { isLoading, error, user_data, success, accessToken } = useSelector((state) => state.auth); // Get loading, error, and user data from Redux
+  const { isLoading, error, user_data, success, accessToken } = useSelector(
+    (state) => state.auth
+  ); // Get loading, error, and user data from Redux
 
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState(null);
+  const [selectedRole, setSelectedRole] = useState("");
+  const handleRoleSelect = (role) => {
+    setShowRoleModal(false);
+    setSelectedRole(role);
+    if (selectedProvider === "google") {
+      Googlelogin();
+    } else if (selectedProvider === "apple") {
+      console.log("Continue with Apple as", role);
+      handleAppleLogin();
+    }
+  };
 
-  const roles = [
-    {
-      id: "user",
-      title: "I'm a User",
-      description: "Find and book professional service providers easily.",
-    },
-    {
-      id: "provider",
-      title: "I'm a Service Provider",
-      description: "Offer your services, manage bookings, and grow your business.",
-    },
-  ];
-
-  const { values, handleBlur, handleChange, handleSubmit, errors, touched } = useFormik({
-    initialValues: loginValues,
-    validationSchema: signInSchema,
-    onSubmit: async (values) => {
-      const token = await getFCMToken();
-      const data = { 
-        email: values?.email, 
-        password: values?.password, 
-        fcm_token: token // Include FCM token in the login payload
-      };
-      console.log(data)
-      dispatch(login(data)); // Dispatch login action
-    },
-  });
+  const { values, handleBlur, handleChange, handleSubmit, errors, touched } =
+    useFormik({
+      initialValues: loginValues,
+      validationSchema: signInSchema,
+      onSubmit: async (values) => {
+        const token = await getFCMToken();
+        const data = {
+          email: values?.email,
+          password: values?.password,
+          fcm_token: token, // Include FCM token in the login payload
+        };
+        console.log(data);
+        dispatch(login(data)); // Dispatch login action
+      },
+    });
 
   useEffect(() => {
     dispatch(resetAuthState()); // reset success, error, and loading
@@ -56,7 +63,7 @@ const Login = () => {
   // useEffect for Success Toast
   useEffect(() => {
     if (success && accessToken) {
-      SuccessToast(typeof success === 'string' ? success : "Login successful!");
+      SuccessToast(typeof success === "string" ? success : "Login successful!");
       // After successful login, get FCM token and save it
       const fetchFCMToken = async () => {
         const token = await getFCMToken();
@@ -64,7 +71,7 @@ const Login = () => {
           console.log("FCM Token:", token);
           // You can now save this token in your backend or local storage for future use
           // For example, you can store it in cookies:
-          Cookies.set('fcm_token', token);
+          Cookies.set("fcm_token", token);
         }
       };
 
@@ -72,9 +79,9 @@ const Login = () => {
 
       // Redirect to appropriate page
       if (user_data?.role === "service_provider") {
-        navigate('/dashboard');
+        navigate("/dashboard");
       } else {
-        navigate('/Home');
+        navigate("/Home");
       }
 
       dispatch(resetAuthState());
@@ -88,6 +95,37 @@ const Login = () => {
       dispatch(resetAuthState()); // clear error after toast
     }
   }, [error]);
+
+  const Googlelogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      console.log("Login Success:", tokenResponse);
+      const data = {
+        token: tokenResponse?.access_token,
+        role: selectedRole,
+      };
+      dispatch(SocialLogin(data));
+    },
+    onError: () => {
+      console.log("Login Failed");
+    },
+  });
+
+  const handleAppleLogin = async (role) => {
+    setShowRoleModal(false);
+    try {
+      const response = await window.AppleID.auth.signIn({
+        clientId: "YOUR_CLIENT_ID", // Apple Service ID
+        redirectURI: "YOUR_REDIRECT_URI",
+        scope: "email name",
+        state: role, // role pass kar sakte ho
+        nonce: "random_nonce_string",
+        usePopup: true,
+      });
+      console.log("Apple login success:", response, "Role:", role);
+    } catch (err) {
+      console.error("Apple login failed:", err);
+    }
+  };
 
   return (
     <div className="w-full h-auto grid grid-cols-2 gap-4 rounded-[19px] bg-white">
@@ -148,7 +186,8 @@ const Login = () => {
               </NavLink>
             </span>
           </div>
-
+        </form>
+        <div className="w-full md:w-[393px] mt-5 flex flex-col justify-start items-start gap-4">
           <div className="flex w-full items-center rounded-full">
             <div className="flex-1 border-b border-gray-350" />
             <span className="text-[#959393] text-[20px] font-normal leading-8 px-8 ">
@@ -157,20 +196,39 @@ const Login = () => {
             <div className="flex-1 border-b border-gray-350" />
           </div>
           <div className="w-full">
-            <button className="border flex items-center p-2 border-[#181818] rounded-full w-full ">
+            <button
+              onClick={() => {
+                setSelectedProvider("google");
+                setShowRoleModal(true);
+              }}
+              className="border flex items-center p-2 border-[#181818] rounded-full w-full h-12"
+            >
               <img src={GoogleImage} alt="" className="w-8" />
               <span className="mx-auto text-[14px] font-[500] text-[#181818]">
                 Continue With Google
               </span>
             </button>
-            <button className="border flex items-center mt-4 p-2 border-[#181818] rounded-full w-full ">
+            <button
+              onClick={() => {
+                setSelectedProvider("apple");
+                setShowRoleModal(true);
+              }}
+              className="border flex items-center mt-4 p-2 border-[#181818] rounded-full w-full h-12"
+            >
               <img src={AppleImage} alt="" className="w-8" />
               <span className="mx-auto text-[14px] font-[500] text-[#181818]">
                 Continue With Apple
               </span>
             </button>
+
+            {/* Role selection modal */}
+            <RoleSelectModal
+              isOpen={showRoleModal}
+              onClose={() => setShowRoleModal(false)}
+              onSelect={handleRoleSelect}
+            />
           </div>
-        </form>
+        </div>
       </div>
       <div
         className="p-4 rounded-[20px]"
@@ -182,7 +240,9 @@ const Login = () => {
         }}
       >
         <div className="flex flex-col justify-end h-full ">
-          <h3 className="text-white text-[52px] font-[600]">Connect. Book. Serve</h3>
+          <h3 className="text-white text-[52px] font-[600]">
+            Connect. Book. Serve
+          </h3>
           <p className="text-white text-[32px] capitalize font-[400]">
             Book top-rated experts or grow your business—all in one place.
           </p>

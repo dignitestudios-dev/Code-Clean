@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../../../components/layout/Navbar";
 import { HeroBg } from "../../../assets/export";
-import { FaArrowLeft, FaCheck, FaTrash } from "react-icons/fa";
+import { FaArrowLeft, FaCheck, FaSpinner, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { ImCross } from "react-icons/im";
 import { useDispatch, useSelector } from "react-redux";
 import {
   AddBank,
+  DeleteBank,
   getPaymentMethod,
   getTransactions,
   getWallet,
@@ -36,6 +37,7 @@ const Wallet = () => {
   const [showModal, setShowModal] = useState(false); // State to control the modal visibility
   const [withdrawal, setWithdrawal] = useState(false);
   const [addbankaccount, setAddbankaccount] = useState(false);
+  const [selectedId, setSelectedId] = useState("");
   // State add kardo
   const [selectedBank, setSelectedBank] = useState(null);
   const [amount, setAmount] = useState("");
@@ -46,6 +48,7 @@ const Wallet = () => {
     isLoading,
     paymentMethod,
     bookingRequestLoader,
+    StartJobLoading,
     widrawData,
   } = useSelector((state) => state.provider);
   useEffect(() => {
@@ -119,6 +122,13 @@ const Wallet = () => {
     await dispatch(widrawFunds(data)).unwrap();
     setShowModal(false);
     setWithdrawal(true);
+  };
+  const handleDelete = async (id) => {
+    try {
+      await dispatch(DeleteBank(id));
+    } finally {
+      dispatch(getPaymentMethod());
+    }
   };
   return (
     <div className="min-h-screen bg-gray-50">
@@ -201,9 +211,27 @@ const Wallet = () => {
                     <p className="text-sm">0112********{item?.last_digits}</p>
                   </div>
                   <div>
-                    <button>
-                      {" "}
-                      <FaTrash size={15} color="red" />{" "}
+                    <button
+                      onClick={() => {
+                        setSelectedId(item?.id);
+                        handleDelete(item?.id);
+                      }}
+                      disabled={StartJobLoading}
+                      className={`flex items-center justify-center p-2 rounded ${
+                        StartJobLoading
+                          ? "cursor-not-allowed opacity-70"
+                          : "hover:bg-gray-100"
+                      }`}
+                    >
+                      {StartJobLoading && selectedId == item?.id ? (
+                        <FaSpinner
+                          className="animate-spin"
+                          size={16}
+                          color="gray"
+                        />
+                      ) : (
+                        <FaTrash size={15} color="red" />
+                      )}
                     </button>
                   </div>
                 </div>
