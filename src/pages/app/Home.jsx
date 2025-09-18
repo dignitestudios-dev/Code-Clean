@@ -135,8 +135,6 @@ const Home = () => {
             </div>
           ) : (
             <>
-              
-
               {currentProfessionals.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {currentProfessionals.map((pro, idx) => {

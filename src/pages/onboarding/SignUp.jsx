@@ -25,7 +25,7 @@ import BillingSummary from "./BillingSummary";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 export default function SignUp() {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(2);
   const location = useLocation();
   const role = location.state?.role || "user";
   const [email, setEmail] = useState("");

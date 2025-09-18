@@ -51,7 +51,7 @@ export default function Filter({ endPoint, setIsFilter }) {
   return (
     <div className="space-y-4 w-[400px] bg-[#FFFFFF] rounded-[14px] absolute  right-20 p-4 shadow-lg -mt-10 ">
       {/* Location */}
-      <div className="relative mt-1">
+      <div className="relative fle mt-1">
         <label className="text-sm font-medium text-gray-700">Location</label>
         <Autocomplete
           onLoad={handleOnLoads}
@@ -65,7 +65,7 @@ export default function Filter({ endPoint, setIsFilter }) {
             className="w-full border rounded-lg px-4 py-2 pr-10"
           />
         </Autocomplete>
-        <span className="absolute right-3 top-2.5 text-blue-500">
+        <span className="absolute right-3 top-9 text-blue-500">
           <IoLocationOutline size={20} />
         </span>
       </div>
