@@ -131,34 +131,30 @@ export const getPaymentMethoduser = createAsyncThunk(
 
 // Fetch user profile — page/per_page optional; agar na do to plain /profile hit hoga
 export const fetchUserProfile = createAsyncThunk(
-  "user/fetchUserProfile",
+  'user/fetchUserProfile',
   async (args, thunkAPI) => {
     try {
       const hasPaging =
         args &&
-        (typeof args.page !== "undefined" ||
-          typeof args.per_page !== "undefined");
+        (typeof args.page !== 'undefined' || typeof args.per_page !== 'undefined');
 
       const config = { signal: thunkAPI.signal };
 
       if (hasPaging) {
         config.params = {};
-        if (typeof args.page !== "undefined") config.params.page = args.page;
-        if (typeof args.per_page !== "undefined")
-          config.params.per_page = args.per_page;
+        if (typeof args.page !== 'undefined') config.params.page = args.page;
+        if (typeof args.per_page !== 'undefined') config.params.per_page = args.per_page;
       }
 
       // If hasPaging=false => no params sent (pure /profile)
-      const res = await axios.get("/profile", config);
+      const res = await axios.get('/profile', config);
       return res.data;
     } catch (error) {
       if (axios.isCancel?.(error)) {
-        return thunkAPI.rejectWithValue("Request cancelled");
+        return thunkAPI.rejectWithValue('Request cancelled');
       }
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch profile"
+        error?.response?.data?.message || error?.message || 'Failed to fetch profile'
       );
     }
   }

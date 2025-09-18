@@ -9,7 +9,7 @@ import { usertwo } from "../../../assets/export"
 import { GoHeart, GoTrash } from 'react-icons/go';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { IoLocationOutline } from "react-icons/io5";
+import { IoLocationOutline, IoTimeOutline } from "react-icons/io5";
 import { RiEditLine } from "react-icons/ri";
 import { MdDelete } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router';
@@ -262,6 +262,19 @@ const Serviceprovider = () => {
             }
         }
     }, [alldata, id]);
+
+
+     const handleDurationChange = (e) => {
+        const value = e.target.value;
+
+        // Validate if the entered value is more than 15
+        if (parseInt(value) > 15 && value !== '') {
+            ErrorToast('Duration cannot be more than 15');
+            return;
+        }
+
+        setDuration(value);
+    };
 
 
     console.log(data, "filtered services data");
@@ -811,11 +824,12 @@ const Serviceprovider = () => {
                             <h3 className="text-lg font-semibold mb-2">Select Duration</h3>
                             <div className="w-full">
                                 <input
-                                    type="text"
+                                    type="number"
                                     value={duration}
-                                    onChange={(e) => setDuration(e.target.value)}
+                                    onChange={handleDurationChange} // Update the state with validation
                                     placeholder="0"
-                                    className="w-full border rounded-lg px-4 py-2 pr-10"
+                                    className={`w-full border rounded-lg px-4 py-2 pr-10 ${parseInt(duration) > 15 ? 'border-red-500' : ''
+                                        }`} // Add red border if duration is greater than 15
                                     required
                                 />
                             </div>
@@ -1502,7 +1516,7 @@ const Serviceprovider = () => {
                                 <div>
                                     <label className="block mb-1 font-medium">Duration*</label>
                                     <div className="flex items-center border rounded px-2">
-                                        <span className="text-gray-500">🕒</span>
+                                        <span className="text-gray-500"><IoTimeOutline /></span>
                                         <input
                                             type="text"
                                             name="duration"
