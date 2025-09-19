@@ -1,99 +1,143 @@
-import React, { useEffect, useState } from 'react';
-import { FaPlus } from 'react-icons/fa';
-import { HiOutlineXMark } from 'react-icons/hi2';
-import Modal from 'react-modal';
-import { useDispatch, useSelector } from 'react-redux';
-// ✅ Only need update thunk here (Profile page already fetches the user)
-import { updateUserProfile } from '../../../redux/slices/users.slice';
+import React, { useEffect, useState, useRef } from "react";
+import { FaPlus } from "react-icons/fa";
+import { HiOutlineXMark } from "react-icons/hi2";
+import Modal from "react-modal";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUserProfile } from "../../../redux/slices/users.slice";
+import { Autocomplete } from "@react-google-maps/api";
 
 const DEFAULT_AVATAR =
-  'https://img.freepik.com/premium-vector/icono-perfil-simple-color-blanco-icon_1076610-50204.jpg';
+  "https://img.freepik.com/premium-vector/icono-perfil-simple-color-blanco-icon_1076610-50204.jpg";
 
-const makeLocation = (u = {}) => {
-  if (u.address) return u.address;
-  const parts = [u.city, u.state, u.country].filter(Boolean);
-  return parts.length ? parts.join(', ') : '';
-};
-
-export default function EditProfileModal({ isOpen, setIsOpen, updateProfile, setUpdateProfile }) {
+export default function EditProfileModal({
+  isOpen,
+  setIsOpen,
+  updateProfile,
+  setUpdateProfile,
+}) {
   const dispatch = useDispatch();
   const { userProfile, updateLoading } = useSelector((s) => s.user || {});
 
-  // ----- Local form state (controlled) -----
+  const autocompleteRef = useRef(null);
+
   const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    tel: '',
-    location: '',
+    fullName: "",
+    email: "",
+    phone: "",
+    location: "",
   });
 
-  // Avatar preview + selected file
+  const [coords, setCoords] = useState({
+    lat: null,
+    lng: null,
+    city: "",
+    state: "",
+    country: "",
+  });
+
   const [selectedImage, setSelectedImage] = useState(DEFAULT_AVATAR);
   const [imageFile, setImageFile] = useState(null);
 
-  // ----- Hydrate form when modal opens & user data is ready -----
+  // hydrate
   useEffect(() => {
     if (isOpen && userProfile) {
       setFormData({
-        fullName: userProfile.name || '',
-        email: userProfile.email || '',
-        phone: userProfile.phone_number || '-', // default to +1
-        location: makeLocation(userProfile),
+        fullName: userProfile.name || "",
+        email: userProfile.email || "",
+        phone: userProfile.phone_number || "+1",
+        location: userProfile.address || "",
       });
-
-      // Use server avatar if present, else keep default
-      setSelectedImage(`https://code-clean-bucket.s3.us-east-2.amazonaws.com/${userProfile?.avatar}` || DEFAULT_AVATAR);
+      setCoords({
+        lat: userProfile.lat || null,
+        lng: userProfile.long || null,
+        city: userProfile.city || "",
+        state: userProfile.state || "",
+        country: userProfile.country || "",
+      });
+      setSelectedImage(
+        userProfile?.avatar
+          ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${userProfile?.avatar}`
+          : DEFAULT_AVATAR
+      );
       setImageFile(null);
     }
   }, [isOpen, userProfile]);
 
   const handleInputChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setSelectedImage(imageUrl);
+      setSelectedImage(URL.createObjectURL(file));
       setImageFile(file);
     }
   };
 
+  const onPlaceChanged = () => {
+    if (autocompleteRef.current) {
+      const place = autocompleteRef.current.getPlace();
+      if (place?.geometry?.location) {
+        const lat = place.geometry.location.lat();
+        const lng = place.geometry.location.lng();
+
+        let city = "";
+        let state = "";
+        let country = "";
+
+        place.address_components?.forEach((comp) => {
+          if (comp.types.includes("locality")) city = comp.long_name;
+          if (comp.types.includes("administrative_area_level_1"))
+            state = comp.long_name;
+          if (comp.types.includes("country")) country = comp.long_name;
+        });
+
+        setFormData((prev) => ({
+          ...prev,
+          location: place.formatted_address,
+        }));
+
+        setCoords({ lat, lng, city, state, country });
+      }
+    }
+  };
+
   const handleSave = async () => {
-    // Build payload — use FormData if user picked a new image
     let payload;
+
     if (imageFile) {
-      const fd = new FormData();
-      fd.append('name', formData.fullName);
-      fd.append('phone_number', formData.phone);     // change to "phone_number" if your backend expects that
-      fd.append('tel', formData.tel);
-      fd.append('location', formData.location);
-      fd.append('avatar', imageFile);         // backend field name "avatar"
-      payload = fd;
+      payload = new FormData();
+      payload.append("name", formData.fullName);
+      payload.append("phone_number", formData.phone);
+      payload.append("location", formData.location);
+      payload.append("lat", coords.lat);
+      payload.append("long", coords.lng);
+      payload.append("city", coords.city);
+      payload.append("state", coords.state);
+      payload.append("country", coords.country);
+      payload.append("avatar", imageFile);
     } else {
       payload = {
         name: formData.fullName,
-        phone_number: formData.phone,                // change to "phone_number" if needed
+        phone_number: formData.phone,
         location: formData.location,
+        lat: coords.lat,
+        long: coords.lng,
+        city: coords.city,
+        state: coords.state,
+        country: coords.country,
       };
     }
 
     try {
       await dispatch(updateUserProfile(payload)).unwrap();
-      // Trigger your "Profile Updated" modal AFTER success
       setUpdateProfile?.(true);
       setIsOpen(false);
-    } catch (e) {
-      // Toasts are shown in thunk; keep modal open
-      console.error('Update failed:', e);
+    } catch (err) {
+      console.error("Update failed:", err);
     }
   };
-  
 
   return (
     <Modal
@@ -104,27 +148,30 @@ export default function EditProfileModal({ isOpen, setIsOpen, updateProfile, set
       overlayClassName="fixed inset-0 bg-[#C6C6C6] bg-opacity-50 backdrop-blur-sm z-[1000] flex justify-center items-center"
     >
       <div className="bg-white rounded-[16px] shadow-lg px-10 py-6 w-[800px] max-h-[90vh] overflow-y-auto flex flex-col gap-3">
-        {/* Close Button */}
-        <div className="flex justify-end px-6 pt-0">
+        <div className="flex justify-end px-6">
           <button
             onClick={() => setIsOpen(false)}
             className="text-gray-500 hover:text-red-500 transition-colors"
             disabled={updateLoading}
-            title={updateLoading ? 'Updating…' : 'Close'}
           >
             <HiOutlineXMark size={22} />
           </button>
         </div>
 
-        {/* Title */}
-        <h2 className="text-center text-[28px] font-[900] text-[#181818]">Edit Profile</h2>
+        <h2 className="text-center text-[28px] font-[900] text-[#181818]">
+          Edit Profile
+        </h2>
 
         <div className="ml-20 mr-20">
-          {/* Profile Image */}
+          {/* Avatar */}
           <div className="flex justify-center mb-6">
             <div className="relative">
               <div className="w-32 h-32 bg-green-300 rounded-full overflow-hidden flex items-center justify-center">
-                <img src={selectedImage} alt="Profile" className="w-full h-full object-cover border-2 rounded-full" />
+                <img
+                  src={selectedImage}
+                  alt="Profile"
+                  className="w-full h-full object-cover border-2 rounded-full"
+                />
               </div>
               <label
                 htmlFor="upload"
@@ -132,83 +179,75 @@ export default function EditProfileModal({ isOpen, setIsOpen, updateProfile, set
               >
                 <FaPlus size={16} className="text-white" />
               </label>
-              <input id="upload" type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+              <input
+                id="upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+              />
             </div>
           </div>
 
-          {/* Form Fields */}
-          <div className="px-6 text-start space-y-4">
+          {/* Fields */}
+          <div className="space-y-4">
             <div>
-              <label className="block text-[#181818] text-[15px] font-medium mb-2">Full Name</label>
+              <label className="block text-sm font-medium">Full Name</label>
               <input
                 type="text"
-                value={formData.fullName ?? ''}
-                onChange={(e) => handleInputChange('fullName', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-                placeholder="Enter your full name"
+                value={formData.fullName}
+                onChange={(e) => handleInputChange("fullName", e.target.value)}
+                className="w-full px-4 py-3 border rounded-lg"
               />
             </div>
 
             <div>
-              <label className="block text-[#181818] text-[15px] font-medium mb-2">Email Address</label>
+              <label className="block text-sm font-medium">Email</label>
               <input
                 type="email"
-                value={formData.email ?? ''}
+                value={formData.email}
                 disabled
-                className="w-full px-4 py-3 bg-gray-100 border border-gray-300 rounded-lg text-gray-500 cursor-not-allowed"
-                placeholder="Enter your email"
+                className="w-full px-4 py-3 bg-gray-100 border rounded-lg"
               />
             </div>
-            <div>
-              <label className="block text-[#181818] text-[15px] font-medium mb-2">Phone Number</label>
-             <input
-  type="tel"
-  value={formData.phone ?? '+1'}
-  onChange={(e) => {
-    let value = e.target.value;
-
-    // Always start with +1
-    if (!value.startsWith('+1')) {
-      value = '+1' + value.replace(/[^0-9]/g, '');
-    }
-
-    // Allow only digits after +1
-    const cleaned = '+1' + value.slice(2).replace(/[^0-9]/g, '');
-
-    // Limit to US number length (+1 + 10 digits)
-    if (cleaned.length > 12) return;
-
-    setFormData((prev) => ({ ...prev, phone: cleaned }));
-  }}
-  placeholder="+1 123 456 7890"
-  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-/>
-
-            </div>
-
-
 
             <div>
-              <label className="block text-[#181818] text-[15px] font-medium mb-2">Location</label>
+              <label className="block text-sm font-medium">Phone Number</label>
               <input
-                type="text"
-                value={formData.location ?? ''}
-                onChange={(e) => handleInputChange('location', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
-                placeholder="Enter your location"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => handleInputChange("phone", e.target.value)}
+                className="w-full px-4 py-3 border rounded-lg"
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">Location</label>
+              <Autocomplete
+                onLoad={(ref) => (autocompleteRef.current = ref)}
+                onPlaceChanged={onPlaceChanged}
+              >
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) =>
+                    handleInputChange("location", e.target.value)
+                  }
+                  className="w-full px-4 py-3 border rounded-lg"
+                  placeholder="Enter your address"
+                />
+              </Autocomplete>
             </div>
           </div>
 
-          {/* Save Button */}
-          <div className="p-6 pt-6">
+          {/* Save */}
+          <div className="pt-6">
             <button
               onClick={handleSave}
               disabled={updateLoading}
-              className={`w-full ${updateLoading ? 'opacity-70 cursor-not-allowed' : ''
-                } bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-4 rounded-xl font-semibold shadow-lg transition-colors`}
+              className="w-full bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-4 rounded-xl font-semibold shadow-lg"
             >
-              {updateLoading ? 'Saving…' : 'Save'}
+              {updateLoading ? "Saving…" : "Save"}
             </button>
           </div>
         </div>

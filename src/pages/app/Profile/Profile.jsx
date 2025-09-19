@@ -28,7 +28,7 @@ export default function Profile() {
     const [serviceUser, setserviceUser] = useState();
     const { user_data } = useSelector((state) => state.auth);
     const { provider_data, getprofileloading } = useSelector((state) => state.provider);
-
+ const [selectedData,setSelectedData]=useState();
     useEffect(() => {
         // Check if user role is 'service_provider' and prevent multiple calls if already loading
         if (user_data?.role === "service_provider" && !getprofileloading) {
@@ -275,11 +275,11 @@ export default function Profile() {
                             </div>
                         </div>
                     </div>
-                    <BroadcastServiceRequests setCustombooking={setCustombooking} setIsRestrict={setIsRestrict} setIsOpen={setIsOpen} />
+                    <BroadcastServiceRequests setSelectedData={setSelectedData} setCustombooking={setCustombooking} setIsRestrict={setIsRestrict} setIsOpen={setIsOpen} />
                 </div>
             </div>
             <BroadCastModal custombooking={custombooking} setCustombooking={setCustombooking} />
-            <DeleteServiceModal isOpen={isOpen} setIsOpen={setIsOpen} />
+            <DeleteServiceModal selectedData={selectedData} isOpen={isOpen} setIsOpen={setIsOpen} />
             <RestrictedModal isOpen={isRestrict} setIsOpen={setIsRestrict} />
             <EditProfileModal
                 isOpen={isProfile}

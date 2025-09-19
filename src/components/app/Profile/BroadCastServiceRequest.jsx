@@ -28,14 +28,14 @@ const canDelete = (req) => {
     return (req?.status || '').toLowerCase() === 'pending' && !req?.booking_id;
 };
 
-const BroadcastServiceRequests = ({ setCustombooking, setIsOpen, setIsRestrict }) => {
+const BroadcastServiceRequests = ({ setCustombooking, setIsOpen, setIsRestrict,setSelectedData }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const navigate = useNavigate();
     const { userProfile, isLoading } = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const [userdata, setUserdata] = useState(null);
-
+  
     // initial + page-based fetch
     useEffect(() => {
         // first load
@@ -72,6 +72,7 @@ const BroadcastServiceRequests = ({ setCustombooking, setIsOpen, setIsRestrict }
 
     const handleDelete = (req) => {
         if (canDelete(req)) {
+            setSelectedData(req)
             setIsOpen(true);
         } else {
             setIsRestrict(true);

@@ -1,31 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  FaArrowLeft,
-  FaCalendarAlt,
-  FaCheck,
-  FaMapMarkerAlt,
-  FaRegCalendarAlt,
-  FaRegHeart,
-  FaStar,
-} from "react-icons/fa";
-import { SlTarget } from "react-icons/sl";
-import { LuPen, LuPenLine } from "react-icons/lu";
-import { AiOutlineClockCircle } from "react-icons/ai";
+import { useEffect, useRef, useState } from "react";
+import { FaArrowLeft, FaCheck, FaStar } from "react-icons/fa";
 import Navbar from "../../../components/layout/Navbar";
-import {
-  HeroBg,
-  stripe,
-  imageone,
-  imagetwo,
-  imagethree,
-} from "../../../assets/export";
-import { usertwo } from "../../../assets/export";
-import { GoHeart, GoTrash } from "react-icons/go";
+import { HeroBg, stripe } from "../../../assets/export";
+
+import { GoTrash } from "react-icons/go";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { IoLocationOutline, IoTimeOutline } from "react-icons/io5";
-import { RiEditLine } from "react-icons/ri";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdOutlineEdit } from "react-icons/md";
 import { useLocation, useNavigate } from "react-router";
 import { RxCross2 } from "react-icons/rx";
 import {
@@ -36,7 +18,7 @@ import {
   RequestCustomService,
 } from "../../../redux/slices/users.slice";
 import { useDispatch, useSelector } from "react-redux";
-import { GoogleMap, LoadScript, Autocomplete } from "@react-google-maps/api";
+import { Autocomplete } from "@react-google-maps/api";
 import { ErrorToast } from "../../../components/global/Toaster";
 
 const Serviceprovider = () => {
@@ -81,47 +63,6 @@ const Serviceprovider = () => {
     price: 0,
     images: [],
   });
-
-  // Function to handle place change
-  // const handlePlaceChangeds = () => {
-  //     if (autocomplete) {
-  //         const place = autocomplete.getPlace();
-  //         setLocations(place.formatted_address); // Set the location with the formatted address
-  //         // Geocoding to get lat, long, city, state, country
-  //         const geocoder = new window.google.maps.Geocoder();
-  //         geocoder.geocode({ address: place.formatted_address }, (results, status) => {
-  //             if (status === 'OK' && results[0]) {
-  //                 const addressComponents = results[0].address_components;
-  //                 const lat = results[0].geometry.location.lat();
-  //                 const lng = results[0].geometry.location.lng();
-
-  //                 // Extract city, state, country
-  //                 let city = '';
-  //                 let state = '';
-  //                 let country = '';
-
-  //                 for (let i = 0; i < addressComponents.length; i++) {
-  //                     const component = addressComponents[i];
-  //                     if (component.types.includes('locality')) {
-  //                         city = component.long_name;
-  //                     } else if (component.types.includes('administrative_area_level_1')) {
-  //                         state = component.long_name;
-  //                     } else if (component.types.includes('country')) {
-  //                         country = component.long_name;
-  //                     }
-  //                 }
-  //                 setFormData(prev => ({
-  //                     ...prev,
-  //                     lat,
-  //                     long: lng,
-  //                     city,
-  //                     state,
-  //                     country,
-  //                 }));
-  //             }
-  //         });
-  //     }
-  // };
 
   const handlePlaceChangeds = () => {
     if (autocomplete) {
@@ -193,11 +134,8 @@ const Serviceprovider = () => {
 
   const [custombookingtwo, setCustombookingtwo] = useState(false);
   const [custombookingthree, setCustombookingthree] = useState(false);
-  const { allservices, paymentMethoduser } = useSelector((s) => s.user);
+  const { allservices, paymentMethoduser,hireProviderLoading } = useSelector((s) => s.user);
 
-  // const handleOnLoad = (autocomplete) => {
-  //     setAutocomplete(autocomplete);
-  // };
 
   const handleOnLoad = (autocomplete) => {
     setAutocomplete(autocomplete);
@@ -307,6 +245,7 @@ const Serviceprovider = () => {
   const handleOnLoads = (autocomplete) => {
     autocompleteRef.current = autocomplete;
   };
+  console.log(allservices,"allService")
 
   useEffect(() => {
     dispatch(fetchallservices("/users/providers")); // pass page to API
@@ -337,17 +276,6 @@ const Serviceprovider = () => {
     setDuration(value);
   };
 
-  console.log(data, "filtered services data");
-
-  // const handleInputChange = (e) => {
-  //     const { name, value, files } = e.target;
-  //     if (name === "file") {
-  //         setFormData({ ...formData, file: files[0] });
-  //     } else {
-  //         setFormData({ ...formData, [name]: value });
-  //     }
-  // };
-
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
 
@@ -375,12 +303,6 @@ const Serviceprovider = () => {
     }
   };
 
-  const today = new Date();
-  const startOfToday = new Date(
-    today.getFullYear(),
-    today.getMonth(),
-    today.getDate()
-  );
 
   const togglePopup = () => {
     setServicetype(!servicetype);
@@ -390,37 +312,6 @@ const Serviceprovider = () => {
   const [locations, setLocations] = useState("");
   const [description, setDescription] = useState("");
   const [files, setFiles] = useState([]);
-
-  // const handleFileChange = (e) => {
-  //     const selectedFiles = Array.from(e.target.files); // Get selected files
-
-  //     const updatedFiles = selectedFiles.map((file) => {
-  //         const fileType = file.type.split("/")[0]; // Check file type (image)
-  //         let preview = null;
-
-  //         return new Promise((resolve) => {
-  //             if (fileType === "image") {
-  //                 // If it's an image, create a preview
-  //                 const reader = new FileReader();
-  //                 reader.onloadend = () => {
-  //                     preview = reader.result; // Base64 image preview
-  //                     resolve({ file, preview, fileName: file.name });
-  //                 };
-  //                 reader.readAsDataURL(file); // Read image as base64
-  //             } else {
-  //                 resolve({ file, preview, fileName: file.name });
-  //             }
-  //         });
-  //     });
-
-  //     // Wait for all promises to resolve before updating the state
-  //     Promise.all(updatedFiles).then((resolvedFiles) => {
-  //         setFiles((prevFiles) => [...prevFiles, ...resolvedFiles]); // Add selected files to state
-  //     });
-  // };
-
-  // Handle file removal
-
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files); // Get selected files
 
@@ -476,32 +367,21 @@ const Serviceprovider = () => {
   };
 
   const handleRemoveFile = (index) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index)); // Remove file at the specified index
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index)); 
   };
 
   const [services, setServices] = useState({});
 
   useEffect(() => {
-    // Initialize the services with quantity 0
+    
     const initialServices = data?.services?.reduce((acc, service) => {
-      acc[service.id] = 0; // or any default quantity you prefer
+      acc[service.id] = 1; 
       return acc;
     }, {});
     setServices(initialServices);
   }, [data?.services]);
 
   const [selectedTime, setSelectedTime] = useState(null);
-
-  const times = [
-    "09:00AM",
-    "10:00AM",
-    "11:00AM",
-    "12:00PM",
-    "01:00PM",
-    "02:00PM",
-    "03:00PM",
-    "04:00PM",
-  ];
 
   const [selectedDate, setSelectedDate] = useState(null);
 
@@ -510,29 +390,22 @@ const Serviceprovider = () => {
   };
 
   const handleSelect = (time) => {
-    // Agar jo time select ho, wo already selected hai toh remove karne ki jagah select karenge
     setSelectedTime(time);
   };
 
   const handleIncrement = (service) => {
     setServices((prev) => ({
       ...prev,
-      [service.id]: prev[service.id] < 10 ? prev[service.id] + 1 : 10, // Increase quantity by 1
+      [service.id]: prev[service.id] < 10 ? prev[service.id] + 1 : 10, 
     }));
   };
 
   const handleDecrement = (service) => {
     setServices((prev) => ({
       ...prev,
-      [service.id]: prev[service.id] > 0 ? prev[service.id] - 1 : 1, // Ensure quantity doesn't go below 0
+      [service.id]: prev[service.id] > 0 ? prev[service.id] - 1 : 1, 
     }));
   };
-
-  const reviews = new Array(5).fill({
-    name: "Mike Smith",
-    rating: 4.5,
-    text: "The standard Lorem Ipsum passage, used since the Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-  });
 
   const [user, setUser] = useState({
     name: "John Doe",
@@ -550,10 +423,6 @@ const Serviceprovider = () => {
   });
 
   const [editMode, setEditMode] = useState(false);
-
-  const handleEdit = (field) => {
-    setEditMode(true);
-  };
 
   const handleSave = () => {
     setEditMode(false);
@@ -704,8 +573,6 @@ const Serviceprovider = () => {
       setTodaytime(availableSlots || []); // Set only available slots
     }
   }, [dailyAvailability]);
-
-  console.log(todaytime, "dailyAvailability");
 
   return (
     <>
@@ -1530,20 +1397,18 @@ const Serviceprovider = () => {
               {/* Payment Method Info */}
               <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
                 <div className="w-full">
-                  <span className="font-medium text-gray-800 ">
+                  <span className="font-medium text-gray-800">
                     Attached Stripe
                   </span>
                   {paymentmethoduser?.payment_methods &&
                     paymentmethoduser?.payment_methods.map((card) => (
                       <div
                         key={card.id}
-                        className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 
-              ${
-                selectedCard?.id === card.id
-                  ? "bg-blue-100 border-blue-500"
-                  : ""
-              } 
-            `} // Highlight the selected card with a background
+                        className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${
+                          selectedCard?.id === card.id
+                            ? "bg-blue-100 border-blue-500"
+                            : ""
+                        }`}
                         onClick={() => handleCardSelect(card)} // Set the card as selected when clicked
                       >
                         <div className="flex gap-3">
@@ -1553,8 +1418,13 @@ const Serviceprovider = () => {
                           <img src={stripe} className="h-6" alt={card.brand} />
                         </div>
 
-                        <button className="text-red-500 hover:text-red-700 text-lg">
-                          <GoTrash />
+                        <button
+                          className="text-blue-500 hover:text-blue-700 text-lg"
+                          onClick={() => {
+                            navigate("/app/payment-method");
+                          }}
+                        >
+                          <MdOutlineEdit />
                         </button>
                       </div>
                     ))}
@@ -1565,7 +1435,7 @@ const Serviceprovider = () => {
               <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
                 <div className="w-full bg-[#F3F3F3] p-3 rounded-[10px]">
                   <div className="w-full border-b-[1px] pb-[3px]">
-                    <span className="font-medium text-gray-800 ">
+                    <span className="font-medium text-gray-800">
                       Payment Summary
                     </span>
                   </div>
@@ -1573,7 +1443,6 @@ const Serviceprovider = () => {
                     <div className="flex justify-between">
                       <p>Subtotal: </p>${" "}
                       {data?.services?.reduce((total, service) => {
-                        // Multiply each service amount by its quantity and add to the total
                         return (
                           total + service.amount * (services[service.id] || 0)
                         );
@@ -1582,7 +1451,6 @@ const Serviceprovider = () => {
                     <div className="flex justify-between pt-3">
                       <p className="text-black font-[500]">Total: </p>${" "}
                       {data?.services?.reduce((total, service) => {
-                        // Multiply each service amount by its quantity and add to the total
                         return (
                           total + service.amount * (services[service.id] || 0)
                         );
@@ -1595,28 +1463,28 @@ const Serviceprovider = () => {
               {/* Action Buttons */}
               <div className="pt-6 pb-3">
                 <button
-                  className="w-full bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
                   onClick={() => {
-                    handleHireNow();
-                    // setBookrequestsend(true);
-                    // setRequestservicefive(false);
+                    // Validation: Check if a payment method is selected
+                    if (!selectedCard) {
+                      ErrorToast("Please select a payment method.");
+                      return; // Prevent further execution if validation fails
+                    }
 
-                    // setInterval(() => {
-                    //     setBookingconfirm(true);
-                    //     setBookrequestsend(false);
-                    //     setInterval(() => {
-                    //         navigate("/booking-details"); // Navigate after interval
+                    setBookrequestsend(true); // Show loading modal
+                    setRequestservicefive(false); // Close current modal
 
-                    //     }, 2000);
-                    // }, 3000);
+                    handleHireNow(); // Proceed with booking
+
                     setDuration("");
                     setSelectedTime("");
                     selectedDate("");
                     setLocations("");
                     setDescription("");
                   }}
+                  className="w-full bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
                 >
-                  Book Now
+                  {hireProviderLoading ? "Processing..." : "Book Now"}{" "}
+                  {/* Loading state for the button */}
                 </button>
 
                 <div
@@ -1642,6 +1510,7 @@ const Serviceprovider = () => {
         </div>
       )}
 
+      {/* Booking Request Sent Modal */}
       {bookrequestsend && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-xl p-10 md:w-[26em] shadow-2xl text-center">
@@ -1660,6 +1529,15 @@ const Serviceprovider = () => {
               Your booking request has been sent to [Provider Name]. You will be
               notified once they confirm.
             </p>
+            <button
+              onClick={() => {
+                setBookrequestsend(false); // Close the booking modal
+                navigate("/Home"); // Navigate to booking details
+              }}
+              className="w-full mt-4 bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
+            >
+              View Booking Details
+            </button>
           </div>
         </div>
       )}

@@ -86,7 +86,23 @@ export const RequestCustomService = createAsyncThunk(
     }
   }
 );
-
+export const DeleteBroadCastRequest = createAsyncThunk(
+  "/user/requests/53/custom",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.delete(`/user/requests/${payload}/custom`);
+      SuccessToast(response?.data?.message);
+      return { success: true, message: response?.data?.message };
+    } catch (error) {
+      ErrorToast(
+        error.response?.data?.message || "Delete Request failed"
+      );
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Delete Request failed"
+      );
+    }
+  }
+);
 // Fetch request details based on ID
 export const fetchRequestDetails = createAsyncThunk(
   "/user/requests/{id}/details", // Action type
@@ -450,6 +466,18 @@ const userSlice = createSlice({
         state.userProfile = action.payload;
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(DeleteBroadCastRequest.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(DeleteBroadCastRequest.fulfilled, (state, action) => {
+        state.isLoading = false;
+      })
+      .addCase(DeleteBroadCastRequest.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })

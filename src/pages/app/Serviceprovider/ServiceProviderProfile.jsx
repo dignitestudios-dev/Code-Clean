@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import Navbar from "../../../components/layout/Navbar";
 import { FaArrowLeft, FaCheck, FaStar } from "react-icons/fa";
@@ -21,8 +21,9 @@ import { MdDelete } from "react-icons/md";
 import ProviderEditProfile from "../../../components/Serviceprovider/profile/ProviderEditProfile";
 import ProviderEditServices from "../../../components/Serviceprovider/profile/EditServicesDetail";
 import ProviderEditCertificate from "../../../components/Serviceprovider/profile/EditCertificateDetail";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { formatDate } from "../../../hooks/utils/Utils";
+import { getProviderProfile } from "../../../redux/slices/auth.slice";
 
 const ServiceproviderProfile = () => {
   const { user_data } = useSelector((state) => state.auth);
@@ -119,6 +120,12 @@ const ServiceproviderProfile = () => {
       kitchen: "01",
     },
   });
+
+  const dispatch = useDispatch();
+
+  useEffect(()=>{
+    dispatch(getProviderProfile())
+  },[dispatch])
 
   const [editMode, setEditMode] = useState(false);
 
