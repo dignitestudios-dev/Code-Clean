@@ -97,13 +97,13 @@ const Login = () => {
   }, [error]);
 
   const Googlelogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
+    onSuccess: async (tokenResponse) => {
       console.log("Login Success:", tokenResponse);
       const data = {
         token: tokenResponse?.access_token,
         role: selectedRole,
       };
-      dispatch(SocialLogin(data));
+      await dispatch(SocialLogin(data));
     },
     onError: () => {
       console.log("Login Failed");

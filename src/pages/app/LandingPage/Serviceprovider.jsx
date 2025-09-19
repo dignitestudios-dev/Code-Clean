@@ -4,14 +4,14 @@ import { SlTarget } from "react-icons/sl";
 import { LuPen, LuPenLine } from "react-icons/lu"
 import { AiOutlineClockCircle } from "react-icons/ai";
 import Navbar from '../../../components/layout/Navbar';
-import { HeroBg, stripe, imageone, imagetwo, imagethree } from "../../../assets/export"
+import { HeroBg, stripe, imageone, imagetwo, imagethree, EditIcon } from "../../../assets/export"
 import { usertwo } from "../../../assets/export"
 import { GoHeart, GoTrash } from 'react-icons/go';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { IoLocationOutline, IoTimeOutline } from "react-icons/io5";
 import { RiEditLine } from "react-icons/ri";
-import { MdDelete } from 'react-icons/md';
+import { MdDelete, MdOutlineEdit } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router';
 import { RxCross2 } from "react-icons/rx";
 import { fetchallservices, fetchDailyAvailability, getPaymentMethoduser, HireServiceProvider, RequestCustomService } from '../../../redux/slices/users.slice';
@@ -476,7 +476,7 @@ const Serviceprovider = () => {
     useEffect(() => {
         // Initialize the services with quantity 0
         const initialServices = data?.services?.reduce((acc, service) => {
-            acc[service.id] = 0; // or any default quantity you prefer
+            acc[service.id] = 1; // or any default quantity you prefer
             return acc;
         }, {});
         setServices(initialServices);
@@ -1329,19 +1329,8 @@ const Serviceprovider = () => {
                                 onClick={() => setRequestservicefive(false)}
                                 className="text-gray-500 hover:text-red-600"
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
                         </div>
@@ -1354,13 +1343,11 @@ const Serviceprovider = () => {
                             {/* Payment Method Info */}
                             <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
                                 <div className="w-full">
-                                    <span className="font-medium text-gray-800 ">Attached Stripe</span>
+                                    <span className="font-medium text-gray-800">Attached Stripe</span>
                                     {paymentmethoduser?.payment_methods && paymentmethoduser?.payment_methods.map((card) => (
                                         <div
                                             key={card.id}
-                                            className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 
-              ${selectedCard?.id === card.id ? 'bg-blue-100 border-blue-500' : ''} 
-            `} // Highlight the selected card with a background
+                                            className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${selectedCard?.id === card.id ? 'bg-blue-100 border-blue-500' : ''}`}
                                             onClick={() => handleCardSelect(card)} // Set the card as selected when clicked
                                         >
                                             <div className="flex gap-3">
@@ -1368,33 +1355,32 @@ const Serviceprovider = () => {
                                                 <img src={stripe} className="h-6" alt={card.brand} />
                                             </div>
 
-                                            <button className="text-red-500 hover:text-red-700 text-lg">
-                                                <GoTrash />
+                                            <button className="text-blue-500 hover:text-blue-700 text-lg" onClick={() => {
+                                                navigate("/app/payment-method");
+                                            }}>
+                                                <MdOutlineEdit />
                                             </button>
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
-
                             {/* Payment Summary */}
                             <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
                                 <div className='w-full bg-[#F3F3F3] p-3 rounded-[10px]'>
                                     <div className='w-full border-b-[1px] pb-[3px]'>
-                                        <span className="font-medium text-gray-800 ">Payment Summary</span>
+                                        <span className="font-medium text-gray-800">Payment Summary</span>
                                     </div>
                                     <div className="text-gray-600 mt-2">
                                         <div className='flex justify-between'>
                                             <p>Subtotal: </p>
                                             $ {data?.services?.reduce((total, service) => {
-                                                // Multiply each service amount by its quantity and add to the total
                                                 return total + service.amount * (services[service.id] || 0);
                                             }, 0)}
                                         </div>
                                         <div className='flex justify-between pt-3'>
                                             <p className='text-black font-[500]'>Total: </p>
                                             $ {data?.services?.reduce((total, service) => {
-                                                // Multiply each service amount by its quantity and add to the total
                                                 return total + service.amount * (services[service.id] || 0);
                                             }, 0)}
                                         </div>
@@ -1405,36 +1391,34 @@ const Serviceprovider = () => {
                             {/* Action Buttons */}
                             <div className="pt-6 pb-3">
                                 <button
-                                    className="w-full bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
                                     onClick={() => {
-                                        handleHireNow();
-                                        // setBookrequestsend(true);
-                                        // setRequestservicefive(false);
+                                        // Validation: Check if a payment method is selected
+                                        if (!selectedCard) {
+                                            ErrorToast('Please select a payment method.');
+                                            return; // Prevent further execution if validation fails
+                                        }
 
-                                        // setInterval(() => {
-                                        //     setBookingconfirm(true);
-                                        //     setBookrequestsend(false);
-                                        //     setInterval(() => {
-                                        //         navigate("/booking-details"); // Navigate after interval
+                                        setBookrequestsend(true); // Show loading modal
+                                        setRequestservicefive(false); // Close current modal
 
-                                        //     }, 2000);
-                                        // }, 3000);
+                                        handleHireNow(); // Proceed with booking
+
                                         setDuration("");
                                         setSelectedTime("");
                                         selectedDate("");
                                         setLocations("");
                                         setDescription("");
-
                                     }}
+                                    className="w-full bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
                                 >
-                                    Book Now
+                                    {bookrequestsend ? 'Processing...' : 'Book Now'} {/* Loading state for the button */}
                                 </button>
 
                                 <div
                                     className="text-center mt-2 text-sm font-medium text-gray-500 cursor-pointer"
                                     onClick={() => {
-                                        setRequestservicefive(false)
-                                        setRequestservicefour(true)
+                                        setRequestservicefive(false);
+                                        setRequestservicefour(true);
                                     }}
                                 >
                                     Back
@@ -1453,6 +1437,7 @@ const Serviceprovider = () => {
                 </div>
             )}
 
+            {/* Booking Request Sent Modal */}
             {bookrequestsend && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white rounded-xl p-10 md:w-[26em] shadow-2xl text-center">
@@ -1468,9 +1453,19 @@ const Serviceprovider = () => {
                         <p className="text-gray-600 text-sm mb-4">
                             Your booking request has been sent to [Provider Name]. You will be notified once they confirm.
                         </p>
+                        <button
+                            onClick={() => {
+                                setBookrequestsend(false); // Close the booking modal
+                                navigate("/Home"); // Navigate to booking details
+                            }}
+                            className="w-full mt-4 bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
+                        >
+                            View Booking Details
+                        </button>
                     </div>
                 </div>
             )}
+
 
             {bookingconfirm && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
