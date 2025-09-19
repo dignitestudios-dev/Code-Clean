@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../axios";
 import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
+import { useNavigate } from "react-router";
 
 // ================= INITIAL STATE =================
 const initialState = {
@@ -88,11 +89,12 @@ export const SocialLogin = createAsyncThunk(
   async (credentials, thunkAPI) => {
     try {
       const res = await axios.post("/social/auth", credentials);
+      const { message, token, user_data } = res?.data;
 
       return {
         message: message || "Login successful",
         accessToken: token,
-        user_data: user_data ?? null,
+        user_data: user_data,
       };
     } catch (e) {
       return thunkAPI.rejectWithValue(
@@ -166,8 +168,8 @@ export const getProviderProfile = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axios.post("/provider/profile");
-      console.log(response.data,"userRec")
-      return response.data?.user; 
+      console.log(response.data, "userRec");
+      return response.data?.user;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Verification failed"
@@ -715,9 +717,9 @@ const authSlice = createSlice({
         state.success = null;
       })
       .addCase(getProviderProfile.fulfilled, (state, action) => {
-        console.log(action.payload,"payload")
+        console.log(action.payload, "payload");
         state.isLoading = false;
-        state.user_data = action.payload; 
+        state.user_data = action.payload;
         state.success = action.payload.message;
       })
       .addCase(getProviderProfile.rejected, (state, action) => {

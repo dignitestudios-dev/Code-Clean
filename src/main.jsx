@@ -14,10 +14,10 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <Provider store={store}>
         {" "}
-        <LoadScript
-          googleMapsApiKey="AIzaSyCkfrN8GHu0s3I_mL4MHJA62c7p54t3kYg"
-          libraries={["places"]}
-        >
+          <LoadScript
+            googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAP_API}
+            libraries={["places"]}
+          >
           <GoogleOAuthProvider
             clientId={import.meta.env.VITE_GOOGLE_AUTH_CLIENTID}
           >
