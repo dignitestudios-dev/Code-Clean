@@ -89,10 +89,25 @@ export const SocialLogin = createAsyncThunk(
   async (credentials, thunkAPI) => {
     try {
       const res = await axios.post("/social/auth", credentials);
-      console.log(res?.data,"response");
+      const { message, token, user_data } = res.data || {};
+      const isHttps =
+        typeof window !== "undefined" && window.location.protocol === "https:";
+      const encoded = encodeURIComponent(token);
+
+      document.cookie =
+        "access_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT"; // Clear old cookie
+      document.cookie =
+        `access_token=${encoded}; Path=/; Max-Age=86400` +
+        (isHttps ? "; Secure; SameSite=None" : "; SameSite=Lax");
+      // Local storage
+      localStorage.setItem("access_token", token);
+
+      console.log(message, token, user_data, "response");
 
       return {
-        message: "Login successful",
+        message: message || "Login successful",
+        accessToken: token,
+        user_data: user_data ?? null,
       };
     } catch (e) {
       return thunkAPI.rejectWithValue(
@@ -165,8 +180,9 @@ export const getProviderProfile = createAsyncThunk(
   "/provider/profile",
   async (_, thunkAPI) => {
     try {
-      const response = await axios.get("/profile");
-      return response.data; // Return entire API response
+      const response = await axios.post("/provider/profile");
+      console.log(response.data,"userRec")
+      return response.data?.user; 
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Verification failed"
@@ -237,7 +253,6 @@ export const UpdateProviderProfile = createAsyncThunk(
       const response = await axios.post(`/provider/profile`, payload);
 
       SuccessToast("Profile Update Successfully");
-
       return response?.data?.user;
     } catch (error) {
       ErrorToast(error.response?.data?.message);
@@ -651,6 +666,21 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+      .addCase(SocialLogin.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(SocialLogin.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.accessToken = action.payload.accessToken;
+        state.user_data = action.payload.user_data;
+        state.success = action.payload.message;
+      })
+      .addCase(SocialLogin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       // GetProfile
       .addCase(getProfile.pending, (state) => {
         state.isLoading = true;
@@ -707,8 +737,9 @@ const authSlice = createSlice({
         state.success = null;
       })
       .addCase(getProviderProfile.fulfilled, (state, action) => {
+        console.log(action.payload,"payload")
         state.isLoading = false;
-        state.user_data = action.payload;
+        state.user_data = action.payload; 
         state.success = action.payload.message;
       })
       .addCase(getProviderProfile.rejected, (state, action) => {

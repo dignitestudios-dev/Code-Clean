@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { useFormik } from "formik";
 import { updateProviderDetailsSchema } from "../../../schema/authentication/AuthSchema";
@@ -11,7 +11,10 @@ import { HiOutlineXMark } from "react-icons/hi2";
 import { FiTrash2 } from "react-icons/fi";
 import SuccessModal from "../../global/SuccessModal";
 import { useDispatch, useSelector } from "react-redux";
-import { UpdateProviderProfile } from "../../../redux/slices/auth.slice";
+import {
+  getProviderProfile,
+  UpdateProviderProfile,
+} from "../../../redux/slices/auth.slice";
 import {
   GoogleMap,
   Marker,
@@ -22,7 +25,9 @@ import {
 export default function ProviderEditProfile({ isOpen, setIsOpen }) {
   const { user_data, isLoading } = useSelector((state) => state?.auth);
   const [previewImage, setPreviewImage] = useState(
-    `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${user_data?.avatar}`
+    user_data?.avatar
+      ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${user_data?.avatar}`
+      : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ3AH9WTlcacKErfpKhk-lJ7serN0eQje6Qg&s"
   );
   const fallbackImage = usertwo;
   const [showModal, setShowModal] = useState(false);
@@ -33,7 +38,10 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
   const [lat, setLat] = useState(user_data?.lat || 39.7508948);
   const [lng, setLng] = useState(user_data?.long || -104.9331132);
   const [autocomplete, setAutocomplete] = useState(null);
-
+  useEffect(() => {
+    setAvailability(user_data?.availability);
+    
+  },[user_data]);
   const dispatch = useDispatch();
   console.log(user_data, "userData");
   const formik = useFormik({
@@ -68,18 +76,16 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
         }
 
         if (availability) {
-          formData.append(
-            "availability[0][start_time]",
-            availability.start_time
-          );
-          formData.append("availability[0][end_time]", availability.end_time);
+          formData.append("availability[start_time]", availability.start_time);
+          formData.append("availability[end_time]", availability.end_time);
 
           availability.days.forEach((day, index) => {
-            formData.append(`availability[0][days][${index}]`, day);
+            formData.append(`availability[days][${index}]`, day);
           });
         }
 
         await dispatch(UpdateProviderProfile(formData)).unwrap();
+        dispatch(getProviderProfile());
         setIsOpen(false);
         setSuccessModal(true);
       } catch (err) {
@@ -285,7 +291,7 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
 
               {/* Right Side */}
               <div className="flex flex-col items-center gap-3">
-                <div className="w-full">
+                {/* <div className="w-full">
                   <Input
                     text="Working Radius"
                     name="radius"
@@ -297,7 +303,7 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
                     error={errors.radius}
                     touched={touched.radius}
                   />
-                </div>
+                </div> */}
                 <Input
                   text="Experience (Years)"
                   name="experience"
