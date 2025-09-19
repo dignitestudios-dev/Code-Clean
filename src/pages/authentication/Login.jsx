@@ -59,6 +59,7 @@ const Login = () => {
   }, [dispatch]);
 
   // useEffect for Success Toast
+  console.log(user_data, "roleee");
   useEffect(() => {
     if (success && accessToken) {
       SuccessToast(typeof success === "string" ? success : "Login successful!");
@@ -75,7 +76,7 @@ const Login = () => {
       fetchFCMToken(); // Fetch the token after login success
 
       // Redirect to appropriate page
-      if (user_data?.role === "service_provider") {
+      if (user_data?.role == "service_provider") {
         navigate("/dashboard");
       } else {
         navigate("/Home");
@@ -100,9 +101,13 @@ const Login = () => {
         role: selectedRole,
       };
       await dispatch(SocialLogin(data));
+      if (user_data?.role == "service_provider") {
+        navigate("/dashboard");
+      } else {
+        navigate("/Home");
+      }
     },
-    onError: () => {
-    },
+    onError: () => {},
   });
 
   const handleAppleLogin = async (role) => {
