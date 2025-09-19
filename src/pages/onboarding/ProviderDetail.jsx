@@ -267,7 +267,7 @@ export default function ProviderDetail({ handleNext }) {
               touched={touched.radius}
             /> */}
 
-            <div className="mt-4">
+            <div className="">
               <Input
                 text="Experience (Years)"
                 name="experience"
