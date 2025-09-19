@@ -44,7 +44,7 @@ export const personalDetailsValues = {
 };
 export const providerDetailsValues = {
   fullName: "",
-  radius: "",
+  // radius: "",
   avaliabilty: "",
   phone: "",
   location: "",

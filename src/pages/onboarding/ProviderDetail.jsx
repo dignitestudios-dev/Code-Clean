@@ -33,7 +33,7 @@ export default function ProviderDetail({ handleNext }) {
 
         // Basic info
         formData.append("name", values.fullName);
-        formData.append("working_radius", values.radius);
+        // formData.append("working_radius", values.radius);
         formData.append("phone_number", values.phone);
         formData.append("lat", mapCenter.lat);
         formData.append("long", mapCenter.lng);
@@ -255,7 +255,7 @@ export default function ProviderDetail({ handleNext }) {
 
           {/* Right column */}
           <div>
-            <Input
+            {/* <Input
               text="Working Radius"
               name="radius"
               type="number"
@@ -265,7 +265,7 @@ export default function ProviderDetail({ handleNext }) {
               handleChange={handleChange}
               error={errors.radius}
               touched={touched.radius}
-            />
+            /> */}
 
             <div className="mt-4">
               <Input

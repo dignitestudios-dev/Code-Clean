@@ -128,7 +128,7 @@ export const providerDetailsSchema = Yup.object({
   phone: Yup.string()
     .matches(/^[0-9]{10}$/, "Enter a valid phone number")
     .required("Phone number is required"),
-  radius: Yup.string().required("Radius is required"),
+  // radius: Yup.string().required("Radius is required"),
   experience: Yup.string().required("experience is required"),
   // Availability: Yup.string().required("Availability is required"),
   biography: Yup.string().required("biography is required"),
