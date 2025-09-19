@@ -69,5 +69,5 @@ export const certificationValues = {
 };
 
 export const emailVerificationValues = {
-  otp: ["", "", "", "", ""], // 6-digit OTP
+  otp: ["", "", "", "", "",""], // 6-digit OTP
 };

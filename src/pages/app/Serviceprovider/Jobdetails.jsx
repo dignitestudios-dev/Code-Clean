@@ -24,6 +24,7 @@ import {
 import { Button } from "../../../components/global/GlobalButton";
 import { ErrorToast } from "../../../components/global/Toaster";
 import BookingCountdown from "../../../components/Serviceprovider/Appointment/BookingStartTimer";
+import { HiXMark } from "react-icons/hi2";
 const Jobdetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -427,8 +428,11 @@ const Jobdetails = () => {
 
                       {rejectedreqcomplete && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                          <div className="bg-white rounded-xl p-10 md:w-[26em] shadow-2xl text-center">
+                          <div className="bg-white rounded-xl px-5 py-5 md:w-[26em] shadow-2xl text-center">
                             {/* Checkmark Icon */}
+                            <div className="flex justify-end items-center" >
+                                  <button onClick={()=>setRejectedreqcomplete(false)} ><HiXMark size={22} /></button> 
+                            </div>
                             <div className="mb-4 flex justify-center items-center">
                               <div className="bg-gradient-to-r from-[#27A8E2] to-[#00034A] w-[70px] h-[70px] rounded-full flex justify-center items-center">
                                 <FaCheck color="white" size={30} />

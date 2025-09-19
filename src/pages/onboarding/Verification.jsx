@@ -40,6 +40,7 @@ export default function Verification({ handleNext, email }) {
       SuccessToast("OTP resent successfully.");
       setIsResendDisabled(true);
       setTimer(30);
+      setOtp(emailVerificationValues.otp);
     } catch (err) {
       console.error("Resend OTP failed:", err);
     }
@@ -118,7 +119,7 @@ export default function Verification({ handleNext, email }) {
         Verification
       </h3>
       <p className="text-[#565656] mt-3 text-center font-[400] text-[16px] ">
-        Please enter OTP code sent to designer@dignitestudios.com
+        Please enter OTP code sent to {email}
       </p>
       <form
         onSubmit={(e) => {
