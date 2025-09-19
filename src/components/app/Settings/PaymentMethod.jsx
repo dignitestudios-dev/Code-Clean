@@ -27,7 +27,6 @@ export default function PaymentMethod() {
     dispatch(getPaymentMethod());
   };
 
-  console.log(paymentMethod, "paymentMethod====");
 
   return (
     <div>

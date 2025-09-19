@@ -1,7 +1,6 @@
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 export default function Pagination({ links, onPageChange }) {
-  console.log(links,"linksfsd")
   return (
     <div className="flex justify-center gap-2">
       <div className="flex gap-3 bg-white shadow-2xl rounded-xl px-2 py-1">

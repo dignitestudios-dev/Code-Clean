@@ -21,7 +21,6 @@ export default function AddServicesForm({ handleNext }) {
     dispatch(getServices());
   }, []);
 
-  console.log(services, "services");
   return (
     <div className="w-full max-w-lg mx-auto py-6">
       <h2 className="text-[32px] font-bold text-[#181818] text-center">

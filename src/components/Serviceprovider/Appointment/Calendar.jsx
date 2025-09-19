@@ -42,7 +42,6 @@ const AppointmentCalendar = () => {
     (state) => state?.provider
   );
   const weeks = [];
-  console.log(CalendarBooking, "calendarBooking");
   let currentDay = 1 - startDay;
   useEffect(() => {
     dispatch(getCalendar());
@@ -66,8 +65,6 @@ const AppointmentCalendar = () => {
 
     // ✅ Safe lookup
     const data = CalendarBooking?.bookings?.[dateKey];
-
-    console.log(day, dateKey, "data-comes");
 
     return (
       <div className="relative p-1 text-sm overflow-y-auto h-full">
@@ -112,7 +109,6 @@ const AppointmentCalendar = () => {
 
     // Format as YYYY-MM
     const formattedMonth = monthGet.format("YYYY-MM");
-    console.log(formattedMonth, "formatted");
 
     await dispatch(getCalendar(formattedMonth));
 
@@ -123,7 +119,6 @@ const AppointmentCalendar = () => {
     const monthGet = currentMonth.clone().add(1, "month");
     // Format as YYYY-MM
     const formattedMonth = monthGet.format("YYYY-MM");
-    console.log(formattedMonth, "formatted");
 
     await dispatch(getCalendar(formattedMonth));
 

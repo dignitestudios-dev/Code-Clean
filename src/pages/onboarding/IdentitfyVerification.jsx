@@ -59,7 +59,6 @@ export default function IdentityVerification({ handleNext }) {
   const [frontFile, setFrontFile] = useState(null);
   const [backFile, setBackFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  console.log(provider_data, "testtt");
   // Current status fetched from API
   const currentStatus =
     provider_data?.identity_verification?.status || "idcard";

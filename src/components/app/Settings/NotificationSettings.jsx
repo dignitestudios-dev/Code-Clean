@@ -55,7 +55,6 @@ export default function NotificationSettings({ isOpen, setIsOpen }) {
     }
   }, [userPreference]);
 
-  console.log(toggles, "toggles");
 
   const handleToggle = (index) => {
     const updated = [...toggles];

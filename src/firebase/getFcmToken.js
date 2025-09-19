@@ -17,7 +17,6 @@ const getFCMToken = async () => {
     });
 
     if (token) {
-      console.log("FCM token:", token);
       localStorage.setItem("fcm_token", token); // optional caching
       return token;
     } else {

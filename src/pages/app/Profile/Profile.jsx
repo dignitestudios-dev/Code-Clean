@@ -36,8 +36,6 @@ export default function Profile() {
         }
     }, [dispatch, user_data, getprofileloading]); // Dependencies
 
-    console.log(provider_data, "provider_data")
-    console.log(user_data, "Userrrrrrrr")
 
     useEffect(() => {
         if (provider_data) {
@@ -45,8 +43,6 @@ export default function Profile() {
         }
     }, [provider_data])
 
-
-    console.log(serviceUser, "serviceUser")
 
     // useEffect(() => {
     //     if (!userProfile && !isLoading) {
@@ -67,9 +63,6 @@ export default function Profile() {
         }
     }, [userProfile])
 
-
-
-    console.log(userdata, "userdata")
 
 
     return (

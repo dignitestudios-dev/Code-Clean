@@ -24,7 +24,6 @@ instance.defaults.headers.common["ngrok-skip-browser-warning"] = "true";
 instance.interceptors.request.use(
   async (request) => {
     const token = Cookies.get("access_token");
- console.log(token)
     if (!navigator.onLine) {
       ErrorToast("No internet connection. Please check your network and try again.");
       return Promise.reject(new Error("No internet connection"));

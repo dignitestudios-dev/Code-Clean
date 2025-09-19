@@ -40,13 +40,11 @@ export default function Settings() {
     }
   }, [userProfile?.role]);
 
-  console.log(role, "User role");
 
   useEffect(() => {
     dispatch(fetchUserProfile());
   }, [dispatch]);
 
-  console.log(userProfile, "userProfile");
 
   const handleItemClick = (item) => {
     setIsOpen(!isOpen);

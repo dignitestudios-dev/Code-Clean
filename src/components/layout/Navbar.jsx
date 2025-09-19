@@ -33,7 +33,6 @@ const Navbar = () => {
   } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  console.log(user_data, "navbar data");
 
   const handleLogout = async () => {
     try {
@@ -118,7 +117,6 @@ const Navbar = () => {
   useEffect(() => {
     // Listen for foreground notifications
     onMessage(messaging, (payload) => {
-      console.log("Foreground notification received: ", payload);
       const newNotification = {
         title: payload.notification.title,
         message: payload.notification.body,
@@ -159,7 +157,6 @@ const Navbar = () => {
     // Also update the notifications in localStorage
     localStorage.setItem("notifications", JSON.stringify(updatedNotifications));
   };
-console.log(role,"role--->")
   const menuLinks =
     role === "service_provider"
       ? [

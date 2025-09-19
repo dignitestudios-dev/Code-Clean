@@ -58,7 +58,6 @@ const BookingRequestModal = ({ isOpen, setIsOpen, date }) => {
   const { bookingRequest, isLoading, bookingRequestLoader } = useSelector(
     (state) => state?.provider
   );
-  console.log(date, bookingRequest, "testing-date");
   useEffect(() => {
     dispatch(getBookingRequest(`provider/booking/requests?date=${date}`));
   }, [date]);

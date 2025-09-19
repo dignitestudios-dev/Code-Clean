@@ -29,7 +29,6 @@ export default function Badge() {
   useEffect(() => {
     dispatch(getBadges());
   }, []);
-  console.log(badges, "badges");
 
   return (
     <>

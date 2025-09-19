@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import Navbar from "../../../components/layout/Navbar";
 import { FaArrowLeft, FaCheck, FaStar } from "react-icons/fa";
@@ -21,8 +21,9 @@ import { MdDelete } from "react-icons/md";
 import ProviderEditProfile from "../../../components/Serviceprovider/profile/ProviderEditProfile";
 import ProviderEditServices from "../../../components/Serviceprovider/profile/EditServicesDetail";
 import ProviderEditCertificate from "../../../components/Serviceprovider/profile/EditCertificateDetail";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { formatDate } from "../../../hooks/utils/Utils";
+import { getProviderProfile } from "../../../redux/slices/auth.slice";
 
 const ServiceproviderProfile = () => {
   const { user_data } = useSelector((state) => state.auth);
@@ -120,6 +121,12 @@ const ServiceproviderProfile = () => {
     },
   });
 
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getProviderProfile())
+  }, [dispatch])
+
   const [editMode, setEditMode] = useState(false);
 
   const handleEdit = (field) => {
@@ -133,7 +140,6 @@ const ServiceproviderProfile = () => {
     setRequestservicefive(true);
     setRequestservicefour(false);
   };
-  console.log(user_data, "userData");
 
   return (
     <>
@@ -159,9 +165,13 @@ const ServiceproviderProfile = () => {
           <div className="flex flex-col md:flex-row gap-8">
             <div className="md:w-[18em]">
               <img
-                src={`https://code-clean-bucket.s3.us-east-2.amazonaws.com/${user_data?.avatar}`}
+                src={
+                  user_data?.avatar
+                    ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${user_data?.avatar}`
+                    : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ3AH9WTlcacKErfpKhk-lJ7serN0eQje6Qg&s"
+                }
                 alt="John Doe"
-                className="w-80 h-100 rounded-xl object-cover"
+                className="w-60 h-100 rounded-xl object-cover"
               />
               {/* Certificates */}
               <div className="mt-4 border-t-2 pt-3">
@@ -185,22 +195,29 @@ const ServiceproviderProfile = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-                  {user_data?.certificates?.slice(0, 2).map((item, i) => (
-                    <div key={i} className="space-y-1">
-                      <h4 className="font-medium text-gradient">
-                        {item?.name}
-                      </h4>
-                      <p className="text-sm text-[#919191]">
-                        {item?.institution}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {item?.description}
-                      </p>
-                      <p className="text-sm text-gray-400 mt-1">
-                        {formatDate(item?.date_of_completion)}
-                      </p>
-                    </div>
-                  ))}
+                  {user_data?.certificates &&
+                    user_data.certificates.length > 0 ? (
+                    user_data.certificates.slice(0, 2).map((item, i) => (
+                      <div key={i} className="space-y-1">
+                        <h4 className="font-medium text-gradient">
+                          {item?.name}
+                        </h4>
+                        <p className="text-sm text-[#919191]">
+                          {item?.institution}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {item?.description}
+                        </p>
+                        <p className="text-sm text-gray-400 mt-1">
+                          {formatDate(item?.date_of_completion)}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-gray-500 text-sm col-span-1">
+                      No certificates found
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -251,7 +268,9 @@ const ServiceproviderProfile = () => {
               {/* Bio */}
               <div className="mt-4 text-sm text-gray-700 border-t-2 pt-3">
                 <h3 className="font-semibold mb-1 text-black">Biography</h3>
-                <p className="pt-1 text-sm">{user_data?.bio}</p>
+                <p className="pt-1 text-sm">
+                  {user_data?.biography || "No Bio"}
+                </p>
                 <div className="mt-4 grid grid-cols-5 gap-5 text-sm text-[#787878] border-t-2 pt-3">
                   <div>
                     <span className="font-semibold">Location</span>
@@ -320,27 +339,32 @@ const ServiceproviderProfile = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  {user_data?.services?.slice(0, 4)?.map((service, i) => (
-                    <div
-                      key={i}
-                      className="bg-gray-50 p-3 rounded-md border flex flex-col justify-between h-[250px]"
-                    >
-                      {" "}
-                      {/* Added flex and height */}
-                      <div>
-                        <h4 className="font-semibold text-[12px] mb-2">
-                          {service?.title}
-                        </h4>
-                        <ul className="list-disc list-inside text-[11px] text-gray-600 space-y-1">
-                          {service?.description}
-                        </ul>
+                  {user_data?.services && user_data.services.length > 0 ? (
+                    user_data.services.slice(0, 4).map((service, i) => (
+                      <div
+                        key={i}
+                        className="bg-gray-50 p-3 rounded-md border flex flex-col justify-between h-[250px]"
+                      >
+                        {/* Added flex and height */}
+                        <div>
+                          <h4 className="font-semibold text-[12px] mb-2">
+                            {service?.title}
+                          </h4>
+                          <ul className="list-disc list-inside text-[11px] text-gray-600 space-y-1">
+                            {service?.description}
+                          </ul>
+                        </div>
+                        <div className="text-[#27A8E2] font-bold text-lg mt-auto">
+                          {service.amount}
+                        </div>
+                        {/* Fixed price at the bottom */}
                       </div>
-                      <div className="text-[#27A8E2] font-bold text-lg mt-auto">
-                        {service.amount}
-                      </div>{" "}
-                      {/* Fixed price at the bottom */}
-                    </div>
-                  ))}
+                    ))
+                  ) : (
+                    <p className="col-span-4 text-center text-gray-500 text-sm">
+                      No services found
+                    </p>
+                  )}
                 </div>
               </div>
               {/* Reviews */}
@@ -544,13 +568,12 @@ const ServiceproviderProfile = () => {
                 ].map((time, idx) => (
                   <button
                     key={idx}
-                    className={`px-4 py-2 rounded-lg border text-sm ${
-                      idx === 0
-                        ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
-                        : idx % 2 === 0
+                    className={`px-4 py-2 rounded-lg border text-sm ${idx === 0
+                      ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
+                      : idx % 2 === 0
                         ? "bg-pink-100 text-gray-800"
                         : "bg-white"
-                    }`}
+                      }`}
                   >
                     {time}
                   </button>
@@ -1179,9 +1202,8 @@ const ServiceproviderProfile = () => {
                     {Array.from({ length: 5 }).map((_, i) => (
                       <FaStar
                         key={i}
-                        className={`text-yellow-400 ${
-                          i < Math.floor(review.rating) ? "" : "opacity-50"
-                        }`}
+                        className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
+                          }`}
                       />
                     ))}
                     <span className="ml-1 font-medium text-sm">

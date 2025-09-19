@@ -34,7 +34,6 @@ const Login = () => {
     if (selectedProvider === "google") {
       Googlelogin();
     } else if (selectedProvider === "apple") {
-      console.log("Continue with Apple as", role);
       handleAppleLogin();
     }
   };
@@ -50,7 +49,6 @@ const Login = () => {
           password: values?.password,
           fcm_token: token, // Include FCM token in the login payload
         };
-        console.log(data);
         dispatch(login(data)); // Dispatch login action
       },
     });
@@ -68,7 +66,6 @@ const Login = () => {
       const fetchFCMToken = async () => {
         const token = await getFCMToken();
         if (token) {
-          console.log("FCM Token:", token);
           // You can now save this token in your backend or local storage for future use
           // For example, you can store it in cookies:
           Cookies.set("fcm_token", token);
@@ -97,16 +94,14 @@ const Login = () => {
   }, [error]);
 
   const Googlelogin = useGoogleLogin({
-    onSuccess: (tokenResponse) => {
-      console.log("Login Success:", tokenResponse);
+    onSuccess: async (tokenResponse) => {
       const data = {
         token: tokenResponse?.access_token,
         role: selectedRole,
       };
-      dispatch(SocialLogin(data));
+      await dispatch(SocialLogin(data));
     },
     onError: () => {
-      console.log("Login Failed");
     },
   });
 
@@ -121,7 +116,6 @@ const Login = () => {
         nonce: "random_nonce_string",
         usePopup: true,
       });
-      console.log("Apple login success:", response, "Role:", role);
     } catch (err) {
       console.error("Apple login failed:", err);
     }

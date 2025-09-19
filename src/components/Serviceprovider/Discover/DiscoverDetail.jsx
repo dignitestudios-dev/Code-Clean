@@ -26,7 +26,6 @@ export default function DiscoverDetail() {
   const [selectedItem, setSelectedItem] = useState(null);
   const dispatch = useDispatch("");
   const { bookingRequestDetail } = useSelector((state) => state.provider);
-  console.log(location, "params");
   const fetchDiscoverJob = async () => {
     await dispatch(
       getRequestDetail(`provider/requests/${queryParams.get("id")}/details`)
@@ -38,7 +37,6 @@ export default function DiscoverDetail() {
     fetchDiscoverJob();
   }, []);
 
-  console.log(bookingRequestDetail, "datass");
 
   const HandleRejectRequest = async () => {
     const data = {

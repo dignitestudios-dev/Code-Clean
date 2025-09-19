@@ -11,7 +11,6 @@ export default function AddCertification({ handleNext }) {
   const [actionType, setActionType] = useState("");
   const { certificates } = useSelector((state) => state?.provider);
   const [selectedItem, setSelectedItem] = useState(null);
-  console.log(certificates);
 
   const handleAddService = (newService) => {
     // setServices((prev) => [...prev, newService]);

@@ -365,7 +365,6 @@ export const getFilteredProviders = createAsyncThunk(
   async (body, thunkAPI) => {
     try {
       const response = await axios.post("/providers/filter", body);
-      console.log(response, "filter-data");
       return response?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(

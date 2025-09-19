@@ -29,7 +29,6 @@ export default function Badgesp() {
   useEffect(() => {
     dispatch(getBadges());
   }, []);
-  console.log(badges, "badges");
   const BagdeData = [
     {
       icon: ThreeMonth,

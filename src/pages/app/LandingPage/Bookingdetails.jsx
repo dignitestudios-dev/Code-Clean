@@ -43,7 +43,6 @@ const Bookingdetails = () => {
     await dispatch(CancelBookingRequest(data));
     navigate("/booking-history");
   };
-  console.log(bookingDetail, "booking-Detail");
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />

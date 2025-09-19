@@ -28,7 +28,6 @@ const initialState = {
 export const login = createAsyncThunk(
   "/login",
   async (credentials, thunkAPI) => {
-    console.log(credentials, "after---login");
     try {
       const res = await axios.post("/login", credentials);
       const {
@@ -89,7 +88,6 @@ export const SocialLogin = createAsyncThunk(
   async (credentials, thunkAPI) => {
     try {
       const res = await axios.post("/social/auth", credentials);
-      console.log(res?.data,"response");
 
       return {
         message: "Login successful",
@@ -233,7 +231,6 @@ export const UpdateProviderProfile = createAsyncThunk(
   "/provider/update-profile",
   async (payload, thunkAPI) => {
     try {
-      console.log(payload, "update ProfileRecord");
       const response = await axios.post(`/provider/profile`, payload);
 
       SuccessToast("Profile Update Successfully");
@@ -280,7 +277,6 @@ export const CreateService = createAsyncThunk(
   "/services/create",
   async (payload, thunkAPI) => {
     try {
-      console.log(payload, "payload");
       const response = await axios.post("/services/create", payload);
 
       const { accessToken, refreshToken, userData } = response.data;
@@ -309,7 +305,6 @@ export const UpdateService = createAsyncThunk(
   "/services/id",
   async (payload, thunkAPI) => {
     try {
-      console.log(payload, "payload");
       const response = await axios.post(
         `/services/${payload?.id}`,
         payload?.data
@@ -359,7 +354,6 @@ export const CreateCertificate = createAsyncThunk(
     try {
       // Get token from localStorage or Redux
       const token = thunkAPI.getState().auth.token;
-      console.log(token);
       if (!token) {
         return thunkAPI.rejectWithValue("No token found, please login again");
       }
@@ -395,7 +389,6 @@ export const UpdateCertificate = createAsyncThunk(
   "/provider/certificate/id",
   async (payload, thunkAPI) => {
     try {
-      console.log(payload, "payload");
       const response = await axios.post(
         `provider/certificate/${payload?.id}`,
         payload?.data
@@ -689,8 +682,6 @@ const authSlice = createSlice({
       .addCase(UpdateProviderProfile.fulfilled, (state, action) => {
         state.isLoading = false;
         state.success = "Profile Update Successfully";
-
-        // Optional: optimistic update (merge with old state)
         state.user_data = {
           ...(state.user_data || {}),
           ...(action.payload || {}),
