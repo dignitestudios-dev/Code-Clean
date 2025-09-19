@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { useFormik } from "formik";
 import { updateProviderDetailsSchema } from "../../../schema/authentication/AuthSchema";
@@ -20,7 +19,6 @@ import {
   GoogleMap,
   Marker,
   Autocomplete,
-  LoadScript,
 } from "@react-google-maps/api";
 import { useNavigate } from "react-router";
 
