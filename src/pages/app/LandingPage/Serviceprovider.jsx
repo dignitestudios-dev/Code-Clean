@@ -6,19 +6,8 @@ import { HeroBg, stripe } from "../../../assets/export";
 import { GoTrash } from "react-icons/go";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import React, { useEffect, useRef, useState } from 'react';
-import { FaArrowLeft, FaCalendarAlt, FaCheck, FaMapMarkerAlt, FaRegCalendarAlt, FaRegHeart, FaStar } from 'react-icons/fa';
-import { SlTarget } from "react-icons/sl";
-import { LuPen, LuPenLine } from "react-icons/lu"
-import { AiOutlineClockCircle } from "react-icons/ai";
-import Navbar from '../../../components/layout/Navbar';
-import { HeroBg, stripe, imageone, imagetwo, imagethree, EditIcon } from "../../../assets/export"
-import { usertwo } from "../../../assets/export"
-import { GoHeart, GoTrash } from 'react-icons/go';
-import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { IoLocationOutline, IoTimeOutline } from "react-icons/io5";
-import { RiEditLine } from "react-icons/ri";
 import { MdDelete, MdOutlineEdit } from 'react-icons/md';
 import { useLocation, useNavigate } from 'react-router';
 import { RxCross2 } from "react-icons/rx";
