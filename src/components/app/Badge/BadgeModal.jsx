@@ -1,7 +1,6 @@
 import Modal from "react-modal";
 import { HiOutlineXMark } from "react-icons/hi2";
 const BadgeModal = ({ isOpen, setIsOpen, detail }) => {
-  console.log(detail, "detail,-->");
   return (
     <Modal
       isOpen={isOpen}

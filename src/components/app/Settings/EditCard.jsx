@@ -58,7 +58,6 @@ export default function EditCard() {
           .map((val) => parseInt(val, 10));
         mm = String(mm).padStart(2, "0"); // ✅ always 2-digit month
 
-        console.log(mm, yyyy, "testing");
 
         // Future date check
         const today = new Date();

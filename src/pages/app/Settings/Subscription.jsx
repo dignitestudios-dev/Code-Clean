@@ -28,7 +28,6 @@ export default function Subscription() {
     dispatch(getPlans());
   }, []);
 
-  console.log(billings, "billings");
   const sliceBaseUrl = (url) => {
     if (!url) return null;
     try {

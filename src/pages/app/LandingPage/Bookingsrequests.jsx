@@ -66,7 +66,6 @@ const Bookingsrequests = () => {
   const { currentbookingdata, currentbookingLoading, requestbookingdata } =
     useSelector((s) => s.user);
   const loading = !!currentbookingLoading;
-  console.log(currentbookingdata, requestbookingdata, "request-booking-data");
   useEffect(() => {
     dispatch(fetchBookingRequest("/user/booking/requests"));
   }, [dispatch]);
@@ -77,7 +76,6 @@ const Bookingsrequests = () => {
     }
   }, [requestbookingdata]);
 
-  console.log(bookingrequest, "bookingrequest");
 
   useEffect(() => {
     dispatch(fetchCurrentBooking("/user/current-bookings"));

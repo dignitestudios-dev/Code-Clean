@@ -125,7 +125,6 @@ export const getServices = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axios.get("/provider/services"); // API request to fetch the profile
-      console.log(response, "response");
       return response.data;
     } catch (error) {
       const msg = error?.response?.data?.message || "Failed to Services";
@@ -140,7 +139,6 @@ export const getBookingRequest = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axios.get(`/${_}`);
-      console.log(response, "data-item");
       return response?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -155,7 +153,6 @@ export const getCurrentBooking = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axios.get(`/${_}`);
-      console.log(response, "data-item");
       return response?.data?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -169,7 +166,6 @@ export const getDiscoverJobs = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axios.get(_);
-      console.log(response, "data-item");
       return response?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -183,7 +179,6 @@ export const getFilteredJobs = createAsyncThunk(
   async (body, thunkAPI) => {
     try {
       const response = await axios.post("/filter/jobs", body);
-      console.log(response, "filter-data");
       return response?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -198,7 +193,6 @@ export const getRequestDetail = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axios.get(`/${_}`);
-      console.log(response, "data-item");
       return response?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -241,7 +235,6 @@ export const reportUser = createAsyncThunk(
   "report/user",
   async (payload, thunkAPI) => {
     try {
-      console.log(payload, "payload");
       const response = await axios.post(`/report/${payload?.id}`, {
         reason: payload?.reason,
       });
@@ -276,7 +269,6 @@ export const EditStripeCard = createAsyncThunk(
   "/edit/payment-methods",
   async (payload, thunkAPI) => {
     try {
-      console.log(payload, "payload");
       const response = await axios.post(payload.url, {
         expiry_month: payload?.expiry_month,
         expiry_year: payload?.expiry_year,
@@ -743,7 +735,6 @@ const providerSlice = createSlice({
         state.success = null;
       })
       .addCase(getRequestDetail.fulfilled, (state, action) => {
-        console.log(action.payload, "payload");
         state.isLoading = false;
         state.bookingRequestDetail = action.payload;
         state.success = "Booking Request Detail Get Successfully";

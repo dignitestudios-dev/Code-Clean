@@ -123,9 +123,9 @@ const ServiceproviderProfile = () => {
 
   const dispatch = useDispatch();
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(getProviderProfile())
-  },[dispatch])
+  }, [dispatch])
 
   const [editMode, setEditMode] = useState(false);
 
@@ -140,7 +140,6 @@ const ServiceproviderProfile = () => {
     setRequestservicefive(true);
     setRequestservicefour(false);
   };
-  console.log(user_data, "userData");
 
   return (
     <>
@@ -197,7 +196,7 @@ const ServiceproviderProfile = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                   {user_data?.certificates &&
-                  user_data.certificates.length > 0 ? (
+                    user_data.certificates.length > 0 ? (
                     user_data.certificates.slice(0, 2).map((item, i) => (
                       <div key={i} className="space-y-1">
                         <h4 className="font-medium text-gradient">
@@ -569,13 +568,12 @@ const ServiceproviderProfile = () => {
                 ].map((time, idx) => (
                   <button
                     key={idx}
-                    className={`px-4 py-2 rounded-lg border text-sm ${
-                      idx === 0
-                        ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
-                        : idx % 2 === 0
+                    className={`px-4 py-2 rounded-lg border text-sm ${idx === 0
+                      ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
+                      : idx % 2 === 0
                         ? "bg-pink-100 text-gray-800"
                         : "bg-white"
-                    }`}
+                      }`}
                   >
                     {time}
                   </button>
@@ -1204,9 +1202,8 @@ const ServiceproviderProfile = () => {
                     {Array.from({ length: 5 }).map((_, i) => (
                       <FaStar
                         key={i}
-                        className={`text-yellow-400 ${
-                          i < Math.floor(review.rating) ? "" : "opacity-50"
-                        }`}
+                        className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
+                          }`}
                       />
                     ))}
                     <span className="ml-1 font-medium text-sm">

@@ -44,7 +44,6 @@ export default function EditCertificateModal({ onClose, selectedItem }) {
         }
       },
     });
-  console.log(errors, "errors");
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-[16px] p-6 w-full max-w-md shadow-lg relative">

@@ -6,9 +6,21 @@ import { HeroBg, stripe } from "../../../assets/export";
 import { GoTrash } from "react-icons/go";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
+import React, { useEffect, useRef, useState } from 'react';
+import { FaArrowLeft, FaCalendarAlt, FaCheck, FaMapMarkerAlt, FaRegCalendarAlt, FaRegHeart, FaStar } from 'react-icons/fa';
+import { SlTarget } from "react-icons/sl";
+import { LuPen, LuPenLine } from "react-icons/lu"
+import { AiOutlineClockCircle } from "react-icons/ai";
+import Navbar from '../../../components/layout/Navbar';
+import { HeroBg, stripe, imageone, imagetwo, imagethree, EditIcon } from "../../../assets/export"
+import { usertwo } from "../../../assets/export"
+import { GoHeart, GoTrash } from 'react-icons/go';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import { IoLocationOutline, IoTimeOutline } from "react-icons/io5";
-import { MdDelete, MdOutlineEdit } from "react-icons/md";
-import { useLocation, useNavigate } from "react-router";
+import { RiEditLine } from "react-icons/ri";
+import { MdDelete, MdOutlineEdit } from 'react-icons/md';
+import { useLocation, useNavigate } from 'react-router';
 import { RxCross2 } from "react-icons/rx";
 import {
   fetchallservices,
@@ -273,8 +285,20 @@ const Serviceprovider = () => {
       return;
     }
 
-    setDuration(value);
-  };
+        setDuration(value);
+    };
+
+
+
+    // const handleInputChange = (e) => {
+    //     const { name, value, files } = e.target;
+    //     if (name === "file") {
+    //         setFormData({ ...formData, file: files[0] });
+    //     } else {
+    //         setFormData({ ...formData, [name]: value });
+    //     }   
+    // };
+
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
@@ -372,14 +396,14 @@ const Serviceprovider = () => {
 
   const [services, setServices] = useState({});
 
-  useEffect(() => {
-    
-    const initialServices = data?.services?.reduce((acc, service) => {
-      acc[service.id] = 1; 
-      return acc;
-    }, {});
-    setServices(initialServices);
-  }, [data?.services]);
+    useEffect(() => {
+        // Initialize the services with quantity 0
+        const initialServices = data?.services?.reduce((acc, service) => {
+            acc[service.id] = 1; // or any default quantity you prefer
+            return acc;
+        }, {});
+        setServices(initialServices);
+    }, [data?.services]);
 
   const [selectedTime, setSelectedTime] = useState(null);
 
@@ -493,7 +517,6 @@ const Serviceprovider = () => {
       providerData,
     };
 
-    console.log(payload); // Log payload to check if it's correct
 
     dispatch(HireServiceProvider(payload)); // Dispatch the action
   };
@@ -564,15 +587,15 @@ const Serviceprovider = () => {
 
   const [todaytime, setTodaytime] = useState("");
 
-  useEffect(() => {
-    if (dailyAvailability) {
-      // Filter out the available slots
-      const availableSlots = dailyAvailability?.slots?.filter(
-        (slot) => slot.status === "Available"
-      );
-      setTodaytime(availableSlots || []); // Set only available slots
-    }
-  }, [dailyAvailability]);
+    useEffect(() => {
+        if (dailyAvailability) {
+            // Filter out the available slots
+            const availableSlots = dailyAvailability?.slots?.filter(slot => slot.status === "Available");
+            setTodaytime(availableSlots || []); // Set only available slots
+        }
+    }, [dailyAvailability]);
+
+
 
   return (
     <>
@@ -1356,34 +1379,21 @@ const Serviceprovider = () => {
         </div>
       )}
 
-      {requestservicefive && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-xl p-6 md:w-[35em] shadow-2xl">
-            {/* Header */}
-            <div className="flex justify-between items-center border-b pb-4 mb-4">
-              <h2 className="text-2xl font-bold text-gray-800">
-                Request Service
-              </h2>
-              <button
-                onClick={() => setRequestservicefive(false)}
-                className="text-gray-500 hover:text-red-600"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
+            {requestservicefive && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white rounded-xl p-6 md:w-[35em] shadow-2xl">
+                        {/* Header */}
+                        <div className="flex justify-between items-center border-b pb-4 mb-4">
+                            <h2 className="text-2xl font-bold text-gray-800">Request Service</h2>
+                            <button
+                                onClick={() => setRequestservicefive(false)}
+                                className="text-gray-500 hover:text-red-600"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
 
             {/* Payment Method Section */}
             <div className="space-y-4">
@@ -1394,71 +1404,53 @@ const Serviceprovider = () => {
                 service provider.
               </p>
 
-              {/* Payment Method Info */}
-              <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
-                <div className="w-full">
-                  <span className="font-medium text-gray-800">
-                    Attached Stripe
-                  </span>
-                  {paymentmethoduser?.payment_methods &&
-                    paymentmethoduser?.payment_methods.map((card) => (
-                      <div
-                        key={card.id}
-                        className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${
-                          selectedCard?.id === card.id
-                            ? "bg-blue-100 border-blue-500"
-                            : ""
-                        }`}
-                        onClick={() => handleCardSelect(card)} // Set the card as selected when clicked
-                      >
-                        <div className="flex gap-3">
-                          <span className="text-gray-700">
-                            **** **** **** **{card.last_digits}
-                          </span>
-                          <img src={stripe} className="h-6" alt={card.brand} />
-                        </div>
+                            {/* Payment Method Info */}
+                            <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
+                                <div className="w-full">
+                                    <span className="font-medium text-gray-800">Attached Stripe</span>
+                                    {paymentmethoduser?.payment_methods && paymentmethoduser?.payment_methods.map((card) => (
+                                        <div
+                                            key={card.id}
+                                            className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${selectedCard?.id === card.id ? 'bg-blue-100 border-blue-500' : ''}`}
+                                            onClick={() => handleCardSelect(card)} // Set the card as selected when clicked
+                                        >
+                                            <div className="flex gap-3">
+                                                <span className="text-gray-700">**** **** **** **{card.last_digits}</span>
+                                                <img src={stripe} className="h-6" alt={card.brand} />
+                                            </div>
 
-                        <button
-                          className="text-blue-500 hover:text-blue-700 text-lg"
-                          onClick={() => {
-                            navigate("/app/payment-method");
-                          }}
-                        >
-                          <MdOutlineEdit />
-                        </button>
-                      </div>
-                    ))}
-                </div>
-              </div>
+                                            <button className="text-blue-500 hover:text-blue-700 text-lg" onClick={() => {
+                                                navigate("/app/payment-method");
+                                            }}>
+                                                <MdOutlineEdit />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
 
-              {/* Payment Summary */}
-              <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
-                <div className="w-full bg-[#F3F3F3] p-3 rounded-[10px]">
-                  <div className="w-full border-b-[1px] pb-[3px]">
-                    <span className="font-medium text-gray-800">
-                      Payment Summary
-                    </span>
-                  </div>
-                  <div className="text-gray-600 mt-2">
-                    <div className="flex justify-between">
-                      <p>Subtotal: </p>${" "}
-                      {data?.services?.reduce((total, service) => {
-                        return (
-                          total + service.amount * (services[service.id] || 0)
-                        );
-                      }, 0)}
-                    </div>
-                    <div className="flex justify-between pt-3">
-                      <p className="text-black font-[500]">Total: </p>${" "}
-                      {data?.services?.reduce((total, service) => {
-                        return (
-                          total + service.amount * (services[service.id] || 0)
-                        );
-                      }, 0)}
-                    </div>
-                  </div>
-                </div>
-              </div>
+                            {/* Payment Summary */}
+                            <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
+                                <div className='w-full bg-[#F3F3F3] p-3 rounded-[10px]'>
+                                    <div className='w-full border-b-[1px] pb-[3px]'>
+                                        <span className="font-medium text-gray-800">Payment Summary</span>
+                                    </div>
+                                    <div className="text-gray-600 mt-2">
+                                        <div className='flex justify-between'>
+                                            <p>Subtotal: </p>
+                                            $ {data?.services?.reduce((total, service) => {
+                                                return total + service.amount * (services[service.id] || 0);
+                                            }, 0)}
+                                        </div>
+                                        <div className='flex justify-between pt-3'>
+                                            <p className='text-black font-[500]'>Total: </p>
+                                            $ {data?.services?.reduce((total, service) => {
+                                                return total + service.amount * (services[service.id] || 0);
+                                            }, 0)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
               {/* Action Buttons */}
               <div className="pt-6 pb-3">

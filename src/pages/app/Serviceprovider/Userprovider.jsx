@@ -15,7 +15,6 @@ const UserProvider = () => {
   const loc = useLocation();
   const dispatch = useDispatch();
   const { getUserProfileDetail } = useSelector((state) => state?.provider);
-  console.log(loc?.state?.user, "testing");
   // useEffect(() => {
   //   // dispatch(getUserProfile(loc?.state?.id));
   // }, []);

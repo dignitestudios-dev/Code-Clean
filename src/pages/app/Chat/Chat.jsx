@@ -23,7 +23,6 @@ const Chat = () => {
 
   const loc = useLocation();
   const user = loc?.state?.user;
-  console.log(user, "userIds");
   const [selectedChatId, setSelectedChatId] = useState(null);
   const [receiverId, setReceiverId] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -61,7 +60,6 @@ const Chat = () => {
   }, [dispatch, selectedChatId, user_data?.uid]);
 
   const getUnseenCount = (chatId) => {
-    console.log(messages, "messages,-->");
     if (!messages?.[chatId]) return 0;
     return messages[chatId].filter(
       (msg) =>
@@ -137,12 +135,7 @@ const Chat = () => {
                     (id) => id !== user_data?.uid
                   );
                   const otherMember = chat.memberInfo?.[otherMemberId] || {};
-                  console.log(
-                    getUnseenCount(chat.id),
-                    chat.id,
-                    chat,
-                    "chatCount"
-                  );
+        
                   return (
                     <div
                       key={chat.id}

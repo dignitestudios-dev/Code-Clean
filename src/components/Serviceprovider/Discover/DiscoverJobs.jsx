@@ -56,7 +56,6 @@ export default function DiscoverJobs() {
       dispatch(getDiscoverJobs(cleanUrl));
     }
   };
-  console.log(discoverJobs, "jobss");
 
   return (
     <div>

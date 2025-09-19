@@ -97,7 +97,6 @@ export default function Verification({ handleNext, email }) {
       email: email,
       otp: otpValue,
     };
-    console.log(data);
     await dispatch(verifyEmail(data)).unwrap();
     handleNext();
   };

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import { useFormik } from "formik";
 import { updateProviderDetailsSchema } from "../../../schema/authentication/AuthSchema";
@@ -21,6 +22,7 @@ import {
   Autocomplete,
   LoadScript,
 } from "@react-google-maps/api";
+import { useNavigate } from "react-router";
 
 export default function ProviderEditProfile({ isOpen, setIsOpen }) {
   const { user_data, isLoading } = useSelector((state) => state?.auth);
@@ -40,10 +42,10 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
   const [autocomplete, setAutocomplete] = useState(null);
   useEffect(() => {
     setAvailability(user_data?.availability);
-    
-  },[user_data]);
+
+  }, [user_data]);
   const dispatch = useDispatch();
-  console.log(user_data, "userData");
+  const navigate = useNavigate()
   const formik = useFormik({
     initialValues: {
       fullName: user_data?.name || "",
@@ -113,6 +115,18 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
     }
   };
 
+
+  const closeSuccessModal = () => {
+    setSuccessModal(false); // Close the success modal
+    window.location.reload(); // First hard reload
+
+    setTimeout(() => {
+      // Second hard reload after a small delay (300ms)
+      window.location.reload();
+    }, 100); // Adjust the timeout to allow for the first reload to complete
+  };
+
+
   // Handle Autocomplete Place Changed
   const handlePlaceChanged = () => {
     if (autocomplete !== null) {
@@ -131,8 +145,7 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
   const fetchAddressFromCoords = async (latitude, longitude) => {
     try {
       const res = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${
-          import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY
         }`
       );
       const data = await res.json();
@@ -392,9 +405,16 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
         </div>
       </Modal>
 
-      <SuccessModal
+      {/* <SuccessModal
         isOpen={successModal}
         setIsOpen={setSuccessModal}
+        des={"Your profile has been updated successfully."}
+        title={"Profile Updated!"}
+      /> */}
+
+      <SuccessModal
+        isOpen={successModal}
+        setIsOpen={closeSuccessModal} // Pass the function to close modal and navigate
         des={"Your profile has been updated successfully."}
         title={"Profile Updated!"}
       />
