@@ -65,51 +65,110 @@ const Serviceprovider = () => {
     images: [],
   });
 
-  const handlePlaceChangeds = () => {
-    if (autocomplete) {
-      const place = autocomplete.getPlace();
-      if (place && place.formatted_address) {
-        setLocations(place.formatted_address); // Set the location with the formatted address
+  // const handlePlaceChangeds = () => {
+  //   if (autocomplete) {
+  //     const place = autocomplete.getPlace();
+  //     if (place && place.formatted_address) {
+  //       setLocations(place.formatted_address); // Set the location with the formatted address
 
-        // Geocoding to get lat, long, city, state, country
-        const geocoder = new window.google.maps.Geocoder();
-        geocoder.geocode(
-          { address: place.formatted_address },
-          (results, status) => {
-            if (status === "OK" && results[0]) {
-              const addressComponents = results[0].address_components;
-              const lat = results[0].geometry.location.lat();
-              const lng = results[0].geometry.location.lng();
+  //       // Geocoding to get lat, long, city, state, country
+  //       const geocoder = new window.google.maps.Geocoder();
+  //       geocoder.geocode(
+  //         { address: place.formatted_address },
+  //         (results, status) => {
+  //           if (status === "OK" && results[0]) {
+  //             const addressComponents = results[0].address_components;
+  //             const lat = results[0].geometry.location.lat();
+  //             const lng = results[0].geometry.location.lng();
 
-              let city = "";
-              let state = "";
-              let country = "";
+  //             let city = "";
+  //             let state = "";
+  //             let country = "";
 
-              // Loop through address components and extract city, state, country
-              addressComponents.forEach((component) => {
-                const types = component.types;
-                if (types.includes("locality")) city = component.long_name;
-                if (types.includes("administrative_area_level_1"))
-                  state = component.long_name;
-                if (types.includes("country")) country = component.long_name;
-              });
+  //             // Loop through address components and extract city, state, country
+  //             addressComponents.forEach((component) => {
+  //               const types = component.types;
+  //               if (types.includes("locality")) city = component.long_name;
+  //               if (types.includes("administrative_area_level_1"))
+  //                 state = component.long_name;
+  //               if (types.includes("country")) country = component.long_name;
+  //             });
 
-              // Update the form data with location details
-              setFormData((prev) => ({
-                ...prev,
-                lat,
-                long: lng,
-                city,
-                state,
-                country,
-                location: place.formatted_address, // Set the full address in form data
-              }));
-            }
+  //             // Update the form data with location details
+  //             setFormData((prev) => ({
+  //               ...prev,
+  //               lat,
+  //               long: lng,
+  //               city,
+  //               state,
+  //               country,
+  //               location: place.formatted_address, // Set the full address in form data
+  //             }));
+  //           }
+  //         }
+  //       );
+  //     }
+  //   }
+  // };
+
+const handlePlaceChangeds = () => {
+  if (autocomplete) {
+    const place = autocomplete.getPlace();
+    if (place && place.formatted_address) {
+      setLocations(place.formatted_address); // Set the location with the formatted address
+
+      // Geocoding to get lat, long, city, state, country
+      const geocoder = new window.google.maps.Geocoder();
+      geocoder.geocode(
+        { address: place.formatted_address },
+        (results, status) => {
+          if (status === "OK" && results[0]) {
+            const addressComponents = results[0].address_components;
+            const lat = results[0].geometry.location.lat();
+            const lng = results[0].geometry.location.lng();
+
+            let city = "";
+            let state = "";
+            let country = "";
+
+            // Loop through address components and extract city, state, country
+            addressComponents.forEach((component) => {
+              const types = component.types;
+              if (types.includes("locality")) {
+                city = component.long_name; // City
+              }
+              if (types.includes("administrative_area_level_1")) {
+                state = component.long_name; // State
+              }
+              if (types.includes("country")) {
+                country = component.long_name; // Country
+              }
+            });
+
+            // Log the address components for debugging
+            console.log('Address Components:', addressComponents);
+            console.log('City:', city);
+            console.log('State:', state);
+            console.log('Country:', country);
+
+            // Update the form data with location details
+            setFormData((prev) => ({
+              ...prev,
+              lat,
+              long: lng,
+              city: city || "N/A", // Fallback to "N/A" if city is not found
+              state: state || "N/A", // Fallback to "N/A" if state is not found
+              country: country || "N/A", // Fallback to "N/A" if country is not found
+              location: place.formatted_address, // Set the full address in form data
+            }));
           }
-        );
-      }
+        }
+      );
     }
-  };
+  }
+};
+
+
 
   const handleSubmit = () => {
     const customserviceData = {
@@ -135,7 +194,7 @@ const Serviceprovider = () => {
 
   const [custombookingtwo, setCustombookingtwo] = useState(false);
   const [custombookingthree, setCustombookingthree] = useState(false);
-  const { allservices, paymentMethoduser,hireProviderLoading } = useSelector((s) => s.user);
+  const { allservices, paymentMethoduser,hireProviderLoading,CustomserviceproviderSuccess } = useSelector((s) => s.user);
 
 
   const handleOnLoad = (autocomplete) => {
@@ -397,6 +456,13 @@ const Serviceprovider = () => {
   const [selectedTime, setSelectedTime] = useState(null);
 
   const [selectedDate, setSelectedDate] = useState(null);
+
+  useEffect(() => {
+    if (CustomserviceproviderSuccess) {
+      // Close the custom booking process once success is received
+      setCustombooking(false);
+    }
+  }, [CustomserviceproviderSuccess]);
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
@@ -1702,6 +1768,7 @@ const Serviceprovider = () => {
                       onChange={handleInputChange}
                       required
                       className="w-full py-2 focus:outline-none"
+                      min={new Date().toISOString().split("T")[0]}
                     />
                   </div>
                 </div>
