@@ -137,6 +137,8 @@ const Bookingsrequests = () => {
     return bookingrequest?.data || []; // Extract data from the response object
   }, [bookingrequest]);
 
+  console.log(bookingrequest)
+
   // ---- unify into UI rows ----
   const uiRows = useMemo(() => {
     if (isCurrent) {
@@ -177,7 +179,7 @@ const Bookingsrequests = () => {
     } else {
       // Booking Request tab (static)
       return bookings.map((b) => ({
-        id: b.booking_id,
+        id: b.request_id,
         name: b.service_provider?.name,
         avatar: b.service_provider?.avatar || PLACEHOLDER_AVATAR,
         dateStr: b?.date || "",
@@ -218,6 +220,10 @@ const Bookingsrequests = () => {
       return url;
     }
   };
+
+
+  console.log(filteredRows,"filteredRows")
+  console.log(uiRows,"uiRows")
 
   const handlePageChange = (url) => {
     const cleanUrl = sliceBaseUrl(url);
@@ -340,7 +346,7 @@ const Bookingsrequests = () => {
                       className="border-t cursor-pointer"
                       onClick={() =>
                         navigate(
-                          `/booking-details?id=${row.id}&status=${row.statusUi}`
+                          `/booking-request?id=${row.id}&status=${row.statusUi}`
                         )
                       }
                     >

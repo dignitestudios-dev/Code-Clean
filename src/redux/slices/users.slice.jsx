@@ -43,6 +43,7 @@ const initialState = {
   favoritesError: null,
   bookingDetail: null,
   userPreference: null,
+  bookingrequestdetailbyid: null,
 };
 // ================= THUNKS =================
 
@@ -296,6 +297,19 @@ export const fetchBookingDetail = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const res = await axios.get(`/user/bookings/${_}/details`);
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue("Failed to fetch profile");
+    }
+  }
+);
+
+
+export const fetchbookingrequestbyid = createAsyncThunk(
+  "/user/requests/67/details",
+  async (_, thunkAPI) => {
+    try {
+      const res = await axios.get(`/user/requests/${_}/details`);
       return res.data;
     } catch (error) {
       return thunkAPI.rejectWithValue("Failed to fetch profile");
@@ -594,6 +608,23 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
+
+ // ----- Fetch Booking Detail---
+      .addCase(fetchbookingrequestbyid.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(fetchbookingrequestbyid.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.bookingrequestdetailbyid = action.payload;
+      })
+      .addCase(fetchbookingrequestbyid.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+
       // Booking Cancel
       .addCase(CancelBookingRequest.pending, (state) => {
         state.isLoading = true;
