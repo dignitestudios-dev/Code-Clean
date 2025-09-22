@@ -543,24 +543,24 @@ const Jobdetails = () => {
 
                 {/* Total Payment */}
                 <div className="mb-6 mt-3">
-                  <h4 className="text-lg font-semibold mb-3">Total Payment</h4>
+                  <h4 className="text-lg font-semibold mb-3">Total Payment1</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
                       <span className="text-gray-500">Subtotal</span>
                       <span className="font-medium">
-                        ${bookingRequestDetail?.sub_total}
+                        ${bookingRequestDetail?.total_payment}
                       </span>
                     </div>
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
                       <span className="text-gray-500">Transaction Fees</span>
                       <span className="font-medium">
-                        ${bookingRequestDetail?.transaction_fees}
+                        ${bookingRequestDetail?.total_payment}
                       </span>
                     </div>
 
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3 font-semibold">
                       <span>Total</span>
-                      <span>${bookingRequestDetail?.total_amount}</span>
+                      <span>${bookingRequestDetail?.total_payment}</span>
                     </div>
                   </div>
                 </div>
