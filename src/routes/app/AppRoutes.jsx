@@ -20,7 +20,7 @@ export const appRoutes = [
     page: <Home />,
     name: "Home",
     isPublic: false,
-  },
+  },  
   {
     url: "service-provider",
     page: <Serviceprovider />,
