@@ -29,6 +29,39 @@ const Navbar = () => {
   );
   const dispatch = useDispatch();
 
+  const userPopupRef = useRef(null);
+  const popupRef = useRef(null);
+
+
+  useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (popupRef.current && !popupRef.current.contains(event.target)) {
+      setIsPopupOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
+
+
+  useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (
+      userPopupRef.current &&
+      !userPopupRef.current.contains(event.target)
+    ) {
+      setUserPopup(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, []);
+
+
+
   console.log(user_data, token,role, "userdata");
   const handleLogout = async () => {
     try {
@@ -218,7 +251,9 @@ const Navbar = () => {
                 </div>
               )}
               {isPopupOpen && (
-                <div className="absolute top-10 right-0 w-[400px] bg-white shadow-lg rounded-lg p-4 z-50">
+                <div 
+                 ref={popupRef}
+                className="absolute top-10 right-0 w-[400px] bg-white shadow-lg rounded-lg p-4 z-50">
                   <h3 className="text-lg font-semibold text-black">
                     Notifications
                   </h3>
@@ -272,7 +307,9 @@ const Navbar = () => {
               alt="Avatar"
             />
             {userPopup && (
-              <div className="absolute top-20 right-4 bg-white w-[155px] h-[157px] text-black rounded-[8px] shadow-lg p-4 space-y-2 z-[99999]">
+              <div 
+              ref={userPopupRef}
+              className="absolute top-20 right-4 bg-white w-[155px] h-[157px] text-black rounded-[8px] shadow-lg p-4 space-y-2 z-[99999]">
                 <span
                   className="block font-[400] py-1 text-sm border-b  border-[#E4E4E4] cursor-pointer"
                   onClick={() =>
