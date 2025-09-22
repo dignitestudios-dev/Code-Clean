@@ -14,7 +14,7 @@ import { Autocomplete, GoogleMap, Marker } from "@react-google-maps/api";
 
 export default function PersonalDetail({ handleNext }) {
   const [previewImage, setPreviewImage] = useState();
-  const [mapCenter, setMapCenter] = useState({ lat: 24.8607, lng: 67.0011 }); // Default Karachi
+  const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 }); 
   const { isLoading, error } = useSelector((state) => state.auth);
 
   const dispatch = useDispatch();

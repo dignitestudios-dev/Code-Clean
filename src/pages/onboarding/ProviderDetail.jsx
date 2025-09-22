@@ -19,7 +19,7 @@ export default function ProviderDetail({ handleNext }) {
   const [previewImage, setPreviewImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [availability, setAvailability] = useState(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 24.8607, lng: 67.0011 }); // default Karachi
+  const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 });  // default Karachi
   const autocompleteRef = useRef(null);
   const dispatch = useDispatch();
   const { error, isLoading } = useSelector((state) => state.auth);
