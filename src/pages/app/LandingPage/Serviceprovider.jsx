@@ -657,44 +657,44 @@ const Serviceprovider = () => {
 
   const [todaytime, setTodaytime] = useState("");
 
-  // useEffect(() => {
-  //   if (dailyAvailability) {
-  //     // Filter out the available slots
-  //     const availableSlots = dailyAvailability?.slots?.filter(slot => slot.status === "Available");
-  //     setTodaytime(availableSlots || []); // Set only available slots
-  //   }
-  // }, [dailyAvailability]);
-
   useEffect(() => {
     if (dailyAvailability) {
-      const now = new Date(); // current date & time
-
-      const availableSlots = dailyAvailability?.slots
-        ?.filter((slot) => slot.status === "Available")
-        ?.filter((slot) => {
-          // slot.time example: "09:00am" / "12:00pm"
-          const timeStr = slot.time.toLowerCase();
-
-          // Extract hours, minutes, am/pm
-          const match = timeStr.match(/(\d{1,2}):(\d{2})(am|pm)/);
-          if (!match) return false;
-
-          let hours = parseInt(match[1], 10);
-          const minutes = parseInt(match[2], 10);
-          const modifier = match[3]; // am / pm
-
-          if (modifier === "pm" && hours < 12) hours += 12;
-          if (modifier === "am" && hours === 12) hours = 0;
-
-          const slotDate = new Date();
-          slotDate.setHours(hours, minutes, 0, 0);
-
-          return slotDate >= now; // only future slots
-        });
-
-      setTodaytime(availableSlots || []);
+      // Filter out the available slots
+      const availableSlots = dailyAvailability?.slots?.filter(slot => slot.status === "Available");
+      setTodaytime(availableSlots || []); // Set only available slots
     }
   }, [dailyAvailability]);
+
+  // useEffect(() => {
+  //   if (dailyAvailability) {
+  //     const now = new Date(); // current date & time
+
+  //     const availableSlots = dailyAvailability?.slots
+  //       ?.filter((slot) => slot.status === "Available")
+  //       ?.filter((slot) => {
+  //         // slot.time example: "09:00am" / "12:00pm"
+  //         const timeStr = slot.time.toLowerCase();
+
+  //         // Extract hours, minutes, am/pm
+  //         const match = timeStr.match(/(\d{1,2}):(\d{2})(am|pm)/);
+  //         if (!match) return false;
+
+  //         let hours = parseInt(match[1], 10);
+  //         const minutes = parseInt(match[2], 10);
+  //         const modifier = match[3]; // am / pm
+
+  //         if (modifier === "pm" && hours < 12) hours += 12;
+  //         if (modifier === "am" && hours === 12) hours = 0;
+
+  //         const slotDate = new Date();
+  //         slotDate.setHours(hours, minutes, 0, 0);
+
+  //         return slotDate >= now; // only future slots
+  //       });
+
+  //     setTodaytime(availableSlots || []);
+  //   }
+  // }, [dailyAvailability]);
 
 
 
