@@ -31,8 +31,9 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
   const [availability, setAvailability] = useState(null);
 
   // Map state
-  const [lat, setLat] = useState(user_data?.lat || 39.7508948);
-  const [lng, setLng] = useState(user_data?.long || -104.9331132);
+  // useState({ lat: 24.8607, lng: 67.0011 });
+  const [lat, setLat] = useState(user_data?.lat || 24.8607);
+  const [lng, setLng] = useState(user_data?.long ||  67.0011 );
   const [autocomplete, setAutocomplete] = useState(null);
   useEffect(() => {
     setAvailability(user_data?.availability);

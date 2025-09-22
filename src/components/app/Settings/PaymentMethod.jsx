@@ -39,7 +39,7 @@ export default function PaymentMethod() {
       ></div>
       <div className="h-full px-10 lg:px-40   -mt-60 bottom-0 items-center gap-3 ">
         <div className="flex items-center gap-2 mb-6">
-          <button type="button" onClick={() => navigate("/app/settings")}>
+          <button type="button" onClick={() => navigate(-1)}>
             <FaArrowLeft color="white" size={16} />
           </button>
           <h1 className="text-[32px] font-semibold text-white">
