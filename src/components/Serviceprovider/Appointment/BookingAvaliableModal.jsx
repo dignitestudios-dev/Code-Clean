@@ -11,7 +11,7 @@ const BookingAvaliable = ({ isOpen, setIsOpen, date }) => {
 
   useEffect(() => {
     if (date) {
-      dispatch(getDailyAvaliablity(`/provider/availability?date=${date}`));
+      dispatch(getDailyAvaliablity(`/availability?date=${date}`));
     }
   }, [date]);
 
