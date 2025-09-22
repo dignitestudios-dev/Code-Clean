@@ -101,12 +101,6 @@ const Login = () => {
         role: selectedRole,
       };
       await dispatch(SocialLogin(data));
-      if (user_data?.role == "service_provider") {
-        // window.location.href = "/dashboard";
-      } else {
-        // window.location.href = "/home";
-        // navigate("/Home");
-      }
     },
     onError: () => {},
   });
