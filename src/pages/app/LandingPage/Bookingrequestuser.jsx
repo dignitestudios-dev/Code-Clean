@@ -263,7 +263,7 @@ const Bookingrequestuser = () => {
                                 </div>
 
                                 {/* Cancel Button */}
-                                {status !== "accepted" &&
+                                {/* {status !== "accepted" &&
                                     status !== "completed" &&
                                     status !== "rejected" &&
                                     status !== "cancelled" && (
@@ -275,7 +275,7 @@ const Bookingrequestuser = () => {
                                         >
                                             Cancel Booking
                                         </button>
-                                    )}
+                                    )} */}
 
                                 {status === "rejected" && (
                                     <div>
