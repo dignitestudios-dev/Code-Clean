@@ -119,10 +119,24 @@ export default function BroadCastModal({
 
     (place.address_components || []).forEach((component) => {
       const types = component.types || [];
-      if (types.includes("locality")) city = component.long_name;
-      if (types.includes("administrative_area_level_1"))
+
+      if (types.includes("locality")) {
+        city = component.long_name;
+      } else if (types.includes("administrative_area_level_2") && !city) {
+        // fallback if locality missing
+        city = component.long_name;
+      } else if (types.includes("sublocality") && !city) {
+        // another fallback
+        city = component.long_name;
+      }
+
+      if (types.includes("administrative_area_level_1")) {
         state = component.long_name;
-      if (types.includes("country")) country = component.long_name;
+      }
+
+      if (types.includes("country")) {
+        country = component.long_name;
+      }
     });
 
     setFormData((prev) => ({
