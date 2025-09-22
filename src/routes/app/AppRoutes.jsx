@@ -12,6 +12,7 @@ import Serviceprovider from "../../pages/app/LandingPage/Serviceprovider";
 import Profile from "../../pages/app/Profile/Profile";
 import Settings from "../../pages/app/Settings/Settings";
 import SettingAddCard from "../../pages/app/Settings/SettingAddCard";
+import Bookingrequestuser from "../../pages/app/LandingPage/Bookingrequestuser";
 
 export const appRoutes = [
   {
@@ -29,6 +30,12 @@ export const appRoutes = [
   {
     url: "booking-details",
     page: <Bookingdetails />,
+    name: "Booking details",
+    isPublic: false,
+  },
+   {
+    url: "booking-request",
+    page: <Bookingrequestuser />,
     name: "Booking details",
     isPublic: false,
   },

@@ -213,11 +213,35 @@ export default function EditProfileModal({
 
             <div>
               <label className="block text-sm font-medium">Phone Number</label>
-              <input
+              {/* <input
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => handleInputChange("phone", e.target.value)}
                 className="w-full px-4 py-3 border rounded-lg"
+              /> */}
+              <input
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => {
+                  let value = e.target.value;
+
+                  // Remove non-digits except +
+                  value = value.replace(/[^0-9+]/g, "");
+
+                  // Always enforce prefix +1
+                  if (!value.startsWith("+1")) {
+                    value = "+1" + value.replace(/\D/g, "");
+                  }
+
+                  // Sirf +1 ke baad 10 digits allow
+                  if (value.length > 12) {
+                    value = value.slice(0, 12);
+                  }
+
+                  handleInputChange("phone", value);
+                }}
+                className="w-full px-4 py-3 border rounded-lg"
+                placeholder="+13462127336"
               />
             </div>
 

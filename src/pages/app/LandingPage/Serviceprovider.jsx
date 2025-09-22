@@ -44,6 +44,8 @@ const Serviceprovider = () => {
     setSelectedCard(card); // Set the selected card
   };
 
+  console.log(data, "dataserviceprovider")
+
   const fromViewProfile = location.state?.fromViewProfile || false;
   const providerId = location.state?.id;
   const [showrating, setShowrating] = useState(false);
@@ -111,62 +113,62 @@ const Serviceprovider = () => {
   //   }
   // };
 
-const handlePlaceChangeds = () => {
-  if (autocomplete) {
-    const place = autocomplete.getPlace();
-    if (place && place.formatted_address) {
-      setLocations(place.formatted_address); // Set the location with the formatted address
+  const handlePlaceChangeds = () => {
+    if (autocomplete) {
+      const place = autocomplete.getPlace();
+      if (place && place.formatted_address) {
+        setLocations(place.formatted_address); // Set the location with the formatted address
 
-      // Geocoding to get lat, long, city, state, country
-      const geocoder = new window.google.maps.Geocoder();
-      geocoder.geocode(
-        { address: place.formatted_address },
-        (results, status) => {
-          if (status === "OK" && results[0]) {
-            const addressComponents = results[0].address_components;
-            const lat = results[0].geometry.location.lat();
-            const lng = results[0].geometry.location.lng();
+        // Geocoding to get lat, long, city, state, country
+        const geocoder = new window.google.maps.Geocoder();
+        geocoder.geocode(
+          { address: place.formatted_address },
+          (results, status) => {
+            if (status === "OK" && results[0]) {
+              const addressComponents = results[0].address_components;
+              const lat = results[0].geometry.location.lat();
+              const lng = results[0].geometry.location.lng();
 
-            let city = "";
-            let state = "";
-            let country = "";
+              let city = "";
+              let state = "";
+              let country = "";
 
-            // Loop through address components and extract city, state, country
-            addressComponents.forEach((component) => {
-              const types = component.types;
-              if (types.includes("locality")) {
-                city = component.long_name; // City
-              }
-              if (types.includes("administrative_area_level_1")) {
-                state = component.long_name; // State
-              }
-              if (types.includes("country")) {
-                country = component.long_name; // Country
-              }
-            });
+              // Loop through address components and extract city, state, country
+              addressComponents.forEach((component) => {
+                const types = component.types;
+                if (types.includes("locality")) {
+                  city = component.long_name; // City
+                }
+                if (types.includes("administrative_area_level_1")) {
+                  state = component.long_name; // State
+                }
+                if (types.includes("country")) {
+                  country = component.long_name; // Country
+                }
+              });
 
-            // Log the address components for debugging
-            console.log('Address Components:', addressComponents);
-            console.log('City:', city);
-            console.log('State:', state);
-            console.log('Country:', country);
+              // Log the address components for debugging
+              console.log('Address Components:', addressComponents);
+              console.log('City:', city);
+              console.log('State:', state);
+              console.log('Country:', country);
 
-            // Update the form data with location details
-            setFormData((prev) => ({
-              ...prev,
-              lat,
-              long: lng,
-              city: city || "N/A", // Fallback to "N/A" if city is not found
-              state: state || "N/A", // Fallback to "N/A" if state is not found
-              country: country || "N/A", // Fallback to "N/A" if country is not found
-              location: place.formatted_address, // Set the full address in form data
-            }));
+              // Update the form data with location details
+              setFormData((prev) => ({
+                ...prev,
+                lat,
+                long: lng,
+                city: city || "N/A", // Fallback to "N/A" if city is not found
+                state: state || "N/A", // Fallback to "N/A" if state is not found
+                country: country || "N/A", // Fallback to "N/A" if country is not found
+                location: place.formatted_address, // Set the full address in form data
+              }));
+            }
           }
-        }
-      );
+        );
+      }
     }
-  }
-};
+  };
 
 
 
@@ -194,7 +196,7 @@ const handlePlaceChangeds = () => {
 
   const [custombookingtwo, setCustombookingtwo] = useState(false);
   const [custombookingthree, setCustombookingthree] = useState(false);
-  const { allservices, paymentMethoduser,hireProviderLoading,CustomserviceproviderSuccess } = useSelector((s) => s.user);
+  const { allservices, paymentMethoduser, hireProviderLoading, CustomserviceproviderSuccess } = useSelector((s) => s.user);
 
 
   const handleOnLoad = (autocomplete) => {
@@ -305,7 +307,7 @@ const handlePlaceChangeds = () => {
   const handleOnLoads = (autocomplete) => {
     autocompleteRef.current = autocomplete;
   };
-  console.log(allservices,"allService")
+  console.log(allservices, "allService")
 
   useEffect(() => {
     dispatch(fetchallservices("/users/providers")); // pass page to API
@@ -325,27 +327,40 @@ const handlePlaceChangeds = () => {
   }, [alldata, id]);
 
   const handleDurationChange = (e) => {
-    const value = e.target.value;
+    let value = parseInt(e.target.value); // number me convert
 
-    // Validate if the entered value is more than 15
-    if (parseInt(value) > 15 && value !== "") {
-      ErrorToast("Duration cannot be more than 15");
+    // Agar empty hai
+    if (isNaN(value)) {
+      setDuration("");
       return;
     }
 
-        setDuration(value);
-    };
+    // Negative block karo
+    if (value < 0) {
+      ErrorToast("Negative values are not allowed");
+      return;
+    }
+
+    // Agar 15 se zyada hai
+    if (value > 8) {
+      ErrorToast("Duration cannot be more than 8");
+      return;
+    }
+
+    setDuration(value);
+  };
 
 
 
-    // const handleInputChange = (e) => {
-    //     const { name, value, files } = e.target;
-    //     if (name === "file") {
-    //         setFormData({ ...formData, file: files[0] });
-    //     } else {
-    //         setFormData({ ...formData, [name]: value });
-    //     }   
-    // };
+
+  // const handleInputChange = (e) => {
+  //     const { name, value, files } = e.target;
+  //     if (name === "file") {
+  //         setFormData({ ...formData, file: files[0] });
+  //     } else {
+  //         setFormData({ ...formData, [name]: value });
+  //     }   
+  // };
 
 
   const handleInputChange = (e) => {
@@ -439,19 +454,19 @@ const handlePlaceChangeds = () => {
   };
 
   const handleRemoveFile = (index) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index)); 
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
   const [services, setServices] = useState({});
 
-    useEffect(() => {
-        // Initialize the services with quantity 0
-        const initialServices = data?.services?.reduce((acc, service) => {
-            acc[service.id] = 1; // or any default quantity you prefer
-            return acc;
-        }, {});
-        setServices(initialServices);
-    }, [data?.services]);
+  useEffect(() => {
+    // Initialize the services with quantity 0
+    const initialServices = data?.services?.reduce((acc, service) => {
+      acc[service.id] = 1; // or any default quantity you prefer
+      return acc;
+    }, {});
+    setServices(initialServices);
+  }, [data?.services]);
 
   const [selectedTime, setSelectedTime] = useState(null);
 
@@ -475,14 +490,14 @@ const handlePlaceChangeds = () => {
   const handleIncrement = (service) => {
     setServices((prev) => ({
       ...prev,
-      [service.id]: prev[service.id] < 10 ? prev[service.id] + 1 : 10, 
+      [service.id]: prev[service.id] < 10 ? prev[service.id] + 1 : 10,
     }));
   };
 
   const handleDecrement = (service) => {
     setServices((prev) => ({
       ...prev,
-      [service.id]: prev[service.id] > 0 ? prev[service.id] - 1 : 1, 
+      [service.id]: prev[service.id] > 0 ? prev[service.id] - 1 : 1,
     }));
   };
 
@@ -642,13 +657,44 @@ const handlePlaceChangeds = () => {
 
   const [todaytime, setTodaytime] = useState("");
 
-    useEffect(() => {
-        if (dailyAvailability) {
-            // Filter out the available slots
-            const availableSlots = dailyAvailability?.slots?.filter(slot => slot.status === "Available");
-            setTodaytime(availableSlots || []); // Set only available slots
-        }
-    }, [dailyAvailability]);
+  // useEffect(() => {
+  //   if (dailyAvailability) {
+  //     // Filter out the available slots
+  //     const availableSlots = dailyAvailability?.slots?.filter(slot => slot.status === "Available");
+  //     setTodaytime(availableSlots || []); // Set only available slots
+  //   }
+  // }, [dailyAvailability]);
+
+  useEffect(() => {
+    if (dailyAvailability) {
+      const now = new Date(); // current date & time
+
+      const availableSlots = dailyAvailability?.slots
+        ?.filter((slot) => slot.status === "Available")
+        ?.filter((slot) => {
+          // slot.time example: "09:00am" / "12:00pm"
+          const timeStr = slot.time.toLowerCase();
+
+          // Extract hours, minutes, am/pm
+          const match = timeStr.match(/(\d{1,2}):(\d{2})(am|pm)/);
+          if (!match) return false;
+
+          let hours = parseInt(match[1], 10);
+          const minutes = parseInt(match[2], 10);
+          const modifier = match[3]; // am / pm
+
+          if (modifier === "pm" && hours < 12) hours += 12;
+          if (modifier === "am" && hours === 12) hours = 0;
+
+          const slotDate = new Date();
+          slotDate.setHours(hours, minutes, 0, 0);
+
+          return slotDate >= now; // only future slots
+        });
+
+      setTodaytime(availableSlots || []);
+    }
+  }, [dailyAvailability]);
 
 
 
@@ -688,20 +734,24 @@ const handlePlaceChangeds = () => {
             <div className="mt-4 border-t-2 pt-3">
               <h3 className="font-semibold text-lg mb-2">Certificates</h3>
               <div className="grid grid-cols-1 md:grid-cols-1 gap-6 max-h-[400px] overflow-y-auto">
-                {data?.certificates?.map((certificate, i) => (
-                  <div key={i} className="space-y-1 border-t-2 pt-3">
-                    <h4 className="font-medium">{certificate.name}</h4>
-                    <p className="text-sm text-blue-600">
-                      {certificate.institution}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      {certificate.description}
-                    </p>
-                    <p className="text-sm text-gray-400 mt-1">
-                      {certificate.date_of_completion}
-                    </p>
-                  </div>
-                ))}
+                {data.certificates && data.certificates.lenth > 0 ? (
+                  data?.certificates?.map((certificate, i) => (
+                    <div key={i} className="space-y-1 border-t-2 pt-3">
+                      <h4 className="font-medium">{certificate.name}</h4>
+                      <p className="text-sm text-blue-600">
+                        {certificate.institution}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {certificate.description}
+                      </p>
+                      <p className="text-sm text-gray-400 mt-1">
+                        {certificate.date_of_completion}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-600">No Certifcate Found</p>
+                )}
               </div>
             </div>
           </div>
@@ -752,17 +802,17 @@ const handlePlaceChangeds = () => {
                 <div>
                   <span className="font-semibold">Location</span>
                   <br />
-                  {data.city} {data.country}
+                  {data.address}
                 </div>
                 <div>
                   <span className="font-semibold">Distance</span>
                   <br />
-                  {data?.distance && data.distance > 0 ? data.distance : "0"}
+                  {data?.distance && data.distance > 0 ? data.distance : "0 miles"}
                 </div>
                 <div>
                   <span className="font-semibold">Completed Job</span>
                   <br />
-                  {data.complete_jobs | "No complete_jobs"}+ Job Success
+                  {data.completed_jobs | "No complete_jobs"}+ Job Success
                 </div>
               </div>
             </div>
@@ -978,22 +1028,28 @@ const handlePlaceChangeds = () => {
             {/* Time Selection */}
             <div className="mb-6">
               <h3 className="text-lg font-semibold mb-2">Select Time</h3>
-              <div className="grid grid-cols-4 gap-3">
-                {todaytime.map((slot, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSelect(slot.time)} // Use slot.time as the time to select
-                    className={`px-4 py-2 rounded-lg border text-sm transition 
-                ${
-                  selectedTime === slot.time
-                    ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
-                    : "bg-white text-gray-800"
-                }`}
-                  >
-                    {slot.time} {/* Display the available time */}
-                  </button>
-                ))}
-              </div>
+
+              {todaytime.length > 0 ? (
+                <div className="grid grid-cols-4 gap-3">
+                  {todaytime.map((slot, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSelect(slot.time)} // Use slot.time as the time to select
+                      className={`px-4 py-2 rounded-lg border text-sm transition 
+                ${selectedTime === slot.time
+                          ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
+                          : "bg-white text-gray-800"
+                        }`}
+                    >
+                      {slot.time} {/* Display the available time */}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-red-500 font-medium mt-2">
+                  No slots available today
+                </p>
+              )}
             </div>
 
             {/* Duration */}
@@ -1005,9 +1061,8 @@ const handlePlaceChangeds = () => {
                   value={duration}
                   onChange={handleDurationChange} // Update the state with validation
                   placeholder="0"
-                  className={`w-full border rounded-lg px-4 py-2 pr-10 ${
-                    parseInt(duration) > 15 ? "border-red-500" : ""
-                  }`} // Add red border if duration is greater than 15
+                  className={`w-full border rounded-lg px-4 py-2 pr-10 ${parseInt(duration) > 15 ? "border-red-500" : ""
+                    }`} // Add red border if duration is greater than 15
                   required
                 />
               </div>
@@ -1245,13 +1300,22 @@ const handlePlaceChangeds = () => {
 
               <button
                 onClick={() => {
+                  // Check if at least one service quantity > 0
+                  const hasSelected = Object.values(services).some((qty) => qty > 0);
+
+                  if (!hasSelected) {
+                    ErrorToast("Please select at least 1 service before proceeding.");
+                    return;
+                  }
+
                   setRequestservicefour(true);
                   setRequestservicethree(false);
                 }}
-                className="w-full mt-6 bg-gradient-to-r  from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
+                className="w-full mt-6 bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
               >
                 Next
               </button>
+
 
               <div
                 onClick={() => {
@@ -1393,7 +1457,7 @@ const handlePlaceChangeds = () => {
                       <div key={i} className="border-r-2 pr-3">
                         <div className="text-sm capitalize">
                           {service.title} <br></br>
-                          {services[service.id] || 0}
+                          {/* {services[service.id] || 0} */}
                         </div>
                       </div>
                     ))}
@@ -1434,21 +1498,21 @@ const handlePlaceChangeds = () => {
         </div>
       )}
 
-            {requestservicefive && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white rounded-xl p-6 md:w-[35em] shadow-2xl">
-                        {/* Header */}
-                        <div className="flex justify-between items-center border-b pb-4 mb-4">
-                            <h2 className="text-2xl font-bold text-gray-800">Request Service</h2>
-                            <button
-                                onClick={() => setRequestservicefive(false)}
-                                className="text-gray-500 hover:text-red-600"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
+      {requestservicefive && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-xl p-6 md:w-[35em] shadow-2xl">
+            {/* Header */}
+            <div className="flex justify-between items-center border-b pb-4 mb-4">
+              <h2 className="text-2xl font-bold text-gray-800">Request Service</h2>
+              <button
+                onClick={() => setRequestservicefive(false)}
+                className="text-gray-500 hover:text-red-600"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
 
             {/* Payment Method Section */}
             <div className="space-y-4">
@@ -1459,53 +1523,68 @@ const handlePlaceChangeds = () => {
                 service provider.
               </p>
 
-                            {/* Payment Method Info */}
-                            <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
-                                <div className="w-full">
-                                    <span className="font-medium text-gray-800">Attached Stripe</span>
-                                    {paymentmethoduser?.payment_methods && paymentmethoduser?.payment_methods.map((card) => (
-                                        <div
-                                            key={card.id}
-                                            className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${selectedCard?.id === card.id ? 'bg-blue-100 border-blue-500' : ''}`}
-                                            onClick={() => handleCardSelect(card)} // Set the card as selected when clicked
-                                        >
-                                            <div className="flex gap-3">
-                                                <span className="text-gray-700">**** **** **** **{card.last_digits}</span>
-                                                <img src={stripe} className="h-6" alt={card.brand} />
-                                            </div>
+              {/* Payment Method Info */}
+              <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
+                <div className="w-full">
+                  <span className="font-medium text-gray-800">Attached Stripe</span>&nbsp;<span className="text-[12px] capitalize text-blue-600">(select the payment method)</span>
+                  {paymentmethoduser?.payment_methods && paymentmethoduser.payment_methods.length > 0 ? (
+                    paymentmethoduser.payment_methods.map((card) => (
+                      <div
+                        key={card.id}
+                        className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${selectedCard?.id === card.id ? "bg-blue-100 border-blue-500" : ""
+                          }`}
+                        onClick={() => handleCardSelect(card)}
+                      >
+                        <div className="flex gap-3">
+                          <span className="text-gray-700">**** **** **** **{card.last_digits}</span>
+                          <img src={stripe} className="h-6" alt={card.brand} />
+                        </div>
 
-                                            <button className="text-blue-500 hover:text-blue-700 text-lg" onClick={() => {
-                                                navigate("/app/payment-method");
-                                            }}>
-                                                <MdOutlineEdit />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                        <button
+                          className="text-blue-500 hover:text-blue-700 text-lg"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent card select when clicking edit
+                            navigate("/app/payment-method");
+                          }}
+                        >
+                          <MdOutlineEdit />
+                        </button>
+                      </div>
+                    ))
+                  ) : (
+                    <div
+                      onClick={() => navigate("/app/payment-method")}
+                      className="w-full text-center py-3 mt-4 border-2 border-dashed rounded-lg text-blue-500 font-semibold cursor-pointer hover:bg-blue-50 transition"
+                    >
+                      + Add Payment Method
+                    </div>
+                  )}
 
-                            {/* Payment Summary */}
-                            <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
-                                <div className='w-full bg-[#F3F3F3] p-3 rounded-[10px]'>
-                                    <div className='w-full border-b-[1px] pb-[3px]'>
-                                        <span className="font-medium text-gray-800">Payment Summary</span>
-                                    </div>
-                                    <div className="text-gray-600 mt-2">
-                                        <div className='flex justify-between'>
-                                            <p>Subtotal: </p>
-                                            $ {data?.services?.reduce((total, service) => {
-                                                return total + service.amount * (services[service.id] || 0);
-                                            }, 0)}
-                                        </div>
-                                        <div className='flex justify-between pt-3'>
-                                            <p className='text-black font-[500]'>Total: </p>
-                                            $ {data?.services?.reduce((total, service) => {
-                                                return total + service.amount * (services[service.id] || 0);
-                                            }, 0)}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                </div>
+              </div>
+
+              {/* Payment Summary */}
+              <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
+                <div className='w-full bg-[#F3F3F3] p-3 rounded-[10px]'>
+                  <div className='w-full border-b-[1px] pb-[3px]'>
+                    <span className="font-medium text-gray-800">Payment Summary</span>
+                  </div>
+                  <div className="text-gray-600 mt-2">
+                    <div className='flex justify-between'>
+                      <p>Subtotal: </p>
+                      $ {data?.services?.reduce((total, service) => {
+                        return total + service.amount * (services[service.id] || 0);
+                      }, 0)}
+                    </div>
+                    <div className='flex justify-between pt-3'>
+                      <p className='text-black font-[500]'>Total: </p>
+                      $ {data?.services?.reduce((total, service) => {
+                        return total + service.amount * (services[service.id] || 0);
+                      }, 0)}
+                    </div>
+                  </div>
+                </div>
+              </div>
 
               {/* Action Buttons */}
               <div className="pt-6 pb-3">
@@ -1573,13 +1652,13 @@ const handlePlaceChangeds = () => {
             </h2>
             {/* Message */}
             <p className="text-gray-600 text-sm mb-4">
-              Your booking request has been sent to [Provider Name]. You will be
+              Your booking request has been sent to {data?.name}. You will be
               notified once they confirm.
             </p>
             <button
               onClick={() => {
                 setBookrequestsend(false); // Close the booking modal
-                navigate("/Home"); // Navigate to booking details
+                navigate("/booking-requests"); // Navigate to booking details
               }}
               className="w-full mt-4 bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
             >
@@ -1639,9 +1718,8 @@ const handlePlaceChangeds = () => {
                       {Array.from({ length: 5 }).map((_, i) => (
                         <FaStar
                           key={i}
-                          className={`text-yellow-400 ${
-                            i < Math.floor(review.rating) ? "" : "opacity-50"
-                          }`}
+                          className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
+                            }`}
                         />
                       ))}
                       <span className="ml-1 font-medium text-sm">
@@ -1861,11 +1939,10 @@ const handlePlaceChangeds = () => {
                     <div
                       key={card.id}
                       className={`flex justify-between items-center border cursor-pointer rounded p-2 mb-2 
-              ${
-                selectedCard?.id === card.id
-                  ? "bg-blue-100 border-blue-500"
-                  : ""
-              } 
+              ${selectedCard?.id === card.id
+                          ? "bg-blue-100 border-blue-500"
+                          : ""
+                        } 
             `} // Highlight the selected card with a background
                       onClick={() => handleCardSelect(card)} // Set the card as selected when clicked
                     >
