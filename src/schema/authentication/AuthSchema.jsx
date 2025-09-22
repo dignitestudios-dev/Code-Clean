@@ -6,7 +6,11 @@ export const signInSchema = Yup.object({
     .required("Please enter your email"),
   password: Yup.string()
     .matches(/^(?!\s)(?!.*\s$)/, "Password must not begin or end with spaces")
-    .min(6, "Password must contain atleast 6 alphanumeric characters.")
+    .min(6, "Password must contain at least 6 characters.")
+    .matches(
+      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
+      "Password must contain at least one special character"
+    )
     .required("Please enter your password"),
 });
 export const signUpSchema = Yup.object({
@@ -15,11 +19,19 @@ export const signUpSchema = Yup.object({
     .required("Please enter your email"),
   password: Yup.string()
     .matches(/^(?!\s)(?!.*\s$)/, "Password must not begin or end with spaces")
-    .min(6, "Password must contain atleast 6 alphanumeric characters.")
+    .min(6, "Password must contain at least 6 characters.")
+    .matches(
+      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
+      "Password must contain at least one special character"
+    )
     .required("Please enter your password"),
   confirmPassword: Yup.string()
     .matches(/^(?!\s)(?!.*\s$)/, "Password must not begin or end with spaces")
     .min(6, "Password must contain atleast 6 alphanumeric characters.")
+    .matches(
+      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
+      "Password must contain at least one special character"
+    )
     .required("Please enter your password"),
 });
 
@@ -57,7 +69,6 @@ export const stripeAccountSchema = Yup.object({
     .required("CVC is required"),
 });
 
-
 export const forgetPasswordSchema = Yup.object({
   email: Yup.string()
     .email("Please enter a valid email address")
@@ -66,35 +77,60 @@ export const forgetPasswordSchema = Yup.object({
 
 export const resetPasswordSchema = Yup.object({
   password: Yup.string()
-    .min(8, "Password must be at least 8 characters")
-    .required("Password is required"),
+    .matches(/^(?!\s)(?!.*\s$)/, "Password must not begin or end with spaces")
+    .min(6, "Password must contain at least 6 characters.")
+    .matches(
+      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
+      "Password must contain at least one special character"
+    )
+    .required("Please enter your password"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
+    .matches(
+      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
+      "Password must contain at least one special character"
+    )
     .required("Please confirm your password"),
 });
 
 export const changedPasswordSchema = Yup.object().shape({
   password: Yup.string()
-    .trim()
-    .min(6, "Password must be at least 6 characters")
-    .required("Current password is required"),
+    .matches(/^(?!\s)(?!.*\s$)/, "Password must not begin or end with spaces")
+    .min(6, "Password must contain at least 6 characters.")
+    .matches(
+      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
+      "Password must contain at least one special character"
+    )
+    .required("Please enter your password"),
 
   newPassword: Yup.string()
-    .trim()
-    .min(6, "New Password must be at least 6 characters")
-    .required("New Password is required"),
+    .matches(/^(?!\s)(?!.*\s$)/, "Password must not begin or end with spaces")
+    .min(6, "Password must contain at least 6 characters.")
+    .matches(
+      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
+      "Password must contain at least one special character"
+    )
+    .required("Please enter your password"),
 
   confirmPassword: Yup.string()
     .trim()
     .oneOf([Yup.ref("newPassword")], "Passwords must match")
+    .matches(
+      /^(?=.*[!@#$%^&*(),.?":{}|<>])/,
+      "Password must contain at least one special character"
+    )
     .required("Confirm Password is required"),
 });
 
 export const personalDetailsSchema = Yup.object({
   fullName: Yup.string().required("Full name is required"),
   phone: Yup.string()
-    .matches(/^[0-9]{10}$/, "Enter a valid phone number")
+    .matches(
+      /^(\+1\s?)?(\([2-9][0-9]{2}\)|[2-9][0-9]{2})([\s.-]?)[0-9]{3}([\s.-]?)[0-9]{4}$/,
+      "Enter a valid phone number"
+    )
     .required("Phone number is required"),
+
   location: Yup.string().required("Location is required"),
   profilePic: Yup.mixed()
     .required("Profile picture is required")
@@ -107,10 +143,18 @@ export const personalDetailsSchema = Yup.object({
 export const updateProviderDetailsSchema = Yup.object({
   fullName: Yup.string().required("Full name is required"),
   phone: Yup.string()
-    .matches(/^[0-9]{10}$/, "Enter a valid phone number")
+    .matches(
+      /^(\+1\s?)?(\([2-9][0-9]{2}\)|[2-9][0-9]{2})([\s.-]?)[0-9]{3}([\s.-]?)[0-9]{4}$/,
+      "Enter a valid  phone number"
+    )
     .required("Phone number is required"),
   // radius: Yup.string().required("Radius is required"),
-  experience: Yup.string().required("Experience is required"),
+  experience: Yup.number()
+    .typeError("Experience must be a number")
+    .integer("Experience must be a whole number")
+    .min(0, "Experience cannot be negative")
+    .required("Experience is required"),
+
   biography: Yup.string().required("Biography is required"),
   location: Yup.string().required("Location is required"),
   profilePic: Yup.mixed().test(
@@ -126,10 +170,18 @@ export const updateProviderDetailsSchema = Yup.object({
 export const providerDetailsSchema = Yup.object({
   fullName: Yup.string().required("Full name is required"),
   phone: Yup.string()
-    .matches(/^[0-9]{10}$/, "Enter a valid phone number")
+    .matches(
+      /^(\+1\s?)?(\([2-9][0-9]{2}\)|[2-9][0-9]{2})([\s.-]?)[0-9]{3}([\s.-]?)[0-9]{4}$/,
+      "Enter a valid phone number"
+    )
     .required("Phone number is required"),
   // radius: Yup.string().required("Radius is required"),
-  experience: Yup.string().required("experience is required"),
+  experience: Yup.number()
+    .typeError("Experience must be a number")
+    .integer("Experience must be a whole number")
+    .min(0, "Experience cannot be negative")
+    .required("Experience is required"),
+
   // Availability: Yup.string().required("Availability is required"),
   biography: Yup.string().required("biography is required"),
   location: Yup.string().required("Location is required"),

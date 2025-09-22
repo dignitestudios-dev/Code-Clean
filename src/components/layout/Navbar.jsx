@@ -3,9 +3,7 @@ import { HiMenu, HiX } from "react-icons/hi";
 import { Link, useLocation, useNavigate } from "react-router";
 import { LogoWhite, Avatar } from "../../assets/export";
 import { FaBell } from "react-icons/fa";
-import {
-  logout,
-} from "../../redux/slices/auth.slice"; // Import login action from Redux
+import { logout } from "../../redux/slices/auth.slice"; // Import login action from Redux
 import { IoNotificationsOutline } from "react-icons/io5";
 import LogOutModal from "../global/LogoutModal";
 import ReportAnIssueModal from "../app/Settings/ReportAnIssueModal";
@@ -13,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ErrorToast, SuccessToast } from "../global/Toaster";
 import { onMessage } from "firebase/messaging"; // Import Firebase onMessage
 import { messaging } from "../../firebase/firebase";
-
+import Cookies from "js-cookie";
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -26,14 +24,12 @@ const Navbar = () => {
   const [logoutpopup, setLogoutpopup] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isReport, setIsReport] = useState(false);
-  const {
-    user_data,
-    accessToken,
-    logoutLoading,
-  } = useSelector((state) => state.auth);
+  const { user_data, token, logoutLoading } = useSelector(
+    (state) => state.auth
+  );
   const dispatch = useDispatch();
 
-
+  console.log(user_data, token,role, "userdata");
   const handleLogout = async () => {
     try {
       await dispatch(logout()).unwrap();
@@ -58,14 +54,13 @@ const Navbar = () => {
     }
   }, [user_data]);
 
-
   useEffect(() => {
-    if (accessToken) {
+    if (token) {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
     }
-  }, [accessToken]);
+  }, [token]);
 
   const dropdownRef = useRef(null);
 
@@ -81,11 +76,11 @@ const Navbar = () => {
   const [notifications, setNotifications] = useState([]);
 
   const handleLogoClick = () => {
-  if (!isLoggedIn) return navigate("/app/landing");
-  if (role === "service_provider") return navigate("/dashboard");
-  if (role === "user") return navigate("/home");
-  return navigate("/app/landing");
-};
+    if (!isLoggedIn) return navigate("/app/landing");
+    if (role === "service_provider") return navigate("/dashboard");
+    if (role === "user") return navigate("/home");
+    return navigate("/app/landing");
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {

@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 export default function AddCertification({ handleNext }) {
   const [showModal, setShowModal] = useState(false);
   const [actionType, setActionType] = useState("");
-  const { certificates } = useSelector((state) => state?.provider);
+  const { user_data } = useSelector((state) => state?.auth);
   const [selectedItem, setSelectedItem] = useState(null);
 
   const handleAddService = (newService) => {
@@ -69,7 +69,7 @@ export default function AddCertification({ handleNext }) {
       {/* Services List */}
       <div className="mt-16 flex flex-col gap-4">
         <div className="mt-0 flex flex-col gap-4 h-[200px] overflow-auto ">
-          {certificates?.map((service, index) => (
+          {user_data?.certificates?.map((service, index) => (
             <div
               key={index}
               className="border rounded-[10px] p-4 bg-white shadow-sm relative"

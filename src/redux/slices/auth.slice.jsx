@@ -768,6 +768,16 @@ const authSlice = createSlice({
         state.refreshToken = null;
       })
       // REGISTER
+      .addCase(CompleteProviderProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(CompleteProviderProfile.fulfilled, (state, action) => {
+        state.isLoading = false;        
+      })
+      .addCase(CompleteProviderProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
       .addCase(Register.pending, (state) => {
         state.isLoading = true;
       })

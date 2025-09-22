@@ -212,10 +212,24 @@ export default function PersonalDetail({ handleNext }) {
           value={values.phone}
           handleBlur={handleBlur}
           handleChange={(e) => {
-            const { value } = e.target;
-            if (/^\d*$/.test(value) && value.length <= 10) {
-              handleChange(e);
+            let { value } = e.target;
+            // Remove non-digits
+            value = value.replace(/\D/g, "");
+
+            if (value.length > 10) return; // max 10 digits
+
+            // Auto-format (xxx) xxx-xxxx
+            if (value.length > 6) {
+              value = `(${value.slice(0, 3)}) ${value.slice(
+                3,
+                6
+              )}-${value.slice(6)}`;
+            } else if (value.length > 3) {
+              value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
             }
+
+            e.target.value = value;
+            handleChange(e);
           }}
           error={errors.phone}
           touched={touched.phone}

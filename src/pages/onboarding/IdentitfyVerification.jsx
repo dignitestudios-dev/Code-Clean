@@ -59,9 +59,10 @@ export default function IdentityVerification({ handleNext }) {
   const [frontFile, setFrontFile] = useState(null);
   const [backFile, setBackFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState("idcard");
   // Current status fetched from API
-  const currentStatus =
-    provider_data?.identity_verification?.status || "idcard";
+  // const currentStatus =
+  //   provider_data?.identity_verification?.status || "idcard";
 
   const statusConfig = {
     pending: {
@@ -129,7 +130,22 @@ export default function IdentityVerification({ handleNext }) {
         national_id_back: backFile,
       })
     ).unwrap();
+    // setCurrentStatus("pending");
+
     dispatch(getProviderProfile()); // refresh status from API
+    let steps = ["pending", "submitted", "approved"];
+    let index = 0;
+
+    setCurrentStatus(steps[index]);
+
+    const interval = setInterval(() => {
+      index++;
+      if (index < steps.length) {
+        setCurrentStatus(steps[index]);
+      } else {
+        clearInterval(interval);
+      }
+    }, 2000); // 2 sec
   };
 
   return (

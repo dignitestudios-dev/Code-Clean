@@ -9,7 +9,10 @@ import {
   certificationSchema,
   personalDetailsSchema,
 } from "../../schema/authentication/AuthSchema";
-import { CreateCertificate,getProviderProfile } from "../../redux/slices/auth.slice";
+import {
+  CreateCertificate,
+  getProviderProfile,
+} from "../../redux/slices/auth.slice";
 import { useDispatch } from "react-redux";
 
 export default function AddCertificationModal({ onClose, onAdd }) {
@@ -29,7 +32,7 @@ export default function AddCertificationModal({ onClose, onAdd }) {
       };
       await dispatch(CreateCertificate(data)).unwrap();
       // Optionally reset form
-      dispatch(getProviderProfile());
+      await dispatch(getProviderProfile());
       action.resetForm();
       onClose();
     },

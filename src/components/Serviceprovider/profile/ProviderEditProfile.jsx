@@ -15,11 +15,7 @@ import {
   getProviderProfile,
   UpdateProviderProfile,
 } from "../../../redux/slices/auth.slice";
-import {
-  GoogleMap,
-  Marker,
-  Autocomplete,
-} from "@react-google-maps/api";
+import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
 import { useNavigate } from "react-router";
 
 export default function ProviderEditProfile({ isOpen, setIsOpen }) {
@@ -40,10 +36,9 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
   const [autocomplete, setAutocomplete] = useState(null);
   useEffect(() => {
     setAvailability(user_data?.availability);
-
   }, [user_data]);
   const dispatch = useDispatch();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       fullName: user_data?.name || "",
@@ -113,7 +108,6 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
     }
   };
 
-
   const closeSuccessModal = () => {
     setSuccessModal(false); // Close the success modal
     window.location.reload(); // First hard reload
@@ -123,7 +117,6 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
       window.location.reload();
     }, 100); // Adjust the timeout to allow for the first reload to complete
   };
-
 
   // Handle Autocomplete Place Changed
   const handlePlaceChanged = () => {
@@ -143,7 +136,8 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
   const fetchAddressFromCoords = async (latitude, longitude) => {
     try {
       const res = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${
+          import.meta.env.VITE_GOOGLE_MAPS_API_KEY
         }`
       );
       const data = await res.json();
@@ -322,7 +316,16 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
                   holder="Enter years of experience"
                   value={values.experience}
                   handleBlur={handleBlur}
-                  handleChange={handleChange}
+                  handleChange={(e) => {
+                    let { value } = e.target;
+
+                    // Prevent negative or decimal values
+                    if (Number(value) < 0) value = "";
+                    if (!/^\d*$/.test(value)) return; // allow only digits
+
+                    e.target.value = value;
+                    handleChange(e);
+                  }}
                   error={errors.experience}
                   touched={touched.experience}
                 />

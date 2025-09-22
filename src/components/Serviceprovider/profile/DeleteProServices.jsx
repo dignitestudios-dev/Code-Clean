@@ -48,6 +48,7 @@ const DeleteProServices = ({
               onClick={async () => {
                 if (dell == "service") {
                   await dispatch(DeleteService(selectedItem?.id)).unwrap();
+                  await dispatch(getProviderProfile()).unwrap();
                   dispatch(getServices());
                   setIsOpen(!isOpen);
                 } else {

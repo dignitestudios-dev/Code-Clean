@@ -6,7 +6,10 @@ import Input from "../../components/global/Input";
 import { Button } from "../global/GlobalButton";
 import { ErrorToast } from "../global/Toaster";
 import { useDispatch, useSelector } from "react-redux";
-import { CreateService } from "../../redux/slices/auth.slice";
+import {
+  CreateService,
+  getProviderProfile,
+} from "../../redux/slices/auth.slice";
 import { getServices } from "../../redux/slices/provider.slice";
 
 export default function AddServiceModal({ onClose, onAdd }) {
@@ -33,8 +36,9 @@ export default function AddServiceModal({ onClose, onAdd }) {
           description: values.description,
         };
         await dispatch(CreateService(data)).unwrap();
-        dispatch(getServices());        
-        // Optionally reset form        
+        await dispatch(getProviderProfile()).unwrap();
+        await dispatch(getServices());
+        // Optionally reset form
         action.resetForm();
         onClose();
       } catch (error) {
@@ -86,7 +90,14 @@ export default function AddServiceModal({ onClose, onAdd }) {
             holder="Enter Service Price"
             value={values.price}
             handleBlur={handleBlur}
-            handleChange={handleChange}
+            handleChange={(e) => {
+              const { value } = e.target;
+
+              // block negatives
+              if (Number(value) < 0) return;
+
+              handleChange(e);
+            }}
             error={errors.price}
             touched={touched.price}
           />

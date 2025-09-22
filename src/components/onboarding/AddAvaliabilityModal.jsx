@@ -3,6 +3,8 @@ import React, { useState } from "react";
 export default function AddAvailabilityModal({ onClose, onSave, edit }) {
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("18:00");
+  const [error, setError] = useState("");
+
   const [workingDays, setWorkingDays] = useState({
     all: false,
     monday: true,
@@ -37,7 +39,25 @@ export default function AddAvailabilityModal({ onClose, onSave, edit }) {
     "sunday",
   ];
 
+  const validateTimes = (start, end) => {
+    // Convert HH:mm to Date objects (same day for comparison)
+    const today = new Date().toDateString();
+
+    const startDate = new Date(`${today} ${start}`);
+    const endDate = new Date(`${today} ${end}`);
+
+    if (endDate <= startDate) {
+      setError("End time must be after start time.");
+      return false;
+    }
+
+    setError("");
+    return true;
+  };
+
   const handleSave = () => {
+    if (!validateTimes(startTime, endTime)) return;
+
     const selectedDays = days.filter((day) => workingDays[day]);
     onSave({
       start_time: startTime,
@@ -57,7 +77,7 @@ export default function AddAvailabilityModal({ onClose, onSave, edit }) {
         </button>
 
         <h2 className="text-2xl font-bold mb-6">
-          {edit ? "Edit Availability" : "Add Availability"}{" "}
+          {edit ? "Edit Availability" : "Add Availability"}
         </h2>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
@@ -80,6 +100,8 @@ export default function AddAvailabilityModal({ onClose, onSave, edit }) {
             />
           </div>
         </div>
+
+        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
         <div className="mb-4">
           <h3 className="text-lg font-semibold mb-2">Select Working Days</h3>
@@ -116,7 +138,7 @@ export default function AddAvailabilityModal({ onClose, onSave, edit }) {
               "linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",
           }}
         >
-          Add
+          Save
         </button>
       </div>
     </div>

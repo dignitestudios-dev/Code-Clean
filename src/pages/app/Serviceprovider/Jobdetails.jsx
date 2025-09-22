@@ -228,7 +228,7 @@ const Jobdetails = () => {
                         <p className="font-medium">
                           {bookingRequestDetail?.user?.name}
                         </p>
-                        <p className="text-yellow-500 text-sm">⭐ 4.9</p>
+                        <p className="text-yellow-500 text-sm">⭐{bookingRequestDetail?.user?.rating}</p>
                       </div>
                     </div>
                     <button

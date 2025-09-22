@@ -123,7 +123,7 @@ export default function ProviderDetail({ handleNext }) {
             if (comp.types.includes("country")) country = comp.long_name;
           }
         }
-
+  console.log(city,state,country,"countr test")
         setFieldValue("city", city);
         setFieldValue("state", state);
         setFieldValue("country", country);
@@ -207,7 +207,7 @@ export default function ProviderDetail({ handleNext }) {
               handleBlur={handleBlur}
               handleChange={(e) => {
                 const { value } = e.target;
-                if (/^\d*$/.test(value) && value.length <= 12) {
+                if (/^\d*$/.test(value) && value.length <= 10) {
                   handleChange(e);
                 }
               }}
@@ -275,7 +275,16 @@ export default function ProviderDetail({ handleNext }) {
                 holder="Enter years of experience"
                 value={values.experience}
                 handleBlur={handleBlur}
-                handleChange={handleChange}
+                handleChange={(e) => {
+                  let { value } = e.target;
+
+                  // Prevent negative or decimal values
+                  if (Number(value) < 0) value = "";
+                  if (!/^\d*$/.test(value)) return; // allow only digits
+
+                  e.target.value = value;
+                  handleChange(e);
+                }}
                 error={errors.experience}
                 touched={touched.experience}
               />

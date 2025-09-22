@@ -124,8 +124,8 @@ const ServiceproviderProfile = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getProviderProfile())
-  }, [dispatch])
+    dispatch(getProviderProfile());
+  }, [dispatch]);
 
   const [editMode, setEditMode] = useState(false);
 
@@ -196,7 +196,7 @@ const ServiceproviderProfile = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                   {user_data?.certificates &&
-                    user_data.certificates.length > 0 ? (
+                  user_data.certificates.length > 0 ? (
                     user_data.certificates.slice(0, 2).map((item, i) => (
                       <div key={i} className="space-y-1">
                         <h4 className="font-medium text-gradient">
@@ -233,7 +233,9 @@ const ServiceproviderProfile = () => {
                     {[...Array(7)].map((_, i) => (
                       <FaStar key={i} />
                     ))}
-                    <span className="ml-2 text-gray-700 font-medium">4.5</span>
+                    <span className="ml-2 text-gray-700 font-medium">
+                      {user_data?.rating}
+                    </span>
                   </div>
                 </div>
                 <div className="space-y-4 text-right">
@@ -277,7 +279,7 @@ const ServiceproviderProfile = () => {
                     <br />
                     <span className="text-[#181818] font-[500]">
                       {" "}
-                      {user_data?.state}, {user_data?.country}{" "}
+                      {user_data?.address}
                     </span>
                   </div>
                   <div>
@@ -301,15 +303,18 @@ const ServiceproviderProfile = () => {
                     <br />
                     <span className="text-[#181818] font-[500]">
                       {" "}
-                      09:00 AM - 05:00 PM{" "}
+                      {user_data?.availability?.start_time} -{" "}
+                      {user_data?.availability?.end_time}{" "}
                     </span>
                   </div>
                   <div>
                     <span className="font-semibold">Working Days</span>
                     <br />
-                    <span className="text-[#181818] font-[500]">
+                    <span className="text-[#181818] break-words
+                     uppercase font-[500]">
                       {" "}
-                      Monday - Friday
+                      {user_data?.availability?.days?.map((item, i) => <span key={i} >{item?.slice(0,3)},</span> )}
+                     
                     </span>
                   </div>
                 </div>
@@ -568,12 +573,13 @@ const ServiceproviderProfile = () => {
                 ].map((time, idx) => (
                   <button
                     key={idx}
-                    className={`px-4 py-2 rounded-lg border text-sm ${idx === 0
-                      ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
-                      : idx % 2 === 0
+                    className={`px-4 py-2 rounded-lg border text-sm ${
+                      idx === 0
+                        ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
+                        : idx % 2 === 0
                         ? "bg-pink-100 text-gray-800"
                         : "bg-white"
-                      }`}
+                    }`}
                   >
                     {time}
                   </button>
@@ -1202,8 +1208,9 @@ const ServiceproviderProfile = () => {
                     {Array.from({ length: 5 }).map((_, i) => (
                       <FaStar
                         key={i}
-                        className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
-                          }`}
+                        className={`text-yellow-400 ${
+                          i < Math.floor(review.rating) ? "" : "opacity-50"
+                        }`}
                       />
                     ))}
                     <span className="ml-1 font-medium text-sm">

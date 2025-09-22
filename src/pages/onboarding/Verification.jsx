@@ -16,7 +16,7 @@ export default function Verification({ handleNext, email }) {
   const { isLoading, error, userData, success, accessToken, isResendLoading } =
     useSelector((state) => state.auth); // Get loading, error, and user data from Redux
   const [isResendDisabled, setIsResendDisabled] = useState(true);
-  const [timer, setTimer] = useState(30);
+  const [timer, setTimer] = useState(60);
   const otpRefs = useRef([]);
   const dispatch = useDispatch();
   const [otp, setOtp] = useState(emailVerificationValues.otp);
@@ -39,7 +39,7 @@ export default function Verification({ handleNext, email }) {
       await dispatch(ResentOtp(data)).unwrap();
       SuccessToast("OTP resent successfully.");
       setIsResendDisabled(true);
-      setTimer(30);
+      setTimer(60);
       setOtp(emailVerificationValues.otp);
     } catch (err) {
       console.error("Resend OTP failed:", err);

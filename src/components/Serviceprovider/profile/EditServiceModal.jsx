@@ -7,7 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 import Input from "../../../components/global/Input";
 import { serviceAddSchema } from "../../../schema/authentication/AuthSchema";
 import { getServices } from "../../../redux/slices/provider.slice";
-import { getProviderProfile, UpdateService } from "../../../redux/slices/auth.slice";
+import {
+  getProviderProfile,
+  UpdateService,
+} from "../../../redux/slices/auth.slice";
 
 export default function EditServiceModal({ onClose, selectedItem }) {
   const dispatch = useDispatch();
@@ -30,7 +33,7 @@ export default function EditServiceModal({ onClose, selectedItem }) {
             id: selectedItem?.id,
             data: {
               title: values.title,
-              amount:Number(values.price),
+              amount: Number(values.price),
               description: values.description,
             },
           };
@@ -84,7 +87,14 @@ export default function EditServiceModal({ onClose, selectedItem }) {
             holder="Enter Service Price"
             value={values.price}
             handleBlur={handleBlur}
-            handleChange={handleChange}
+            handleChange={(e) => {
+              const { value } = e.target;
+
+              // block negatives
+              if (Number(value) < 0) return;
+
+              handleChange(e);
+            }}
             error={errors.price}
             touched={touched.price}
           />
