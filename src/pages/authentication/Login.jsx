@@ -102,9 +102,10 @@ const Login = () => {
       };
       await dispatch(SocialLogin(data));
       if (user_data?.role == "service_provider") {
-        navigate("/dashboard");
+        // window.location.href = "/dashboard";
       } else {
-        navigate("/Home");
+        // window.location.href = "/home";
+        // navigate("/Home");
       }
     },
     onError: () => {},

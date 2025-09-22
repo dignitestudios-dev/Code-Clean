@@ -2,8 +2,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "../../axios";
 import { ErrorToast, SuccessToast } from "../../components/global/Toaster";
-import { useNavigate } from "react-router";
-
+import Cookies from "js-cookie";
 // ================= INITIAL STATE =================
 const initialState = {
   isLoading: false,
@@ -90,7 +89,8 @@ export const SocialLogin = createAsyncThunk(
     try {
       const res = await axios.post("/social/auth", credentials);
       const { message, token, user_data } = res?.data;
-
+      localStorage.setItem("access_token", token);
+      Cookies.set("access_token", token, { expires: 7 });
       return {
         message: message || "Login successful",
         accessToken: token,
@@ -649,18 +649,19 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       .addCase(SocialLogin.pending, (state) => {
-        state.isLoading = true;
+        state.isResendLoading = true;
         state.error = null;
         state.success = null;
       })
       .addCase(SocialLogin.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.isResendLoading = false;
         state.accessToken = action.payload.accessToken;
+        state.token = action.payload.accessToken;
         state.user_data = action.payload.user_data;
         state.success = action.payload.message;
       })
       .addCase(SocialLogin.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isResendLoading = false;
         state.error = action.payload;
       })
       // GetProfile
@@ -772,7 +773,7 @@ const authSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(CompleteProviderProfile.fulfilled, (state, action) => {
-        state.isLoading = false;        
+        state.isLoading = false;
       })
       .addCase(CompleteProviderProfile.rejected, (state, action) => {
         state.isLoading = false;
