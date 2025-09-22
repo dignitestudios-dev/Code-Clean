@@ -17,9 +17,12 @@ import Feedback from "../../../components/global/FeedBack";
 import ReportUser from "../../../components/Serviceprovider/Reportuser";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  AcceptBookingRequest,
   CancelBookingRequest,
+  getBookingRequest,
   getRequestDetail,
   MarkStartJob,
+  RejectBookingRequest,
 } from "../../../redux/slices/provider.slice";
 import { Button } from "../../../components/global/GlobalButton";
 import { ErrorToast } from "../../../components/global/Toaster";
@@ -42,9 +45,12 @@ const Jobdetails = () => {
   const [cancelReasonText, setCancelReasonText] = useState();
   const [role, SetRole] = useState("");
   const dispatch = useDispatch("");
-  const { bookingRequestDetail, isLoading, StartJobLoading } = useSelector(
-    (state) => state.provider
-  );
+  const {
+    bookingRequestDetail,
+    isLoading,
+    StartJobLoading,
+    bookingRequestLoader,
+  } = useSelector((state) => state.provider);
   const { user_data } = useSelector((state) => state.auth);
   const status = bookingRequestDetail?.status;
   const getRequestDetailData = async () => {
@@ -124,7 +130,19 @@ const Jobdetails = () => {
 
     return () => clearInterval(interval);
   }, [bookingRequestDetail]);
+  const HandleRejectRequest = async () => {
+    if (!reason) return ErrorToast("Reason is required");
+    const data = {
+      requestId: bookingRequestDetail?.request_id,
+      reason: reason,
+    };
 
+    await dispatch(RejectBookingRequest(data)).unwrap();
+    setRejectedpopup(false); // Close warning popup
+    setRejectedreasons(false); // Close reason popup
+    setRejectedreqcomplete(true); // Show success modal
+    getRequestDetailData();
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar type="serviceprovider" />
@@ -228,7 +246,9 @@ const Jobdetails = () => {
                         <p className="font-medium">
                           {bookingRequestDetail?.user?.name}
                         </p>
-                        <p className="text-yellow-500 text-sm">⭐{bookingRequestDetail?.user?.rating}</p>
+                        <p className="text-yellow-500 text-sm">
+                          ⭐{bookingRequestDetail?.user?.rating}
+                        </p>
                       </div>
                     </div>
                     <button
@@ -389,10 +409,18 @@ const Jobdetails = () => {
                             className="bg-white rounded-xl shadow-lg w-[440px] p-6"
                             onClick={(e) => e.stopPropagation()} // ← Important line!
                           >
-                            <h2 className="text-[26px] font-bold text-black text-center mb-6">
-                              Reject Reason
-                            </h2>
-
+                            <div className="flex items-center justify-between gap-2 mb-6">
+                              <h2 className="text-[26px] font-bold text-black text-center ">
+                                Reject Reason
+                              </h2>
+                              <div>
+                                <button
+                                  onClick={() => setRejectedreasons(false)}
+                                >
+                                  <HiXMark />
+                                </button>
+                              </div>
+                            </div>
                             <label className="block text-sm text-left font-medium text-black mb-1">
                               Reason
                             </label>
@@ -400,27 +428,17 @@ const Jobdetails = () => {
                               rows={4}
                               value={reason}
                               onChange={(e) => setReason(e.target.value)}
+                              required
                               placeholder="Type your reason here..."
                               className="w-full border border-gray-300 rounded-xl px-4 py-3 placeholder-gray-400 text-black resize-none focus:outline-none focus:ring-2 focus:ring-black"
                             />
 
                             <div className="flex justify-between gap-4 mt-6">
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setRejectedpopup(false); // Close warning popup
-                                  setRejectedreasons(false); // Close reason popup
-                                  setRejectedreqcomplete(true); // Show success modal
-                                  setTimeout(() => {
-                                    navigate(
-                                      "/job-details?id=3&status=Rejected"
-                                    );
-                                  }, 2000);
-                                }}
-                                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white font-semibold hover:bg-red-600 transition"
-                              >
-                                Submit
-                              </button>
+                              <Button
+                                onClick={HandleRejectRequest}
+                                text={"Submit"}
+                                loading={bookingRequestLoader}
+                              />
                             </div>
                           </div>
                         </div>
@@ -430,8 +448,12 @@ const Jobdetails = () => {
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                           <div className="bg-white rounded-xl px-5 py-5 md:w-[26em] shadow-2xl text-center">
                             {/* Checkmark Icon */}
-                            <div className="flex justify-end items-center" >
-                                  <button onClick={()=>setRejectedreqcomplete(false)} ><HiXMark size={22} /></button> 
+                            <div className="flex justify-end items-center">
+                              <button
+                                onClick={() => setRejectedreqcomplete(false)}
+                              >
+                                <HiXMark size={22} />
+                              </button>
                             </div>
                             <div className="mb-4 flex justify-center items-center">
                               <div className="bg-gradient-to-r from-[#27A8E2] to-[#00034A] w-[70px] h-[70px] rounded-full flex justify-center items-center">
@@ -451,15 +473,19 @@ const Jobdetails = () => {
                         </div>
                       )}
 
-                      <button
-                        className="bg-gradient-to-r w-full from-[#27A8E2] to-[#00034A] text-white px-6 py-2 rounded-xl"
-                        onClick={(e) => {
+                      <Button
+                        text={"Accept"}
+                        onClick={async (e) => {
                           e.stopPropagation();
-                          navigate("/job-details?id=3&status=Accepted");
+                          await dispatch(
+                            AcceptBookingRequest(
+                              bookingRequestDetail.request_id
+                            )
+                          ).unwrap();
+                          await getRequestDetailData();
                         }}
-                      >
-                        Accept
-                      </button>
+                        loading={bookingRequestLoader}
+                      />
                     </div>
                   </>
                 )}
