@@ -168,7 +168,6 @@ export const getProviderProfile = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       const response = await axios.post("/provider/profile");
-      console.log(response.data, "userRec");
       return response.data?.user;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -718,7 +717,6 @@ const authSlice = createSlice({
         state.success = null;
       })
       .addCase(getProviderProfile.fulfilled, (state, action) => {
-        console.log(action.payload, "payload");
         state.isLoading = false;
         state.user_data = action.payload;
         state.success = action.payload.message;

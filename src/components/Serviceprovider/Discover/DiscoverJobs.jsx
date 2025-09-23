@@ -50,6 +50,8 @@ export default function DiscoverJobs() {
     }
   };
 
+  console.log(discoverJobs,"discoverJobs")
+
   const handlePageChange = (url) => {
     const cleanUrl = sliceBaseUrl(url);
     if (cleanUrl) {
@@ -97,12 +99,12 @@ export default function DiscoverJobs() {
                 />
               </div>
 
-              <button
+              {/* <button
                 onClick={() => setIsFilter(!isFilter)}
                 className="bg-[#FFFFFF4D] text-white p-3 rounded-md"
               >
                 <LuSettings2 />
-              </button>
+              </button> */}
             </div>
             <div className="relative top-12 left-20">
               {isFilter && <Filter endPoint={""} setIsFilter={setIsFilter} />}

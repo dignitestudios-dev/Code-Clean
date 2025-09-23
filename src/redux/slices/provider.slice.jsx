@@ -258,7 +258,6 @@ export const AddCard = createAsyncThunk(
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {
-      console.log(error?.response.data?.message,"errors---->")
       ErrorToast(error?.response.data?.message || "Card Add failed");
       // return thunkAPI.rejectWithValue(
       //   error?.response.data?.message || "Card Add failed"

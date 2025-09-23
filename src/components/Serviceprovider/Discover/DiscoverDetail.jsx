@@ -10,11 +10,15 @@ import Filter from "../../global/Filter";
 import AcceptedModal from "./AcceptedJobsModal";
 import AlreadyTakenModal from "./AlreadyTakenModal";
 import {
+  AcceptBookingRequest,
   getRequestDetail,
   RejectBookingRequest,
   resetError,
 } from "../../../redux/slices/provider.slice";
 import { useDispatch, useSelector } from "react-redux";
+import { RiLoader5Line } from "react-icons/ri";
+import { IoWarning } from "react-icons/io5";
+import { TiWarning } from "react-icons/ti";
 
 export default function DiscoverDetail() {
   const navigate = useNavigate("");
@@ -24,8 +28,9 @@ export default function DiscoverDetail() {
   const [isAccept, setIsAccept] = useState(false);
   const [isAlready, setIsAlready] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [acceptmodel, setAcceptmodel] = useState(false);
   const dispatch = useDispatch("");
-  const { bookingRequestDetail } = useSelector((state) => state.provider);
+  const { bookingRequestDetail, bookingRequestLoader } = useSelector((state) => state.provider);
   const fetchDiscoverJob = async () => {
     await dispatch(
       getRequestDetail(`provider/requests/${queryParams.get("id")}/details`)
@@ -37,16 +42,41 @@ export default function DiscoverDetail() {
     fetchDiscoverJob();
   }, []);
 
+  console.log(bookingRequestDetail, "bookingRequestDetail")
 
-  const HandleRejectRequest = async () => {
+  console.log(selectedItem, "selectedItem")
+
+  const handleacceptjob = async () => {
     const data = {
-      requestId: selectedItem,
+      requestId: bookingRequestDetail?.request_id,
+    };
+
+    try {
+      // Dispatch AcceptBookingRequest action to initiate the API call
+      await dispatch(AcceptBookingRequest(bookingRequestDetail?.request_id)).unwrap();
+      setAcceptmodel(false); // Close modal after accepting
+      navigate("/discover-job"); // Navigate to discover jobs after accepting
+    } catch (error) {
+      console.error("Error accepting booking request:", error);
+    }
+  };
+
+  const handleRejectRequest = async () => {
+    const data = {
+      requestId: bookingRequestDetail?.request_id,
       reason: null,
     };
 
-    await dispatch(RejectBookingRequest(data)).unwrap();
-    navigate("/discover-job");
+    try {
+      // Dispatch RejectBookingRequest action to initiate the API call
+      await dispatch(RejectBookingRequest(data)).unwrap();
+      navigate("/discover-job"); // Navigate after successful request
+    } catch (error) {
+      console.error("Error rejecting booking request:", error);
+      navigate("/discover-job"); // Navigate after successful request
+    }
   };
+
 
   return (
     <div>
@@ -106,23 +136,34 @@ export default function DiscoverDetail() {
                       {bookingRequestDetail.location}
                     </div>
                   </div>
-                  {bookingRequestDetail?.status != "pending" && (
+                  {bookingRequestDetail?.status == "pending" && (
                     <div className="flex gap-4">
                       <button
+                        disabled={bookingRequestLoader} // Disable the button while loading
+                        type="button"
                         onClick={() => {
-                          setSelectedItem(bookingRequestDetail?.request_id);
-                          HandleRejectRequest();
+                          setSelectedItem(bookingRequestDetail?.request_id); // Assuming this function is defined elsewhere
+                          handleRejectRequest(); // Call the function to reject the booking request
                         }}
-                        className="p-2 text-[#000000] bg-[#F2F1F1] px-8 rounded-lg transition-colors"
+                        className={`p-2 text-[#000000] bg-[#F2F1F1] px-8 rounded-lg transition-colors ${bookingRequestLoader ? "cursor-not-allowed opacity-50" : ""
+                          }`}
                       >
-                        Ignore
+                        {/* Show loading spinner if loader is true */}
+                        {bookingRequestLoader ? (
+                          <RiLoader5Line className="animate-spin text-lg" />
+                        ) : (
+                          "Ignore"
+                        )}
                       </button>
                       <button
-                        onClick={() =>
-                          location?.state?.status == "Avaliable"
-                            ? setIsAccept(!isAccept)
-                            : setIsAlready(!isAlready)
-                        }
+                        // onClick={() =>
+                        //   location?.state?.status == "Avaliable"
+                        //     ? setIsAccept(!isAccept)
+                        //     : setIsAlready(!isAlready)
+                        // }
+                        onClick={() => {
+                          setAcceptmodel(true)
+                        }}
                         className="p-2 bg-gradient-to-r from-[#00034A] to-[#27A8E2] px-6 text-white rounded-lg transition-colors"
                       >
                         Accept Job
@@ -180,6 +221,41 @@ export default function DiscoverDetail() {
           </div>
         </div>
       </div>
+
+      {acceptmodel && (
+        <div
+          className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50"
+          onClick={() => setAcceptmodel(false)}
+        >
+          <div className="bg-white rounded-lg p-6 w-[80%] sm:w-[30%] shadow-xl">
+            <div className="flex justify-center pb-3">
+              <div className="w-[70px] h-[70px] rounded-full flex justify-center items-center bg-gradient-to-r from-[#27A8E2] to-[#00034A]">
+                <IoWarning size={40} color="white" />
+              </div>
+
+            </div>
+
+            <h3 className="text-3xl font-semibold text-center mb-4">
+              Confirm Acceptance!
+            </h3>
+            <p className="text-sm text-center">You are about to accept this job. Once accepted, you are expected to complete the service as per the job details. Do you want to proceed?</p>
+            <div className="text-center flex justify-center gap-3 mt-10">
+              <button
+                className="bg-[#F2F1F1] text-black py-2 px-8 rounded-xl"
+                onClick={() => setAcceptmodel(false)}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleacceptjob}
+                className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 px-8 rounded-xl"
+              >
+                Accept Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <AcceptedModal isOpen={isAccept} setIsOpen={setIsAccept} />
       <AlreadyTakenModal isOpen={isAlready} setIsOpen={setIsAlready} />
