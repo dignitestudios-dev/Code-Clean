@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { FaCheck } from "react-icons/fa";
+import { FaAngleRight, FaCheck } from "react-icons/fa";
 import { HeroBg } from "../../../assets/export";
 import Navbar from "../../../components/layout/Navbar";
 import Footer from "../../../components/layout/Footer";
@@ -264,7 +264,7 @@ const Dashboard = () => {
                       {row.status === "pending" ? (
                         <div className="flex gap-3">
                           <button
-                            className="bg-[#EE3131] text-white px-6 py-3 rounded-xl"
+                            className="bg-[#EE3131] text-white px-10 py-2 text-[16px] rounded-xl"
                             onClick={(e) => {
                               setSelectedItem(row?.request_id);
                               e.stopPropagation();
@@ -276,6 +276,7 @@ const Dashboard = () => {
 
                           <Button
                             text={"Accept"}
+                            className="!h-10 !px-0"
                             onClick={(e) => {
                               setSelectedItem(index);
                               e.stopPropagation();
@@ -290,7 +291,7 @@ const Dashboard = () => {
                           />
                         </div>
                       ) : (
-                        <span>&gt;</span>
+                        <span><FaAngleRight className="ml-3" size={20} /></span>
                       )}
                     </td>
                   </tr>

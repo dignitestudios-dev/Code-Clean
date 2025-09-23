@@ -46,7 +46,6 @@ const Bookingrequestuser = () => {
     };
 
 
-    console.log(bookingrequestdetailbyid,"bookingrequestdetailbyid")
     return (
         <div className="min-h-screen bg-gray-50">
             <Navbar />

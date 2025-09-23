@@ -117,9 +117,9 @@ const Bookingsrequests = () => {
   const fmtIsoTime = (iso) =>
     iso
       ? new Date(iso).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        })
+        hour: "2-digit",
+        minute: "2-digit",
+      })
       : "";
 
   // ---- normalize API payload (supports {data:[...]} OR [...] OR {...}) ----
@@ -137,7 +137,6 @@ const Bookingsrequests = () => {
     return bookingrequest?.data || []; // Extract data from the response object
   }, [bookingrequest]);
 
-  console.log(bookingrequest)
 
   // ---- unify into UI rows ----
   const uiRows = useMemo(() => {
@@ -222,8 +221,6 @@ const Bookingsrequests = () => {
   };
 
 
-  console.log(filteredRows,"filteredRows")
-  console.log(uiRows,"uiRows")
 
   const handlePageChange = (url) => {
     const cleanUrl = sliceBaseUrl(url);
@@ -271,9 +268,8 @@ const Bookingsrequests = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for bookings"
                 disabled={loading}
-                className={`w-[260px] py-3 pl-10 pr-5 rounded-lg border !text-white border-[#ccc] bg-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF] ${
-                  loading ? "opacity-60 cursor-not-allowed" : ""
-                }`}
+                className={`w-[260px] py-3 pl-10 pr-5 rounded-lg border !text-white border-[#ccc] bg-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF] ${loading ? "opacity-60 cursor-not-allowed" : ""
+                  }`}
               />
             </div>
 
@@ -287,11 +283,10 @@ const Bookingsrequests = () => {
                     setStatusFilter("All");
                     setActiveTab(tab);
                   }}
-                  className={`px-4 py-2 rounded-lg ${
-                    activeTab === tab
+                  className={`px-4 py-2 rounded-lg ${activeTab === tab
                       ? "bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white"
                       : "bg-white text-text-[#181818]"
-                  } ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
+                    } ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
                 >
                   {tab}
                 </button>
@@ -310,11 +305,10 @@ const Bookingsrequests = () => {
               <button
                 key={index}
                 onClick={() => setStatusFilter(status)}
-                className={`px-4 py-2 text-sm font-medium hover:text-[#00AEEF] focus:outline-none border-b-2 ${
-                  statusFilter === status
+                className={`px-4 py-2 text-sm font-medium hover:text-[#00AEEF] focus:outline-none border-b-2 ${statusFilter === status
                     ? "border-[#00AEEF] text-gradient"
                     : "border-transparent text-[#3F3F3F]"
-                }`}
+                  }`}
               >
                 {status}
               </button>
@@ -344,20 +338,25 @@ const Bookingsrequests = () => {
                     <tr
                       key={row.id ?? index}
                       className="border-t cursor-pointer"
-                      onClick={() =>
-                        navigate(
-                          `/booking-request?id=${row.id}&status=${row.statusUi}`
-                        )
-                      }
+                      // onClick={() =>
+                      //   navigate(
+                      //     `/booking-request?id=${row.id}&status=${row.statusUi}`
+                      //   )
+                      // }
+                      onClick={() => {
+                        const navigateTo = activeTab === "Current Bookings"
+                          ? `/booking-details?id=${row.id}&status=${row.statusUi}`
+                          : `/booking-request?id=${row.id}&status=${row.statusUi}`;
+                        navigate(navigateTo);
+                      }}
                     >
                       <td className="px-6 py-4">{row.id}</td>
                       <td className="px-6 py-4 flex items-center gap-3">
                         <img
                           src={
                             row?.avatar
-                              ? `${
-                                  import.meta.env.VITE_APP_AWS_URL + row?.avatar
-                                }`
+                              ? `${import.meta.env.VITE_APP_AWS_URL + row?.avatar
+                              }`
                               : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"
                           }
                           alt={row.name}

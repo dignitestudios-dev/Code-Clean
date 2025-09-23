@@ -24,7 +24,7 @@ const Navbar = () => {
   const [logoutpopup, setLogoutpopup] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isReport, setIsReport] = useState(false);
-  const { user_data, token, logoutLoading } = useSelector(
+  const { user_data, token,accessToken, logoutLoading } = useSelector(
     (state) => state.auth
   );
   const dispatch = useDispatch();
@@ -62,7 +62,7 @@ const Navbar = () => {
 
 
 
-  console.log(user_data, token,role, "userdata");
+
   const handleLogout = async () => {
     try {
       await dispatch(logout()).unwrap();
@@ -88,12 +88,12 @@ const Navbar = () => {
   }, [user_data]);
 
   useEffect(() => {
-    if (token) {
+    if (accessToken) {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
     }
-  }, [token]);
+  }, [accessToken]);
 
   const dropdownRef = useRef(null);
 
