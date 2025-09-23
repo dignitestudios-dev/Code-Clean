@@ -321,11 +321,12 @@ const Serviceprovider = () => {
       const provider = alldata.find((item) => item.id === id);
       // Step 2: Agar mila to uske services ko state me set karo
       if (provider) {
+
         setData(provider || []);
       }
     }
   }, [alldata, id]);
-
+        console.log(data,"provider--item")
   const handleDurationChange = (e) => {
     let value = parseInt(e.target.value); // number me convert
 
@@ -734,7 +735,7 @@ const Serviceprovider = () => {
             <div className="mt-4 border-t-2 pt-3">
               <h3 className="font-semibold text-lg mb-2">Certificates</h3>
               <div className="grid grid-cols-1 md:grid-cols-1 gap-6 max-h-[400px] overflow-y-auto">
-                {data.certificates && data.certificates.lenth > 0 ? (
+                {data.certificates  ? (
                   data?.certificates?.map((certificate, i) => (
                     <div key={i} className="space-y-1 border-t-2 pt-3">
                       <h4 className="font-medium">{certificate.name}</h4>
@@ -750,7 +751,7 @@ const Serviceprovider = () => {
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-gray-600">No Certifcate Found</p>
+                  <p className="text-sm text-gray-600">No Certifcate Found1</p>
                 )}
               </div>
             </div>
