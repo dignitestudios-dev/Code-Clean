@@ -6,10 +6,10 @@ import { HeroBg, stripe } from "../../../assets/export";
 import { GoTrash } from "react-icons/go";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import 'react-calendar/dist/Calendar.css';
+import "react-calendar/dist/Calendar.css";
 import { IoLocationOutline, IoTimeOutline } from "react-icons/io5";
-import { MdDelete, MdOutlineEdit } from 'react-icons/md';
-import { useLocation, useNavigate } from 'react-router';
+import { MdDelete, MdOutlineEdit } from "react-icons/md";
+import { useLocation, useNavigate } from "react-router";
 import { RxCross2 } from "react-icons/rx";
 import {
   fetchallservices,
@@ -44,7 +44,7 @@ const Serviceprovider = () => {
     setSelectedCard(card); // Set the selected card
   };
 
-  console.log(data, "dataserviceprovider")
+  console.log(data, "dataserviceprovider");
 
   const fromViewProfile = location.state?.fromViewProfile || false;
   const providerId = location.state?.id;
@@ -148,10 +148,10 @@ const Serviceprovider = () => {
               });
 
               // Log the address components for debugging
-              console.log('Address Components:', addressComponents);
-              console.log('City:', city);
-              console.log('State:', state);
-              console.log('Country:', country);
+              console.log("Address Components:", addressComponents);
+              console.log("City:", city);
+              console.log("State:", state);
+              console.log("Country:", country);
 
               // Update the form data with location details
               setFormData((prev) => ({
@@ -169,8 +169,6 @@ const Serviceprovider = () => {
       }
     }
   };
-
-
 
   const handleSubmit = () => {
     const customserviceData = {
@@ -196,8 +194,12 @@ const Serviceprovider = () => {
 
   const [custombookingtwo, setCustombookingtwo] = useState(false);
   const [custombookingthree, setCustombookingthree] = useState(false);
-  const { allservices, paymentMethoduser, hireProviderLoading, CustomserviceproviderSuccess } = useSelector((s) => s.user);
-
+  const {
+    allservices,
+    paymentMethoduser,
+    hireProviderLoading,
+    CustomserviceproviderSuccess,
+  } = useSelector((s) => s.user);
 
   const handleOnLoad = (autocomplete) => {
     setAutocomplete(autocomplete);
@@ -307,7 +309,7 @@ const Serviceprovider = () => {
   const handleOnLoads = (autocomplete) => {
     autocompleteRef.current = autocomplete;
   };
-  console.log(allservices, "allService")
+  console.log(allservices, "allService");
 
   useEffect(() => {
     dispatch(fetchallservices("/users/providers")); // pass page to API
@@ -321,12 +323,11 @@ const Serviceprovider = () => {
       const provider = alldata.find((item) => item.id === id);
       // Step 2: Agar mila to uske services ko state me set karo
       if (provider) {
-
         setData(provider || []);
       }
     }
   }, [alldata, id]);
-        console.log(data,"provider--item")
+  console.log(data, "provider--item");
   const handleDurationChange = (e) => {
     let value = parseInt(e.target.value); // number me convert
 
@@ -351,36 +352,41 @@ const Serviceprovider = () => {
     setDuration(value);
   };
 
-
-
-
   // const handleInputChange = (e) => {
   //     const { name, value, files } = e.target;
   //     if (name === "file") {
   //         setFormData({ ...formData, file: files[0] });
   //     } else {
   //         setFormData({ ...formData, [name]: value });
-  //     }   
+  //     }
   // };
-
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
 
     if (name === "duration") {
-      // Allow only numeric input for duration
-      const numericValue = value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+      // Remove non-digits completely
+      const numericValue = value.replace(/[^0-9]/g, "");
+      const parsed = parseInt(numericValue || "0", 10);
 
-      // Validate the duration
-      if (parseInt(numericValue) > 15 && numericValue !== "") {
-        ErrorToast("Duration cannot be more than 15");
-        return; // Prevent further state update if validation fails
+      if (!numericValue) {
+        setFormData({ ...formData, [name]: "" }); // allow empty while typing
+        return;
       }
 
-      // Update the form data with the validated duration
+      if (parsed < 1) {
+        ErrorToast("Duration must be at least 1");
+        return;
+      }
+
+      if (parsed > 15) {
+        ErrorToast("Duration cannot be more than 15");
+        return;
+      }
+
       setFormData({
         ...formData,
-        [name]: numericValue, // Only update numeric value
+        [name]: parsed.toString(),
       });
     } else if (name === "file") {
       // Handle file input (e.g., updating the file in form data)
@@ -390,7 +396,6 @@ const Serviceprovider = () => {
       setFormData({ ...formData, [name]: value });
     }
   };
-
 
   const togglePopup = () => {
     setServicetype(!servicetype);
@@ -588,7 +593,6 @@ const Serviceprovider = () => {
       providerData,
     };
 
-
     dispatch(HireServiceProvider(payload)); // Dispatch the action
   };
 
@@ -661,7 +665,9 @@ const Serviceprovider = () => {
   useEffect(() => {
     if (dailyAvailability) {
       // Filter out the available slots
-      const availableSlots = dailyAvailability?.slots?.filter(slot => slot.status === "Available");
+      const availableSlots = dailyAvailability?.slots?.filter(
+        (slot) => slot.status === "Available"
+      );
       setTodaytime(availableSlots || []); // Set only available slots
     }
   }, [dailyAvailability]);
@@ -696,8 +702,6 @@ const Serviceprovider = () => {
   //     setTodaytime(availableSlots || []);
   //   }
   // }, [dailyAvailability]);
-
-
 
   return (
     <>
@@ -735,7 +739,7 @@ const Serviceprovider = () => {
             <div className="mt-4 border-t-2 pt-3">
               <h3 className="font-semibold text-lg mb-2">Certificates</h3>
               <div className="grid grid-cols-1 md:grid-cols-1 gap-6 max-h-[400px] overflow-y-auto">
-                {data.certificates  ? (
+                {data.certificates ? (
                   data?.certificates?.map((certificate, i) => (
                     <div key={i} className="space-y-1 border-t-2 pt-3">
                       <h4 className="font-medium">{certificate.name}</h4>
@@ -808,7 +812,9 @@ const Serviceprovider = () => {
                 <div>
                   <span className="font-semibold">Distance</span>
                   <br />
-                  {data?.distance && data.distance > 0 ? data.distance : "0 miles"}
+                  {data?.distance && data.distance > 0
+                    ? data.distance
+                    : "0 miles"}
                 </div>
                 <div>
                   <span className="font-semibold">Completed Job</span>
@@ -1037,10 +1043,11 @@ const Serviceprovider = () => {
                       key={idx}
                       onClick={() => handleSelect(slot.time)} // Use slot.time as the time to select
                       className={`px-4 py-2 rounded-lg border text-sm transition 
-                ${selectedTime === slot.time
-                          ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
-                          : "bg-white text-gray-800"
-                        }`}
+                ${
+                  selectedTime === slot.time
+                    ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
+                    : "bg-white text-gray-800"
+                }`}
                     >
                       {slot.time} {/* Display the available time */}
                     </button>
@@ -1062,8 +1069,9 @@ const Serviceprovider = () => {
                   value={duration}
                   onChange={handleDurationChange} // Update the state with validation
                   placeholder="0"
-                  className={`w-full border rounded-lg px-4 py-2 pr-10 ${parseInt(duration) > 15 ? "border-red-500" : ""
-                    }`} // Add red border if duration is greater than 15
+                  className={`w-full border rounded-lg px-4 py-2 pr-10 ${
+                    parseInt(duration) > 15 ? "border-red-500" : ""
+                  }`} // Add red border if duration is greater than 15
                   required
                 />
               </div>
@@ -1143,7 +1151,7 @@ const Serviceprovider = () => {
 
               <div className="space-y-3">
                 <label className="font-semibold text-gray-700">
-                  Upload Images{" "}
+                  Upload document{" "}
                   <span className="text-sm text-gray-400">(Optional)</span>
                 </label>
                 <div className="border-dashed border-2 border-gray-300 p-20 rounded-lg text-center cursor-pointer">
@@ -1159,7 +1167,7 @@ const Serviceprovider = () => {
                     htmlFor="fileInput"
                     className="cursor-pointer text-gray-500"
                   >
-                    Upload "document name"
+                    Upload document
                     <br />
                     <span className="text-xs text-gray-400">
                       Up to 3 images (JPG, PNG)
@@ -1302,10 +1310,14 @@ const Serviceprovider = () => {
               <button
                 onClick={() => {
                   // Check if at least one service quantity > 0
-                  const hasSelected = Object.values(services).some((qty) => qty > 0);
+                  const hasSelected = Object.values(services).some(
+                    (qty) => qty > 0
+                  );
 
                   if (!hasSelected) {
-                    ErrorToast("Please select at least 1 service before proceeding.");
+                    ErrorToast(
+                      "Please select at least 1 service before proceeding."
+                    );
                     return;
                   }
 
@@ -1316,7 +1328,6 @@ const Serviceprovider = () => {
               >
                 Next
               </button>
-
 
               <div
                 onClick={() => {
@@ -1504,13 +1515,26 @@ const Serviceprovider = () => {
           <div className="bg-white rounded-xl p-6 md:w-[35em] shadow-2xl">
             {/* Header */}
             <div className="flex justify-between items-center border-b pb-4 mb-4">
-              <h2 className="text-2xl font-bold text-gray-800">Request Service</h2>
+              <h2 className="text-2xl font-bold text-gray-800">
+                Request Service
+              </h2>
               <button
                 onClick={() => setRequestservicefive(false)}
                 className="text-gray-500 hover:text-red-600"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -1527,17 +1551,29 @@ const Serviceprovider = () => {
               {/* Payment Method Info */}
               <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
                 <div className="w-full">
-                  <span className="font-medium text-gray-800">Attached Stripe</span>&nbsp;<span className="text-[12px] capitalize text-blue-600">(select the payment method)</span>
-                  {paymentmethoduser?.payment_methods && paymentmethoduser.payment_methods.length > 0 ? (
+                  <span className="font-medium text-gray-800">
+                    Attached Stripe
+                  </span>
+                  &nbsp;
+                  <span className="text-[12px] capitalize text-blue-600">
+                    (select the payment method)
+                  </span>
+                  {paymentmethoduser?.payment_methods &&
+                  paymentmethoduser.payment_methods.length > 0 ? (
                     paymentmethoduser.payment_methods.map((card) => (
                       <div
                         key={card.id}
-                        className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${selectedCard?.id === card.id ? "bg-blue-100 border-blue-500" : ""
-                          }`}
+                        className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${
+                          selectedCard?.id === card.id
+                            ? "bg-blue-100 border-blue-500"
+                            : ""
+                        }`}
                         onClick={() => handleCardSelect(card)}
                       >
                         <div className="flex gap-3">
-                          <span className="text-gray-700">**** **** **** **{card.last_digits}</span>
+                          <span className="text-gray-700">
+                            **** **** **** **{card.last_digits}
+                          </span>
                           <img src={stripe} className="h-6" alt={card.brand} />
                         </div>
 
@@ -1560,27 +1596,32 @@ const Serviceprovider = () => {
                       + Add Payment Method
                     </div>
                   )}
-
                 </div>
               </div>
 
               {/* Payment Summary */}
               <div className="flex justify-between items-center border-t-[2px] pt-3 border-slate-200">
-                <div className='w-full bg-[#F3F3F3] p-3 rounded-[10px]'>
-                  <div className='w-full border-b-[1px] pb-[3px]'>
-                    <span className="font-medium text-gray-800">Payment Summary</span>
+                <div className="w-full bg-[#F3F3F3] p-3 rounded-[10px]">
+                  <div className="w-full border-b-[1px] pb-[3px]">
+                    <span className="font-medium text-gray-800">
+                      Payment Summary
+                    </span>
                   </div>
                   <div className="text-gray-600 mt-2">
-                    <div className='flex justify-between'>
-                      <p>Subtotal: </p>
-                      $ {data?.services?.reduce((total, service) => {
-                        return total + service.amount * (services[service.id] || 0);
+                    <div className="flex justify-between">
+                      <p>Subtotal: </p>${" "}
+                      {data?.services?.reduce((total, service) => {
+                        return (
+                          total + service.amount * (services[service.id] || 0)
+                        );
                       }, 0)}
                     </div>
-                    <div className='flex justify-between pt-3'>
-                      <p className='text-black font-[500]'>Total: </p>
-                      $ {data?.services?.reduce((total, service) => {
-                        return total + service.amount * (services[service.id] || 0);
+                    <div className="flex justify-between pt-3">
+                      <p className="text-black font-[500]">Total: </p>${" "}
+                      {data?.services?.reduce((total, service) => {
+                        return (
+                          total + service.amount * (services[service.id] || 0)
+                        );
                       }, 0)}
                     </div>
                   </div>
@@ -1719,8 +1760,9 @@ const Serviceprovider = () => {
                       {Array.from({ length: 5 }).map((_, i) => (
                         <FaStar
                           key={i}
-                          className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
-                            }`}
+                          className={`text-yellow-400 ${
+                            i < Math.floor(review.rating) ? "" : "opacity-50"
+                          }`}
                         />
                       ))}
                       <span className="ml-1 font-medium text-sm">
@@ -1924,6 +1966,11 @@ const Serviceprovider = () => {
                       name="duration"
                       placeholder="Enter Duration"
                       value={formData.duration}
+                      onKeyDown={(e) => {
+                        if (["-", "+", "e", "E", "."].includes(e.key)) {
+                          e.preventDefault(); // block invalid keys
+                        }
+                      }}
                       onChange={handleInputChange}
                       required
                       className="w-full py-2 ml-1 focus:outline-none"
@@ -1940,10 +1987,11 @@ const Serviceprovider = () => {
                     <div
                       key={card.id}
                       className={`flex justify-between items-center border cursor-pointer rounded p-2 mb-2 
-              ${selectedCard?.id === card.id
-                          ? "bg-blue-100 border-blue-500"
-                          : ""
-                        } 
+              ${
+                selectedCard?.id === card.id
+                  ? "bg-blue-100 border-blue-500"
+                  : ""
+              } 
             `} // Highlight the selected card with a background
                       onClick={() => handleCardSelect(card)} // Set the card as selected when clicked
                     >
