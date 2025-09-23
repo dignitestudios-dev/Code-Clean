@@ -37,7 +37,7 @@ export const getProfile = createAsyncThunk(
       return response.data; // Return entire API response
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Verification failed"
+        error?.response.data?.message || "Verification failed"
       );
     }
   }
@@ -50,7 +50,7 @@ export const getUserProfile = createAsyncThunk(
       return response.data; // Return entire API response
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Verification failed"
+        error?.response.data?.message || "Verification failed"
       );
     }
   }
@@ -62,7 +62,7 @@ export const getBadges = createAsyncThunk("/badges", async (_, thunkAPI) => {
     return response.data; // Return entire API response
   } catch (error) {
     return thunkAPI.rejectWithValue(
-      error.response?.data?.message || "Verification failed"
+      error?.response.data?.message || "Verification failed"
     );
   }
 });
@@ -74,7 +74,7 @@ export const getBillings = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Verification failed"
+        error?.response.data?.message || "Verification failed"
       );
     }
   }
@@ -87,7 +87,7 @@ export const getTransactions = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Verification failed"
+        error?.response.data?.message || "Verification failed"
       );
     }
   }
@@ -100,7 +100,7 @@ export const getWallet = createAsyncThunk(
       return response.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Verification failed"
+        error?.response.data?.message || "Verification failed"
       );
     }
   }
@@ -113,7 +113,7 @@ export const getPlans = createAsyncThunk(
       const response = await axios.get("/plans"); // API request to fetch the profile
       return response.data; // Assuming the API returns the user profile data
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to Fetch Plans";
+      const msg = error?.response.data?.message || "Failed to Fetch Plans";
       ErrorToast(msg); // Show error toast
       return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
@@ -127,7 +127,7 @@ export const getServices = createAsyncThunk(
       const response = await axios.get("/provider/services"); // API request to fetch the profile
       return response.data;
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to Services";
+      const msg = error?.response.data?.message || "Failed to Services";
       ErrorToast(msg); // Show error toast
       return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
@@ -142,7 +142,7 @@ export const getBookingRequest = createAsyncThunk(
       return response?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Verification failed"
+        error?.response.data?.message || "Verification failed"
       );
     }
   }
@@ -156,7 +156,7 @@ export const getCurrentBooking = createAsyncThunk(
       return response?.data?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Verification failed"
+        error?.response.data?.message || "Verification failed"
       );
     }
   }
@@ -169,7 +169,7 @@ export const getDiscoverJobs = createAsyncThunk(
       return response?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Verification failed"
+        error?.response.data?.message || "Verification failed"
       );
     }
   }
@@ -182,7 +182,7 @@ export const getFilteredJobs = createAsyncThunk(
       return response?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Filter request failed"
+        error?.response.data?.message || "Filter request failed"
       );
     }
   }
@@ -196,7 +196,7 @@ export const getRequestDetail = createAsyncThunk(
       return response?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Verification failed"
+        error?.response.data?.message || "Verification failed"
       );
     }
   }
@@ -223,9 +223,9 @@ export const ReportAnIssue = createAsyncThunk(
 
       return { success: true, message: response?.data?.message };
     } catch (error) {
-      ErrorToast(error.response?.data?.message || "Report failed");
+      ErrorToast(error?.response.data?.message || "Report failed");
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Report failed"
+        error?.response.data?.message || "Report failed"
       );
     }
   }
@@ -242,9 +242,9 @@ export const reportUser = createAsyncThunk(
       SuccessToast(response?.data?.message || "User reported successfully");
       return { success: true, message: response?.data?.message };
     } catch (error) {
-      ErrorToast(error.response?.data?.message || "Report failed");
+      ErrorToast(error?.response.data?.message || "Report failed");
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Report failed"
+        error?.response.data?.message || "Report failed"
       );
     }
   }
@@ -258,10 +258,11 @@ export const AddCard = createAsyncThunk(
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {
-      ErrorToast(error.response?.data?.message || "Card Add failed");
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Card Add failed"
-      );
+      console.log(error?.response.data?.message,"errors---->")
+      ErrorToast(error?.response.data?.message || "Card Add failed");
+      // return thunkAPI.rejectWithValue(
+      //   error?.response.data?.message || "Card Add failed"
+      // );
     }
   }
 );
@@ -276,9 +277,9 @@ export const EditStripeCard = createAsyncThunk(
       SuccessToast("Update Card Succefully");
       return { success: true, message: response?.data?.message };
     } catch (error) {
-      ErrorToast(error.response?.data?.message || "Card Add failed");
+      ErrorToast(error?.response.data?.message || "Card Add failed");
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Card Add failed"
+        error?.response.data?.message || "Card Add failed"
       );
     }
   }
@@ -297,10 +298,10 @@ export const RejectBookingRequest = createAsyncThunk(
       return { success: true, message: response?.data?.message };
     } catch (error) {
       ErrorToast(
-        error.response?.data?.message || "Booking Request Accept failed"
+        error?.response.data?.message || "Booking Request Accept failed"
       );
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Booking Request Accept failed"
+        error?.response.data?.message || "Booking Request Accept failed"
       );
     }
   }
@@ -314,10 +315,10 @@ export const AcceptBookingRequest = createAsyncThunk(
       return { success: true, message: response?.data?.message };
     } catch (error) {
       ErrorToast(
-        error.response?.data?.message || "Booking Request Accept failed"
+        error?.response.data?.message || "Booking Request Accept failed"
       );
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Booking Request Accept failed"
+        error?.response.data?.message || "Booking Request Accept failed"
       );
     }
   }
@@ -333,10 +334,10 @@ export const MarkStartJob = createAsyncThunk(
       return { success: true, message: response?.data?.message };
     } catch (error) {
       ErrorToast(
-        error.response?.data?.message || "Booking Request Accept failed"
+        error?.response.data?.message || "Booking Request Accept failed"
       );
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Booking Request Accept failed"
+        error?.response.data?.message || "Booking Request Accept failed"
       );
     }
   }
@@ -349,7 +350,7 @@ export const getPaymentMethod = createAsyncThunk(
       const response = await axios.get("/payment-methods"); // API request to fetch the profile
       return response.data; // Assuming the API returns the user profile data
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to Payment Method";
+      const msg = error?.response.data?.message || "Failed to Payment Method";
       ErrorToast(msg); // Show error toast
       return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
@@ -364,7 +365,7 @@ export const getCalendar = createAsyncThunk(
       ); // API request to fetch the profile
       return response.data; // Assuming the API returns the user profile data
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to Calendar";
+      const msg = error?.response.data?.message || "Failed to Calendar";
       ErrorToast(msg); // Show error toast
       return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
@@ -377,7 +378,7 @@ export const getDailyAvaliablity = createAsyncThunk(
       const response = await axios.get(payload); // API request to fetch the profile
       return response.data; // Assuming the API returns the user profile data
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to Calendar";
+      const msg = error?.response.data?.message || "Failed to Calendar";
       ErrorToast(msg); // Show error toast
       return thunkAPI.rejectWithValue(msg); // Handle rejection
     }
@@ -393,10 +394,10 @@ export const DeletePaymentMethod = createAsyncThunk(
       return { success: true, message: response?.data?.message };
     } catch (error) {
       ErrorToast(
-        error.response?.data?.message || "Delete Payment Method failed"
+        error?.response.data?.message || "Delete Payment Method failed"
       );
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Delete Payment Method failed"
+        error?.response.data?.message || "Delete Payment Method failed"
       );
     }
   }
@@ -410,10 +411,10 @@ export const DeleteBank = createAsyncThunk(
       return { success: true, message: response?.data?.message };
     } catch (error) {
       ErrorToast(
-        error.response?.data?.message || "Delete Bank failed"
+        error?.response.data?.message || "Delete Bank failed"
       );
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Delete Bank failed"
+        error?.response.data?.message || "Delete Bank failed"
       );
     }
   }
@@ -427,10 +428,10 @@ export const SubscriptionCancel = createAsyncThunk(
       return { success: true, message: response?.data?.message };
     } catch (error) {
       ErrorToast(
-        error.response?.data?.message || "Booking Request Accept failed"
+        error?.response.data?.message || "Booking Request Accept failed"
       );
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Booking Request Accept failed"
+        error?.response.data?.message || "Booking Request Accept failed"
       );
     }
   }
@@ -444,10 +445,10 @@ export const SubscriptionUpgrade = createAsyncThunk(
       return { success: true, message: response?.data?.message };
     } catch (error) {
       ErrorToast(
-        error.response?.data?.message || "Booking Request Accept failed"
+        error?.response.data?.message || "Booking Request Accept failed"
       );
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Booking Request Accept failed"
+        error?.response.data?.message || "Booking Request Accept failed"
       );
     }
   }
@@ -462,9 +463,9 @@ export const AddBank = createAsyncThunk(
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {
-      ErrorToast(error.response?.data?.message || "Bank Add failed");
+      ErrorToast(error?.response.data?.message || "Bank Add failed");
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Bank Add failed"
+        error?.response.data?.message || "Bank Add failed"
       );
     }
   }
@@ -477,9 +478,9 @@ export const widrawFunds = createAsyncThunk(
       SuccessToast("withdraw Funds Successfully");
       return { success: true, data: response?.data };
     } catch (error) {
-      ErrorToast(error.response?.data?.message || "withdraw Funds failed");
+      ErrorToast(error?.response.data?.message || "withdraw Funds failed");
       return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "withdraw Funds failed"
+        error?.response.data?.message || "withdraw Funds failed"
       );
     }
   }
