@@ -231,7 +231,7 @@ export default function DiscoverJobs() {
                             Preferred Date & Time
                           </p>
                           <p className="text-lg font-medium text-gray-900">
-                            {request.date}
+                            {request?.date} |   {request?.time}
                           </p>
                         </div>
                       </div>
