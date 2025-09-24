@@ -4,7 +4,6 @@ import { DeleteBroadCastRequest } from "../../../redux/slices/users.slice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserProfile, getProfile } from "../../../redux/slices/auth.slice";
 const DeleteServiceModal = ({ isOpen, setIsOpen, selectedData }) => {
-  console.log(selectedData, "selectedata");
   const { isLoading } = useSelector((state) => state?.user);
   const dispatch = useDispatch();
   return (

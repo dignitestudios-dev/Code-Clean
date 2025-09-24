@@ -445,6 +445,7 @@ export default function BroadCastModal({
                     : "border border-gray-300"
                 }`}
                 aria-invalid={!!(touched.date && errors.date)}
+                min={new Date().toISOString().split("T")[0]}
               />
               <input
                 type="time"

@@ -59,7 +59,6 @@ const Login = () => {
   }, [dispatch]);
 
   // useEffect for Success Toast
-  console.log(user_data, "roleee");
   useEffect(() => {
     if (success && accessToken) {
       SuccessToast(typeof success === "string" ? success : "Login successful!");
