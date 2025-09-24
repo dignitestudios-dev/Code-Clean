@@ -4,6 +4,7 @@ import { IoLocationOutline } from "react-icons/io5";
 import { useDispatch } from "react-redux";
 import { getDiscoverJobs, getFilteredJobs } from "../../redux/slices/provider.slice";
 import { fetchallservices, getFilteredProviders } from "../../redux/slices/users.slice";
+import { ErrorToast } from "./Toaster";
 
 export default function Filter({ endPoint, setIsFilter }) {
   const dispatch = useDispatch();
@@ -38,10 +39,23 @@ export default function Filter({ endPoint, setIsFilter }) {
   };
 
   const handleApply = () => {
+    // Validation check before applying filter
+    if (
+      !formData.lat ||
+      !formData.long ||
+      !formData.min_price ||
+      !formData.max_price ||
+      !formData.experience ||
+      formData.rating === 0 ||
+      formData.miles === 0
+    ) {
+      ErrorToast("Please fill all the fields before applying.");
+      return;
+    }
+
     if (endPoint == "providers/filter") {
       dispatch(getFilteredProviders(JSON.parse(JSON.stringify(formData))));
-
-      // setIsFilter(false);
+      setIsFilter(false); 
     } else {
       dispatch(getFilteredJobs({ ...formData }));
       setIsFilter(false);
@@ -49,7 +63,7 @@ export default function Filter({ endPoint, setIsFilter }) {
   };
 
   return (
-    <div className="space-y-4 w-[400px] bg-[#FFFFFF] rounded-[14px] absolute  right-20 p-4 shadow-lg -mt-10 ">
+    <div className="space-y-4 w-[400px] bg-[#FFFFFF] rounded-[14px] absolute right-20 p-4 shadow-lg -mt-10">
       {/* Location */}
       <div className="relative fle mt-1">
         <label className="text-sm font-medium text-gray-700">Location</label>
@@ -146,8 +160,8 @@ export default function Filter({ endPoint, setIsFilter }) {
       {/* Buttons */}
       <div className="flex items-center gap-3 pt-2">
         <button
-          onClick={() =>{
-            setLocations("")
+          onClick={() => {
+            setLocations("");
             setFormData({
               lat: "",
               long: "",
@@ -156,15 +170,14 @@ export default function Filter({ endPoint, setIsFilter }) {
               experience: "",
               rating: 0,
               miles: 20,
-            })
-            if (endPoint=="providers/filter") {
-              dispatch(fetchallservices("/users/providers"))
-            }else{
-              dispatch(getDiscoverJobs("/provider/discover/jobs"))
+            });
+            if (endPoint == "providers/filter") {
+              dispatch(fetchallservices("/users/providers"));
+            } else {
+              dispatch(getDiscoverJobs("/provider/discover/jobs"));
             }
-            setIsFilter(false)
-          }
-          }
+            setIsFilter(false); // Close the modal here
+          }}
           className="bg-[#F8F8F8] px-6 py-3 w-full rounded-[8px] text-sm"
         >
           Clear All

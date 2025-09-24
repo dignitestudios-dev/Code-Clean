@@ -972,7 +972,8 @@ const Serviceprovider = () => {
                           )
                         )}
                         <span className="ml-2 text-gray-700 font-medium">
-                          {review.rating || "0"}
+                          {(review.rating || 0).toFixed(1)}
+
                         </span>
                       </div>
                       <p className="text-sm text-gray-600">
@@ -1886,7 +1887,7 @@ const Serviceprovider = () => {
                         />
                       ))}
                       <span className="ml-1 font-medium text-sm">
-                        {review.rating || "0"}
+                        {(review.rating || 0).toFixed(1)}
                       </span>
                     </div>
                     <p className="text-sm text-gray-600 mt-2">

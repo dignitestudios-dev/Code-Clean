@@ -125,7 +125,7 @@ const Home = () => {
               </button>
             </div>
           </div>
-          {isFilter && <Filter endPoint={"providers/filter"} />}
+          {isFilter && <Filter endPoint={"providers/filter"} setIsFilter={setIsFilter} />}
           {/* Show loading spinner when data is being fetched */}
           {allservicesloading ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
