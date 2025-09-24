@@ -40,8 +40,7 @@ export default function Filter({ endPoint, setIsFilter }) {
   const handleApply = () => {
     if (endPoint == "providers/filter") {
       dispatch(getFilteredProviders(JSON.parse(JSON.stringify(formData))));
-
-      // setIsFilter(false);
+      setIsFilter(false); 
     } else {
       dispatch(getFilteredJobs({ ...formData }));
       setIsFilter(false);
@@ -162,7 +161,7 @@ export default function Filter({ endPoint, setIsFilter }) {
             }else{
               dispatch(getDiscoverJobs("/provider/discover/jobs"))
             }
-            setIsFilter(false)
+            setIsFilter(false); // Close the modal here
           }
           }
           className="bg-[#F8F8F8] px-6 py-3 w-full rounded-[8px] text-sm"

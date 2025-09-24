@@ -9,9 +9,10 @@ export default function Herotwo() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = () => {
-    if (!searchTerm.trim()) return;
+    // if (!searchTerm.trim()) return;
     // ✅ Pass search query
     dispatch(filterAllService({ search: searchTerm }));
+    console.log("hello")
   };
 
   const handleKeyPress = (e) => {
