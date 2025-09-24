@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function BookingCountdown({ bookingRequestDetail }) {
   const [timeLeft, setTimeLeft] = useState("00:00:00");
-
+ console.log(bookingRequestDetail,"time remaining")
   // Helper: Parse "30 Sep, 2025" + "13:00 PM" safely into a Date
   const parseBookingDateTime = (dateStr, timeStr) => {
     const date = new Date(dateStr);
@@ -69,7 +69,7 @@ export default function BookingCountdown({ bookingRequestDetail }) {
   }
 
   return (
-    <div className="flex text-[#808080] text-nowrap items-center justify-center h-[44px] border-2 px-2  rounded-[8px] text-[14px] font-bold mb-2 w-full text-center">
+    <div className="flex text-[#808080] text-nowrap items-center justify-center h-[60px] border-2 px-2  rounded-[8px] text-[14px] font-bold mb-2 w-full text-center">
       {timeLeft} {/* Format = days:hours:minutes */}
     </div>
   );

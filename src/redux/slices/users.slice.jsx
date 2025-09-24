@@ -11,7 +11,7 @@ const initialState = {
   currentbookingdata: null,
   requestDetails: null,
   error: null,
-  dailyAvailability:null,
+  dailyAvailability: null,
   requestisLoading: false,
   success: null,
   updateLoading: false,
@@ -83,7 +83,8 @@ export const RequestCustomService = createAsyncThunk(
       return res.data;
     } catch (error) {
       // Reject the promise with a custom error message
-      return thunkAPI.rejectWithValue("Failed to submit provider data");
+      ErrorToast(error.response?.data?.message || "Failed to submit Booking Request");
+      // return thunkAPI.rejectWithValue("Failed to submit provider data");
     }
   }
 );
@@ -95,12 +96,11 @@ export const DeleteBroadCastRequest = createAsyncThunk(
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {
-      ErrorToast(
-        error.response?.data?.message || "Delete Request failed"
-      );
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.message || "Delete Request failed"
-      );
+      ErrorToast(error.response?.data?.message || "Delete Request failed");
+      return
+      // return thunkAPI.rejectWithValue(
+      //   error.response?.data?.message || "Delete Request failed"
+      // );
     }
   }
 );
@@ -162,30 +162,34 @@ export const fetchDailyAvailability = createAsyncThunk(
 
 // Fetch user profile — page/per_page optional; agar na do to plain /profile hit hoga
 export const fetchUserProfile = createAsyncThunk(
-  'user/fetchUserProfile',
+  "user/fetchUserProfile",
   async (args, thunkAPI) => {
     try {
       const hasPaging =
         args &&
-        (typeof args.page !== 'undefined' || typeof args.per_page !== 'undefined');
+        (typeof args.page !== "undefined" ||
+          typeof args.per_page !== "undefined");
 
       const config = { signal: thunkAPI.signal };
 
       if (hasPaging) {
         config.params = {};
-        if (typeof args.page !== 'undefined') config.params.page = args.page;
-        if (typeof args.per_page !== 'undefined') config.params.per_page = args.per_page;
+        if (typeof args.page !== "undefined") config.params.page = args.page;
+        if (typeof args.per_page !== "undefined")
+          config.params.per_page = args.per_page;
       }
 
       // If hasPaging=false => no params sent (pure /profile)
-      const res = await axios.get('/profile', config);
+      const res = await axios.get("/profile", config);
       return res.data;
     } catch (error) {
       if (axios.isCancel?.(error)) {
-        return thunkAPI.rejectWithValue('Request cancelled');
+        return thunkAPI.rejectWithValue("Request cancelled");
       }
       return thunkAPI.rejectWithValue(
-        error?.response?.data?.message || error?.message || 'Failed to fetch profile'
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to fetch profile"
       );
     }
   }
@@ -303,7 +307,6 @@ export const fetchBookingDetail = createAsyncThunk(
     }
   }
 );
-
 
 export const fetchbookingrequestbyid = createAsyncThunk(
   "/user/requests/67/details",
@@ -609,7 +612,7 @@ const userSlice = createSlice({
         state.error = action.payload;
       })
 
- // ----- Fetch Booking Detail---
+      // ----- Fetch Booking Detail---
       .addCase(fetchbookingrequestbyid.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -623,7 +626,6 @@ const userSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload;
       })
-
 
       // Booking Cancel
       .addCase(CancelBookingRequest.pending, (state) => {
@@ -655,7 +657,7 @@ const userSlice = createSlice({
       })
 
       //GET FetchDailyAvailability
-       .addCase(fetchDailyAvailability.pending, (state) => {
+      .addCase(fetchDailyAvailability.pending, (state) => {
         state.isLoading = true;
         state.error = null;
         state.success = null;

@@ -130,6 +130,7 @@ const Jobdetails = () => {
 
     return () => clearInterval(interval);
   }, [bookingRequestDetail]);
+
   const HandleRejectRequest = async () => {
     if (!reason) return ErrorToast("Reason is required");
     const data = {
@@ -543,7 +544,7 @@ const Jobdetails = () => {
 
                 {/* Total Payment */}
                 <div className="mb-6 mt-3">
-                  <h4 className="text-lg font-semibold mb-3">Total Payment1</h4>
+                  <h4 className="text-lg font-semibold mb-3">Total Payment</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
                       <span className="text-gray-500">Subtotal</span>

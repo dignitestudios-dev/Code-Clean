@@ -17,6 +17,7 @@ import {
 } from "../../../redux/slices/users.slice";
 import { ErrorToast } from "../../../components/global/Toaster";
 import { Button } from "../../../components/global/GlobalButton";
+import BookingCountdown from "../../../components/Serviceprovider/Appointment/BookingStartTimer";
 
 const Bookingdetails = () => {
   const navigate = useNavigate();
@@ -43,6 +44,58 @@ const Bookingdetails = () => {
     await dispatch(CancelBookingRequest(data));
     navigate("/booking-history");
   };
+
+  const [canStart, setCanStart] = useState(false);
+
+  // Parse booking date + time safely
+  const parseBookingDateTime = (dateStr, timeStr) => {
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return null;
+
+    let [time, modifier] = timeStr.trim().split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+
+    if (modifier) {
+      modifier = modifier.toUpperCase();
+      if (modifier === "PM" && hours < 12) hours += 12;
+      if (modifier === "AM" && hours === 12) hours = 0;
+    }
+
+    if (hours > 12 && modifier) {
+      modifier = null; // case "13:00 PM"
+    }
+
+    date.setHours(hours);
+    date.setMinutes(minutes || 0);
+    date.setSeconds(0);
+
+    return date;
+  };
+
+  useEffect(() => {
+    if (!bookingDetail?.date || !bookingDetail?.time) return;
+
+    const bookingDateTime = parseBookingDateTime(
+      bookingDetail.date,
+      bookingDetail.time
+    );
+    if (!bookingDateTime) return;
+
+    const checkTime = () => {
+      const now = new Date();
+      if (now >= bookingDateTime) {
+        setCanStart(true);
+      } else {
+        setCanStart(false);
+      }
+    };
+
+    checkTime();
+    const interval = setInterval(checkTime, 1000); // check every second
+
+    return () => clearInterval(interval);
+  }, [bookingDetail]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -160,7 +213,7 @@ const Bookingdetails = () => {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg shadow-md pb-[1em] pl-[2em] pr-[2em] pt-[1.3em]">
                 {/* Status and Timer */}
-                <div className="text-center mb-6 flex gap-3">
+                <div className="text-center mb-6 flex gap-2">
                   <div
                     onClick={() => {
                       if (status === "In Progress") {
@@ -170,7 +223,7 @@ const Bookingdetails = () => {
                         }, 2000);
                       }
                     }}
-                    className={`inline-block cursor-pointer px-6 py-4 rounded text-[17px] font-medium mb-2 w-full text-center pt-[20px]
+                    className={`inline-block text-nowrap cursor-pointer px-3 py-4 rounded text-[17px] font-medium mb-2 w-full text-center pt-[20px]
                                       ${
                                         status === "pending"
                                           ? "bg-[#EC832533] text-[#EC8325]"
@@ -193,9 +246,7 @@ const Bookingdetails = () => {
                   </div>
 
                   {status !== "Completed" && (
-                    <div className="inline-block text-black border-2 px-10 py-4 rounded text-[17px] font-medium mb-2 w-full text-center">
-                      00:00:00
-                    </div>
+                    <BookingCountdown bookingRequestDetail={bookingDetail} />
                   )}
                 </div>
 

@@ -21,6 +21,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Autocomplete } from "@react-google-maps/api";
 import { ErrorToast } from "../../../components/global/Toaster";
+import { Button } from "../../../components/global/GlobalButton";
 
 const Serviceprovider = () => {
   const dispatch = useDispatch();
@@ -170,26 +171,54 @@ const Serviceprovider = () => {
     }
   };
 
-  const handleSubmit = () => {
-    const customserviceData = {
-      service_provider_id: id,
-      title: formData.title,
-      date: formData.date,
-      time: formData.time,
-      duration: formData.duration,
-      lat: formData.lat,
-      long: formData.long,
-      city: formData.city,
-      state: formData.state,
-      country: formData.country,
-      location: formData.location,
-      description: formData.description,
-      payment_method_id: selectedCard.id,
-      amount: formData.price,
-      images: formData.images,
-    };
-    // Dispatch the action to submit the form
-    dispatch(RequestCustomService({ customserviceData }));
+  const handleSubmit = async () => {
+    try {
+      const customserviceData = {
+        service_provider_id: id,
+        title: formData.title,
+        date: formData.date,
+        time: formData.time,
+        duration: formData.duration,
+        lat: formData.lat,
+        long: formData.long,
+        city: formData.city,
+        state: formData.state,
+        country: formData.country,
+        location: formData.location,
+        description: formData.description,
+        payment_method_id: selectedCard?.id,
+        amount: formData.price,
+        images: formData.images,
+      };
+
+      // Simple client-side validation (optional)
+      if (!formData.title || !formData.date || !formData.time) {
+        return ErrorToast("Please fill all required fields");
+      }
+      if (!selectedCard?.id) {
+        return ErrorToast("Please select a payment method");
+      }
+      if (!formData.price || formData.price <= 0) {
+        return ErrorToast("Amount must be greater than 0");
+      }
+
+      // API call
+      await dispatch(RequestCustomService({ customserviceData })).unwrap();
+
+      // Success state updates
+      setCustombookingthree(false);
+      setCustombookingtwo(false);
+      setBookingconfirm(true);
+    } catch (error) {
+      console.error("Error submitting booking:", error);
+
+      // Handle known errors (if your API returns message)
+      if (error?.message) {
+        ErrorToast(error.message);
+      } else {
+        ErrorToast("Something went wrong. Please try again.");
+      }
+    }
   };
 
   const [custombookingtwo, setCustombookingtwo] = useState(false);
@@ -199,6 +228,7 @@ const Serviceprovider = () => {
     paymentMethoduser,
     hireProviderLoading,
     CustomserviceproviderSuccess,
+    CustomserviceproviderLoading,
   } = useSelector((s) => s.user);
 
   const handleOnLoad = (autocomplete) => {
@@ -563,14 +593,16 @@ const Serviceprovider = () => {
     )}`;
   };
 
-  const handleHireNow = () => {
+  const handleHireNow = async () => {
     const formattedDate = formatDate(selectedDate);
     const formattedTime = formatTime(selectedTime);
 
-    const serviceData = data?.services?.map((service) => ({
-      service_id: service.id,
-      quantity: services[service.id] || 0, // Use the current quantity from your services state
-    }));
+    const serviceData = data?.services
+      ?.filter((service) => (services[service.id] || 0) > 0) // sirf wo services jinki qty > 0 hai
+      ?.map((service) => ({
+        service_id: service.id,
+        quantity: services[service.id],
+      }));
 
     const providerData = {
       title: "Service Request",
@@ -593,7 +625,9 @@ const Serviceprovider = () => {
       providerData,
     };
 
-    dispatch(HireServiceProvider(payload)); // Dispatch the action
+    await dispatch(HireServiceProvider(payload)); // Dispatch the action
+    setBookrequestsend(true); // Show loading modal
+    setRequestservicefive(false); // Close current modal
   };
 
   useEffect(() => {
@@ -659,18 +693,45 @@ const Serviceprovider = () => {
   useEffect(() => {
     dispatch(fetchDailyAvailability(providerId));
   }, [dispatch]);
-
-  const [todaytime, setTodaytime] = useState("");
+  const [todaytime, setTodaytime] = useState([]);
 
   useEffect(() => {
     if (dailyAvailability) {
-      // Filter out the available slots
-      const availableSlots = dailyAvailability?.slots?.filter(
-        (slot) => slot.status === "Available"
-      );
-      setTodaytime(availableSlots || []); // Set only available slots
+      const now = new Date();
+
+      const availableSlots = dailyAvailability?.slots
+        ?.filter((slot) => slot.status === "Available")
+        ?.filter((slot) => {
+          // Parse slot.time manually
+          const timeStr = slot.time.toLowerCase(); // "05:00pm"
+          const [time, modifier] = timeStr.split(/(am|pm)/); // ["05:00", "pm"]
+          let [hours, minutes] = time.split(":").map(Number);
+
+          if (modifier === "pm" && hours !== 12) {
+            hours += 12;
+          }
+          if (modifier === "am" && hours === 12) {
+            hours = 0;
+          }
+
+          // Make Date object with given date + parsed time
+          const slotDateTime = new Date(selectedDate || dailyAvailability.date);
+          slotDateTime.setHours(hours, minutes, 0, 0);
+
+          console.log(
+            dailyAvailability.date,
+            slot.time,
+            slotDateTime,
+            now,
+            "times Compare"
+          );
+
+          return slotDateTime > now; // Only future slots
+        });
+
+      setTodaytime(availableSlots || []);
     }
-  }, [dailyAvailability]);
+  }, [dailyAvailability, selectedDate]);
 
   // useEffect(() => {
   //   if (dailyAvailability) {
@@ -757,7 +818,6 @@ const Serviceprovider = () => {
                 ) : (
                   <p className="text-sm text-gray-600">No Certificates</p> // Updated message here
                 )}
-
               </div>
             </div>
           </div>
@@ -1044,10 +1104,11 @@ const Serviceprovider = () => {
                       key={idx}
                       onClick={() => handleSelect(slot.time)} // Use slot.time as the time to select
                       className={`px-4 py-2 rounded-lg border text-sm transition 
-                ${selectedTime === slot.time
-                          ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
-                          : "bg-white text-gray-800"
-                        }`}
+                ${
+                  selectedTime === slot.time
+                    ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
+                    : "bg-white text-gray-800"
+                }`}
                     >
                       {slot.time} {/* Display the available time */}
                     </button>
@@ -1069,9 +1130,15 @@ const Serviceprovider = () => {
                   value={duration}
                   onChange={handleDurationChange} // Update the state with validation
                   placeholder="0"
-                  className={`w-full border rounded-lg px-4 py-2 pr-10 ${parseInt(duration) > 15 ? "border-red-500" : ""
-                    }`} // Add red border if duration is greater than 15
+                  className={`w-full border rounded-lg px-4 py-2 pr-10 ${
+                    parseInt(duration) > 15 ? "border-red-500" : ""
+                  }`} // Add red border if duration is greater than 15
                   required
+                  onKeyDown={(e) => {
+                    if (["-", "+", "e", "E"].includes(e.key)) {
+                      e.preventDefault(); // block unwanted chars
+                    }
+                  }}
                 />
               </div>
             </div>
@@ -1474,7 +1541,7 @@ const Serviceprovider = () => {
                     ))} */}
 
                     {data?.services
-                      ?.filter(service => services[service.id] > 0) // Filter services where quantity is greater than 0
+                      ?.filter((service) => services[service.id] > 0) // Filter services where quantity is greater than 0
                       .map((service, i) => (
                         <div key={i} className="border-r-2 pr-3">
                           <div className="text-sm capitalize">
@@ -1483,7 +1550,6 @@ const Serviceprovider = () => {
                           </div>
                         </div>
                       ))}
-
                   </div>
                 </div>
               </div>
@@ -1570,14 +1636,15 @@ const Serviceprovider = () => {
                     (select the payment method)
                   </span>
                   {paymentmethoduser?.payment_methods &&
-                    paymentmethoduser.payment_methods.length > 0 ? (
+                  paymentmethoduser.payment_methods.length > 0 ? (
                     paymentmethoduser.payment_methods.map((card) => (
                       <div
                         key={card.id}
-                        className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${selectedCard?.id === card.id
-                          ? "bg-blue-100 border-blue-500"
-                          : ""
-                          }`}
+                        className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${
+                          selectedCard?.id === card.id
+                            ? "bg-blue-100 border-blue-500"
+                            : ""
+                        }`}
                         onClick={() => handleCardSelect(card)}
                       >
                         <div className="flex gap-3">
@@ -1647,9 +1714,6 @@ const Serviceprovider = () => {
                       ErrorToast("Please select a payment method.");
                       return; // Prevent further execution if validation fails
                     }
-
-                    setBookrequestsend(true); // Show loading modal
-                    setRequestservicefive(false); // Close current modal
 
                     handleHireNow(); // Proceed with booking
 
@@ -1724,6 +1788,27 @@ const Serviceprovider = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white rounded-xl p-6 md:w-[30em] shadow-2xl text-center">
             {/* Checkmark Icon */}
+            <div className="flex justify-end items-center">
+              <button
+                onClick={() => setBookingconfirm(false)}
+                className="text-gray-500 hover:text-red-600"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
             <div className="mb-4 flex justify-center items-center">
               <div className="bg-gradient-to-r from-[#27A8E2] to-[#00034A] w-[70px] h-[70px] rounded-full flex justify-center items-center">
                 <FaCheck color="white" size={30} />
@@ -1770,8 +1855,9 @@ const Serviceprovider = () => {
                       {Array.from({ length: 5 }).map((_, i) => (
                         <FaStar
                           key={i}
-                          className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
-                            }`}
+                          className={`text-yellow-400 ${
+                            i < Math.floor(review.rating) ? "" : "opacity-50"
+                          }`}
                         />
                       ))}
                       <span className="ml-1 font-medium text-sm">
@@ -1958,6 +2044,12 @@ const Serviceprovider = () => {
                       value={formData.price}
                       onChange={handleInputChange}
                       required
+                      min="0"
+                      onKeyDown={(e) => {
+                        if (["-", "+", "e", "E"].includes(e.key)) {
+                          e.preventDefault(); // block unwanted chars
+                        }
+                      }}
                       className="w-full py-2 ml-1 focus:outline-none"
                     />
                   </div>
@@ -1996,10 +2088,11 @@ const Serviceprovider = () => {
                     <div
                       key={card.id}
                       className={`flex justify-between items-center border cursor-pointer rounded p-2 mb-2 
-              ${selectedCard?.id === card.id
-                          ? "bg-blue-100 border-blue-500"
-                          : ""
-                        } 
+              ${
+                selectedCard?.id === card.id
+                  ? "bg-blue-100 border-blue-500"
+                  : ""
+              } 
             `} // Highlight the selected card with a background
                       onClick={() => handleCardSelect(card)} // Set the card as selected when clicked
                     >
@@ -2262,14 +2355,11 @@ const Serviceprovider = () => {
 
               {/* Action Buttons */}
               <div className="pt-6 pb-3">
-                <button
-                  className="w-full bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
-                  onClick={() => {
-                    handleSubmit(); // Call your submit function here
-                  }}
-                >
-                  Send request to service provider
-                </button>
+                <Button
+                  text={"Send request to service provider"}
+                  onClick={handleSubmit}
+                  loading={CustomserviceproviderLoading}
+                />
 
                 <div
                   className="text-center mt-2 text-sm font-medium text-gray-500 cursor-pointer"
