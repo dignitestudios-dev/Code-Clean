@@ -173,24 +173,6 @@ const Serviceprovider = () => {
 
   const handleSubmit = async () => {
     try {
-      const customserviceData = {
-        service_provider_id: id,
-        title: formData.title,
-        date: formData.date,
-        time: formData.time,
-        duration: formData.duration,
-        lat: formData.lat,
-        long: formData.long,
-        city: formData.city,
-        state: formData.state,
-        country: formData.country,
-        location: formData.location,
-        description: formData.description,
-        payment_method_id: selectedCard?.id,
-        amount: formData.price,
-        images: formData.images,
-      };
-
       // Simple client-side validation (optional)
       if (!formData.title || !formData.date || !formData.time) {
         return ErrorToast("Please fill all required fields");
@@ -202,8 +184,34 @@ const Serviceprovider = () => {
         return ErrorToast("Amount must be greater than 0");
       }
 
+      // ✅ Build FormData
+      const formDataPayload = new FormData();
+      formDataPayload.append("service_provider_id", id);
+      formDataPayload.append("title", formData.title);
+      formDataPayload.append("date", formData.date);
+      formDataPayload.append("time", formData.time);
+      formDataPayload.append("duration", formData.duration);
+      formDataPayload.append("lat", formData.lat || 0);
+      formDataPayload.append("long", formData.long || 0);
+      formDataPayload.append("city", formData.city || "");
+      formDataPayload.append("state", formData.state || "");
+      formDataPayload.append("country", formData.country || "");
+      formDataPayload.append("location", formData.location || "");
+      formDataPayload.append("description", formData.description || "");
+      formDataPayload.append("payment_method_id", selectedCard?.id);
+      formDataPayload.append("amount", formData.price);
+      formDataPayload.append(
+        "timezone",
+        Intl.DateTimeFormat().resolvedOptions().timeZone
+      );
+
+      // ✅ Append images (binary)
+      files.forEach((f, index) => {
+        formDataPayload.append("images[]", f.file); // backend will receive an array of files
+      });
+
       // API call
-      await dispatch(RequestCustomService({ customserviceData })).unwrap();
+      await dispatch(RequestCustomService(formDataPayload)).unwrap();
 
       // Success state updates
       setCustombookingthree(false);
@@ -212,7 +220,6 @@ const Serviceprovider = () => {
     } catch (error) {
       console.error("Error submitting booking:", error);
 
-      // Handle known errors (if your API returns message)
       if (error?.message) {
         ErrorToast(error.message);
       } else {
@@ -587,7 +594,7 @@ const Serviceprovider = () => {
     }
 
     // Return time in 24-hour format (HH:mm), no AM/PM suffix
-    return `${formattedHours.toString().padStart(2, "0")}:${minutes.slice(
+    return `${formattedHours.toString().padStart(2, "0")}:${minutes?.slice(
       0,
       2
     )}`;
@@ -598,36 +605,54 @@ const Serviceprovider = () => {
     const formattedTime = formatTime(selectedTime);
 
     const serviceData = data?.services
-      ?.filter((service) => (services[service.id] || 0) > 0) // sirf wo services jinki qty > 0 hai
+      ?.filter((service) => (services[service.id] || 0) > 0)
       ?.map((service) => ({
         service_id: service.id,
         quantity: services[service.id],
       }));
 
-    const providerData = {
-      title: "Service Request",
-      date: formattedDate, // Formatting the date
-      time: formattedTime, // You can replace this with selectedTime if you're using it
-      location: locations,
-      duration: duration,
-      city: formData.city || "Default City",
-      state: formData.state || "Default State",
-      country: formData.country || "Default Country",
-      lat: formData.lat || 0, // Dynamically set latitude from formData
-      long: formData.long || 0, // Dynamically set longitude from formData
-      description: description,
-      payment_method_id: selectedCard.id,
-      services: serviceData,
-    };
+    const formDataPayload = new FormData();
 
-    const payload = {
-      userId: id, // Ensure userId is available from the location or state
-      providerData,
-    };
+    formDataPayload.append("title", "Service Request");
+    formDataPayload.append("date", formattedDate);
+    formDataPayload.append("time", formattedTime);
+    formDataPayload.append("location", locations);
+    formDataPayload.append("duration", duration);
+    formDataPayload.append("city", formData.city || "Default City");
+    formDataPayload.append("state", formData.state || "Default State");
+    formDataPayload.append("country", formData.country || "Default Country");
+    formDataPayload.append("lat", formData.lat || 0);
+    formDataPayload.append("long", formData.long || 0);
+    formDataPayload.append("description", description);
+    formDataPayload.append("payment_method_id", selectedCard.id);
+    formDataPayload.append(
+      "timezone",
+      Intl.DateTimeFormat().resolvedOptions().timeZone
+    );
 
-    await dispatch(HireServiceProvider(payload)); // Dispatch the action
-    setBookrequestsend(true); // Show loading modal
-    setRequestservicefive(false); // Close current modal
+    // ✅ Correct services append
+    if (serviceData?.length > 0) {
+      serviceData.forEach((service, i) => {
+        formDataPayload.append(
+          `services[${i}][service_id]`,
+          service.service_id
+        );
+        formDataPayload.append(`services[${i}][quantity]`, service.quantity);
+      });
+    }
+
+    // append images
+    files.forEach((f) => {
+      formDataPayload.append("images[]", f.file);
+    });
+
+    // userId
+    formDataPayload.append("userId", id);
+
+    await dispatch(HireServiceProvider(formDataPayload));
+    setBookrequestsend(true);
+
+    setRequestservicefive(false);
   };
 
   useEffect(() => {
@@ -1719,7 +1744,7 @@ const Serviceprovider = () => {
 
                     setDuration("");
                     setSelectedTime("");
-                    selectedDate("");
+                    // selectedDate("");
                     setLocations("");
                     setDescription("");
                   }}

@@ -49,20 +49,35 @@ const initialState = {
 
 // Hire Now Service Provider with optional userId
 export const HireServiceProvider = createAsyncThunk(
-  "/provider/requests/private", // Action type
+  "/provider/requests/private",
   async (payload, thunkAPI) => {
     try {
-      const { userId, providerData } = payload;
+      let endpoint = `/provider/requests/custom`;
+      let dataToSend = payload;
+      let config = {};
 
-      // Agar userId hai to URL mein lagao, warna base endpoint use karo
-      const endpoint = userId
-        ? `/provider/requests/private/${userId}`
-        : `/provider/requests/custom`;
+      // check if payload is FormData
+      if (payload instanceof FormData) {
+        // userId nikalne ki zarurat ho to formData se get karo
+        const userId = payload.get("userId");
+        if (userId) {
+          endpoint = `/provider/requests/private/${userId}`;
+        }
 
-      const res = await axios.post(endpoint, providerData);
+        config.headers = { "Content-Type": "multipart/form-data" };
+      } else {
+        // JSON case
+        const { userId, providerData } = payload;
+        if (userId) {
+          endpoint = `/provider/requests/private/${userId}`;
+          dataToSend = providerData;
+        }
+      }
 
+      const res = await axios.post(endpoint, dataToSend, config);
       return res.data;
     } catch (error) {
+      console.error("HireServiceProvider error:", error);
       return thunkAPI.rejectWithValue("Failed to submit provider data");
     }
   }
@@ -73,17 +88,15 @@ export const RequestCustomService = createAsyncThunk(
   "/provider/requests/custom", // Action type
   async (payload, thunkAPI) => {
     try {
-      const { customserviceData } = payload; // Destructure userId and providerData from payload
       // Sending the userId in the URL and providerData in the request body
-      const res = await axios.post(
-        `/provider/requests/custom`,
-        customserviceData
-      );
+      const res = await axios.post(`/provider/requests/custom`, payload);
       // Return the response data after submission
       return res.data;
     } catch (error) {
       // Reject the promise with a custom error message
-      ErrorToast(error.response?.data?.message || "Failed to submit Booking Request");
+      ErrorToast(
+        error.response?.data?.message || "Failed to submit Booking Request"
+      );
       // return thunkAPI.rejectWithValue("Failed to submit provider data");
     }
   }
@@ -97,7 +110,7 @@ export const DeleteBroadCastRequest = createAsyncThunk(
       return { success: true, message: response?.data?.message };
     } catch (error) {
       ErrorToast(error.response?.data?.message || "Delete Request failed");
-      return
+      return;
       // return thunkAPI.rejectWithValue(
       //   error.response?.data?.message || "Delete Request failed"
       // );

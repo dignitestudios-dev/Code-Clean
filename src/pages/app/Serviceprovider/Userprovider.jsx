@@ -29,7 +29,7 @@ const UserProvider = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
+console.log(loc?.state)
   return (
     <div>
       <Navbar type="serviceprovider" />
@@ -102,13 +102,13 @@ const UserProvider = () => {
             <div>
               <p className="font-medium">Phone Number</p>
               <p className="text-gray-500">
-                {loc?.state?.user?.phone_number}
+                {loc?.state?.user?.phone}
               </p>
             </div>
             <div>
               <p className="font-medium">Location</p>
               <p className="text-gray-500">
-                {loc?.state?.user?.city}, {loc?.state?.user?.country}
+                {loc?.state?.user?.location}
               </p>
             </div>
           </div>

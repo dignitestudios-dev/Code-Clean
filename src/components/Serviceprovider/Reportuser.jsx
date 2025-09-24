@@ -18,6 +18,7 @@ const ReportUser = ({ isOpen, setIsOpen, userId }) => {
     };
     await dispatch(reportUser(data));
     setIsOpen(false);
+    setReason("");
   };
 
   return (

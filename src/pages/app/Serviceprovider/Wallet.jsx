@@ -111,6 +111,13 @@ const Wallet = () => {
     dispatch(getPaymentMethod());
     setAddbankaccount(false);
     setShowModal(true);
+    setFormData({
+       bankName: "",
+    accountHolderName: "",
+    accountNumber: "",
+    routingNumber: "",
+    saveDetails: false,
+    })
   };
   const handleWidraw = async () => {
     if (!selectedBank) return ErrorToast("Please Select Bank");
@@ -263,7 +270,13 @@ const Wallet = () => {
               </label>
               <input
                 type="number"
-                onChange={(e) => setAmount(e?.target?.value)}
+                onChange={(e) => setAmount(e.target.value)}
+                onKeyDown={(e) => {
+                  if (["e", "E", "+", "-", "."].includes(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+                min="0" // prevent negative
                 placeholder="$200"
                 value={amount}
                 className="w-full p-2 mt-2 border rounded-md"
@@ -391,6 +404,7 @@ const Wallet = () => {
                   className="w-full p-2 mt-2 border rounded-md"
                   placeholder="Enter your number"
                   required
+                   maxLength={12} // Account number max 12 digits
                 />
               </div>
               <div className="mb-4">
@@ -405,6 +419,7 @@ const Wallet = () => {
                   className="w-full p-2 mt-2 border rounded-md"
                   placeholder="Enter your routing number"
                   required
+                  maxLength={9} 
                 />
               </div>
               <div className="flex items-center">

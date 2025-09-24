@@ -9,6 +9,7 @@ import Wallet from "../../pages/app/Serviceprovider/Wallet";
 import ServiceproviderProfile from "../../pages/app/Serviceprovider/ServiceProviderProfile";
 import ChatSP from "../../pages/app/Serviceprovider/ChatSP";
 import Badgesp from "../../pages/app/Serviceprovider/Badgesp";
+import DiscoverJobDetail from "../../pages/app/Serviceprovider/DiscoverJobDetail";
 
 export const serviceproviderRoutes = [
   {
@@ -44,6 +45,12 @@ export const serviceproviderRoutes = [
   {
     url: "job-details",
     page: <Jobdetails />,
+    name: "Job Details",
+    isPublic: false,
+  },
+  {
+    url: "discover-job-details",
+    page: <DiscoverJobDetail />,
     name: "Job Details",
     isPublic: false,
   },

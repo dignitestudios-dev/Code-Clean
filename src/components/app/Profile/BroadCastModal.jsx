@@ -275,28 +275,39 @@ export default function BroadCastModal({
     try {
       setIsSubmitting(true);
 
-      const providerData = {
-        title: formData.title.trim(),
-        date: formData.date, // "YYYY-MM-DD"
-        time: formData.time, // "HH:mm"
-        location: formData.location.trim(),
-        amount: Number(formData.price),
-        description: formData.description.trim(),
-        duration: formData.duration.trim(),
-        city: formData.city || "",
-        state: formData.state || "",
-        country: formData.country || "",
-        lat: formData.lat || 0,
-        long: formData.long || 0,
-        payment_method_id: selectedCard.id,
-      };
+      // Create FormData object
+      const formDataPayload = new FormData();
 
-      const payload = { providerData };
-      await dispatch(HireServiceProvider(payload));
+      // Append providerData fields
+      formDataPayload.append("title", formData.title.trim());
+      formDataPayload.append("date", formData.date);
+      formDataPayload.append("time", formData.time);
+      formDataPayload.append("location", formData.location.trim());
+      formDataPayload.append("amount", Number(formData.price));
+      formDataPayload.append("description", formData.description.trim());
+      formDataPayload.append("duration", formData.duration.trim());
+      formDataPayload.append("city", formData.city || "");
+      formDataPayload.append("state", formData.state || "");
+      formDataPayload.append("country", formData.country || "");
+      formDataPayload.append("lat", formData.lat || 0);
+      formDataPayload.append("long", formData.long || 0);
+      formDataPayload.append("payment_method_id", selectedCard.id);
+      formDataPayload.append(
+        "timezone",
+        Intl.DateTimeFormat().resolvedOptions().timeZone
+      );
+
+      // Append images (binary)
+      files.forEach((f, index) => {
+        formDataPayload.append("images[]", f.file); // backend will receive an array of files
+      });
+    console.log(formDataPayload,"payload,Data")
+      // Dispatch thunk with FormData
+      await dispatch(HireServiceProvider(formDataPayload));
       dispatch(fetchUserProfile());
-      // Optionally close modal on success
     } catch (err) {
-      // Thunk handles its own errors typically
+      console.error("Error in handleHireNow:", err);
+      ErrorToast("Failed to submit service request.");
     } finally {
       setIsSubmitting(false);
     }

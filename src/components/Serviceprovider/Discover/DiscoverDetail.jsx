@@ -30,7 +30,10 @@ export default function DiscoverDetail() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [acceptmodel, setAcceptmodel] = useState(false);
   const dispatch = useDispatch("");
-  const { bookingRequestDetail, bookingRequestLoader } = useSelector((state) => state.provider);
+  const [actionType, setActionType] = useState("");
+  const { bookingRequestDetail, bookingRequestLoader } = useSelector(
+    (state) => state.provider
+  );
   const fetchDiscoverJob = async () => {
     await dispatch(
       getRequestDetail(`provider/requests/${queryParams.get("id")}/details`)
@@ -42,20 +45,20 @@ export default function DiscoverDetail() {
     fetchDiscoverJob();
   }, []);
 
-  console.log(bookingRequestDetail, "bookingRequestDetail")
+  console.log(bookingRequestDetail, "bookingRequestDetail");
 
-  console.log(selectedItem, "selectedItem")
+  console.log(selectedItem, "selectedItem");
 
   const handleacceptjob = async () => {
-    const data = {
-      requestId: bookingRequestDetail?.request_id,
-    };
-
     try {
       // Dispatch AcceptBookingRequest action to initiate the API call
-      await dispatch(AcceptBookingRequest(bookingRequestDetail?.request_id)).unwrap();
+      await dispatch(
+        AcceptBookingRequest(bookingRequestDetail?.request_id)
+      ).unwrap();
       setAcceptmodel(false); // Close modal after accepting
-      navigate("/discover-job"); // Navigate to discover jobs after accepting
+      navigate(
+        `/discover-job-details?id=${bookingRequestDetail?.request_id}&status=${bookingRequestDetail?.status}`
+      );
     } catch (error) {
       console.error("Error accepting booking request:", error);
     }
@@ -68,15 +71,13 @@ export default function DiscoverDetail() {
     };
 
     try {
-      // Dispatch RejectBookingRequest action to initiate the API call
       await dispatch(RejectBookingRequest(data)).unwrap();
-      navigate("/discover-job"); // Navigate after successful request
+      navigate("/discover-job");
     } catch (error) {
       console.error("Error rejecting booking request:", error);
-      navigate("/discover-job"); // Navigate after successful request
+      navigate("/discover-job");
     }
   };
-
 
   return (
     <div>
@@ -142,31 +143,33 @@ export default function DiscoverDetail() {
                         disabled={bookingRequestLoader} // Disable the button while loading
                         type="button"
                         onClick={() => {
+                          setActionType("Reject");
                           setSelectedItem(bookingRequestDetail?.request_id); // Assuming this function is defined elsewhere
                           handleRejectRequest(); // Call the function to reject the booking request
                         }}
-                        className={`p-2 text-[#000000] bg-[#F2F1F1] px-8 rounded-lg transition-colors ${bookingRequestLoader ? "cursor-not-allowed opacity-50" : ""
-                          }`}
+                        className={`p-2 text-[#000000] flex items-center gap-2 bg-[#F2F1F1] px-8 rounded-lg transition-colors ${
+                          bookingRequestLoader
+                            ? "cursor-not-allowed opacity-50"
+                            : ""
+                        }`}
                       >
                         {/* Show loading spinner if loader is true */}
-                        {bookingRequestLoader ? (
+                        Ignore
+                        {bookingRequestLoader && actionType == "Reject" && (
                           <RiLoader5Line className="animate-spin text-lg" />
-                        ) : (
-                          "Ignore"
                         )}
                       </button>
                       <button
-                        // onClick={() =>
-                        //   location?.state?.status == "Avaliable"
-                        //     ? setIsAccept(!isAccept)
-                        //     : setIsAlready(!isAlready)
-                        // }
                         onClick={() => {
-                          setAcceptmodel(true)
+                          setAcceptmodel(true);
+                          setActionType("Accept");
                         }}
-                        className="p-2 bg-gradient-to-r from-[#00034A] to-[#27A8E2] px-6 text-white rounded-lg transition-colors"
+                        className="p-2 bg-gradient-to-r flex items-center gap-2 from-[#00034A] to-[#27A8E2] px-6 text-white rounded-lg transition-colors"
                       >
                         Accept Job
+                        {bookingRequestLoader && actionType == "Accept" && (
+                          <RiLoader5Line className="animate-spin text-lg" />
+                        )}
                       </button>
                     </div>
                   )}
@@ -179,10 +182,13 @@ export default function DiscoverDetail() {
                       {bookingRequestDetail.images.map((image, index) => (
                         <div
                           key={index}
-                          className="w-20 h-15 bg-gray-200 rounded-lg overflow-hidden"
+                          className="w-40 h-15 bg-gray-200 rounded-lg overflow-hidden"
                         >
                           <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400">
-                            <img src={image} alt="" />
+                            <img
+                              src={import.meta.env.VITE_APP_AWS_URL + image}
+                              alt=""
+                            />
                           </div>
                         </div>
                       ))}
@@ -232,13 +238,16 @@ export default function DiscoverDetail() {
               <div className="w-[70px] h-[70px] rounded-full flex justify-center items-center bg-gradient-to-r from-[#27A8E2] to-[#00034A]">
                 <IoWarning size={40} color="white" />
               </div>
-
             </div>
 
             <h3 className="text-3xl font-semibold text-center mb-4">
               Confirm Acceptance!
             </h3>
-            <p className="text-sm text-center">You are about to accept this job. Once accepted, you are expected to complete the service as per the job details. Do you want to proceed?</p>
+            <p className="text-sm text-center">
+              You are about to accept this job. Once accepted, you are expected
+              to complete the service as per the job details. Do you want to
+              proceed?
+            </p>
             <div className="text-center flex justify-center gap-3 mt-10">
               <button
                 className="bg-[#F2F1F1] text-black py-2 px-8 rounded-xl"

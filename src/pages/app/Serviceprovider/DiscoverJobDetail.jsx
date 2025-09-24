@@ -19,7 +19,6 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   AcceptBookingRequest,
   CancelBookingRequest,
-  getBookingRequest,
   getRequestDetail,
   MarkStartJob,
   RejectBookingRequest,
@@ -28,7 +27,7 @@ import { Button } from "../../../components/global/GlobalButton";
 import { ErrorToast } from "../../../components/global/Toaster";
 import BookingCountdown from "../../../components/Serviceprovider/Appointment/BookingStartTimer";
 import { HiXMark } from "react-icons/hi2";
-const Jobdetails = () => {
+const DiscoverJobDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -53,8 +52,9 @@ const Jobdetails = () => {
   } = useSelector((state) => state.provider);
   const { user_data } = useSelector((state) => state.auth);
   const status = bookingRequestDetail?.status;
+  console.log(bookingRequestDetail)
   const getRequestDetailData = async () => {
-    await dispatch(getRequestDetail(queryParams.get("type"))).unwrap();
+    await dispatch(getRequestDetail(`provider/requests/${queryParams.get("id")}/details`)).unwrap();
     SetRole(Cookies.get("role"));
   };
   useEffect(() => {
@@ -279,7 +279,7 @@ const Jobdetails = () => {
                 {/* Status and Timer */}
                 <div className="text-center mb-2 flex gap-3">
                   <div
-                    className={`flex items-center justify-center cursor-pointer px-6 rounded-[8px] h-[60px]  text-[16px] font-medium mb-2 w-full text-center 
+                    className={`flex items-center justify-center cursor-pointer px-6  rounded-[8px] h-[60px]  text-[16px] font-medium mb-2 w-full text-center 
                                       ${
                                         status === "pending"
                                           ? "bg-[#EC832533] text-[#EC8325]"
@@ -747,4 +747,4 @@ const Jobdetails = () => {
   );
 };
 
-export default Jobdetails;
+export default DiscoverJobDetail;
