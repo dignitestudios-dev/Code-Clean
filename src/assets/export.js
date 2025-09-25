@@ -64,11 +64,13 @@ import linkdin from "./linkdin.png"
 import twitter from "./twitter.jpg"
 import deleteIcon from "./delete.png"
 import ChatIcon from "./Chat.png"
+import GalaryJobComplete from "./gallaryIcon.png"
 // export {
 //     FILENAME(PASCALCASE)
 // }
 
 export {
+  GalaryJobComplete,
   ChatIcon,
   deleteIcon,
   HearIcon,

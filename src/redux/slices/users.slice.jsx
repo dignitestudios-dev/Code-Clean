@@ -44,6 +44,10 @@ const initialState = {
   bookingDetail: null,
   userPreference: null,
   bookingrequestdetailbyid: null,
+  bookingReviewData: null,
+  bookingReviewLoading: false,
+  bookingReviewError: null,
+  bookingReviewSuccess: null,
 };
 // ================= THUNKS =================
 
@@ -114,6 +118,25 @@ export const DeleteBroadCastRequest = createAsyncThunk(
       // return thunkAPI.rejectWithValue(
       //   error.response?.data?.message || "Delete Request failed"
       // );
+    }
+  }
+);
+
+export const submitBookingReview = createAsyncThunk(
+  "/user/bookings/{id}/review", // Action type
+  async (payload, thunkAPI) => {
+    try {
+      console.log(payload, "test review data")
+      const res = await axios.post(`/bookings/${payload?.booking_id}/review`, {
+        rating: payload?.rating,
+        text: payload?.feedback
+      }); // API request to submit the review
+      SuccessToast("Review submitted successfully!");
+      return res.data;
+    } catch (error) {
+      const msg = error?.response?.data?.message || "Failed to submit review";
+      ErrorToast(msg);
+      return thunkAPI.rejectWithValue(msg);
     }
   }
 );
@@ -201,8 +224,8 @@ export const fetchUserProfile = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(
         error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch profile"
+        error?.message ||
+        "Failed to fetch profile"
       );
     }
   }
@@ -265,7 +288,7 @@ export const unfavoriteProvider = createAsyncThunk(
           isFavorite === false
             ? serverMsg || "Your favorite has been removed successfully."
             : // if server says it's still favorite, force a sane message
-              "Your favorite has been removed successfully.";
+            "Your favorite has been removed successfully.";
 
         return {
           providerId,
@@ -563,6 +586,21 @@ const userSlice = createSlice({
       .addCase(changePassword.rejected, (state, action) => {
         state.updateLoading = false;
         state.updateError = action.payload;
+      })
+
+      .addCase(submitBookingReview.pending, (state) => {
+        state.bookingReviewLoading = true;
+        state.bookingReviewError = null;
+        state.bookingReviewSuccess = null;
+      })
+      .addCase(submitBookingReview.fulfilled, (state, action) => {
+        state.bookingReviewLoading = false;
+        state.bookingReviewData = action.payload;
+        state.bookingReviewSuccess = "Successfully submitted booking review!";
+      })
+      .addCase(submitBookingReview.rejected, (state, action) => {
+        state.bookingReviewLoading = false;
+        state.bookingReviewError = action.payload;
       })
 
       // ----- fetch all services -----

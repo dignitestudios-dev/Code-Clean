@@ -313,7 +313,7 @@ const Bookingrequestuser = () => {
                     </button>
                     <button
                       className="w-full bg-[#208BC733] text-[#208BC7] py-3 rounded-lg font-medium hover:bg-[#208ac742]"
-                      onClick={() => alert("Booking Canceled")}
+                      // onClick={() => }
                     >
                       Report Service Provider
                     </button>

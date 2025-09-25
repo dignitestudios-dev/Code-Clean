@@ -224,22 +224,21 @@ const Bookingdetails = () => {
                       }
                     }}
                     className={`inline-block text-nowrap cursor-pointer px-3 py-4 rounded text-[17px] font-medium mb-2 w-full text-center pt-[20px]
-                                      ${
-                                        status === "pending"
-                                          ? "bg-[#EC832533] text-[#EC8325]"
-                                          : status === "waiting"
-                                          ? "bg-[#EC832533] text-[#EC8325]"
-                                          : status == "rejected" ||
-                                            status == "cancelled"
-                                          ? "bg-[#EE313133] text-[#EE3131]"
-                                          : status === "accepted"
-                                          ? "bg-green-100 text-green-600"
-                                          : status === "completed"
-                                          ? "bg-[#04AA5133] text-[#00C853]"
-                                          : status === "In Progress"
-                                          ? "bg-[#00B0FF33] text-[#00B0FF]"
-                                          : "bg-gray-100 text-gray-600"
-                                      }
+                                      ${status === "pending"
+                        ? "bg-[#EC832533] text-[#EC8325]"
+                        : status === "waiting"
+                          ? "bg-[#EC832533] text-[#EC8325]"
+                          : status == "rejected" ||
+                            status == "cancelled"
+                            ? "bg-[#EE313133] text-[#EE3131]"
+                            : status === "accepted"
+                              ? "bg-green-100 text-green-600"
+                              : status === "completed"
+                                ? "bg-[#04AA5133] text-[#00C853]"
+                                : status === "In Progress"
+                                  ? "bg-[#00B0FF33] text-[#00B0FF]"
+                                  : "bg-gray-100 text-gray-600"
+                      }
     `}
                   >
                     {status === "Pending" ? "Waiting" : status}
@@ -338,12 +337,17 @@ const Bookingdetails = () => {
 
                 {status === "completed" && (
                   <div className="space-y-3">
-                    <button
-                      className="w-full bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-3 rounded-lg font-medium hover:bg-red-600"
-                      onClick={() => setRating(true)}
-                    >
-                      Write a review
-                    </button>
+                    {
+                      !bookingDetail?.is_reviewed && (
+
+                        <button
+                          className="w-full bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white py-3 rounded-lg font-medium hover:bg-red-600"
+                          onClick={() => setRating(true)}
+                        >
+                          Write a review
+                        </button>
+                      )
+                    }
                     <button
                       className="w-full bg-[#208BC733] text-[#208BC7] py-3 rounded-lg font-medium hover:bg-[#208ac742]"
                       onClick={() => alert("Booking Canceled")}
@@ -353,7 +357,7 @@ const Bookingdetails = () => {
                   </div>
                 )}
 
-                <ServiceRatingUI isOpen={rating} setIsOpen={setRating} />
+                <ServiceRatingUI isOpen={rating} setIsOpen={setRating} booking_id={bookingDetail?.booking_id} />
 
                 {inProgressModal && (
                   <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

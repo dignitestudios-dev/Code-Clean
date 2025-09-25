@@ -7,7 +7,7 @@ import {
   FaCheck,
 } from "react-icons/fa";
 import Navbar from "../../../components/layout/Navbar";
-import { ChatIcon, HeroBg } from "../../../assets/export";
+import { ChatIcon, GalaryJobComplete, HeroBg } from "../../../assets/export";
 import { user } from "../../../assets/export";
 import ServiceRatingUI from "../../../components/app/Profile/ServiceRatingUi";
 import { TiWarning } from "react-icons/ti";
@@ -43,6 +43,7 @@ const Jobdetails = () => {
   const [rejectedpopup, setRejectedpopup] = useState(false);
   const [rejectedreqcomplete, setRejectedreqcomplete] = useState(false);
   const [reportUser, setReportUser] = useState(false);
+  const [confirmJobComplete, setConfirmJobComplete] = useState(false);
   const [cancelReasonText, setCancelReasonText] = useState();
   const [role, SetRole] = useState("");
   const dispatch = useDispatch("");
@@ -69,6 +70,7 @@ const Jobdetails = () => {
     };
     await dispatch(MarkStartJob(data)).unwrap();
     dispatch(getRequestDetail(queryParams.get("type")));
+    setConfirmJobComplete(true);
   };
   const handleCancelBooking = async () => {
     if (!cancelReasonText) return ErrorToast("Reason is required");
@@ -326,7 +328,6 @@ const Jobdetails = () => {
                     />
                   )}
                 </div>
-
                 {/* Message Button */}
                 {status !== "completed" &&
                   status !== "rejected" &&
@@ -359,6 +360,45 @@ const Jobdetails = () => {
                       <span className="mt-1">Message</span>
                     </button>
                   )}
+                {confirmJobComplete && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-white rounded-xl px-5 py-8 md:w-[30em] shadow-2xl text-center">
+                      {/* Checkmark Icon */}
+                      <div className="flex justify-end items-center">
+                        <button onClick={() => setConfirmJobComplete(false)}>
+                          <HiXMark size={22} />
+                        </button>
+                      </div>
+                      <div className="mb-4 flex justify-center items-center">
+                        <div className=" rounded-full flex justify-center items-center">
+                          <img
+                            src={GalaryJobComplete}
+                            alt="GalaryJobComplete"
+                            className="w-20 "
+                          />
+                        </div>
+                      </div>
+                      {/* Title */}
+                      <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                        Confirm Completion
+                      </h2>
+                      {/* Message */}
+                      <p className="text-gray-600 text-sm mb-4">
+                         Before completing the job, to protect yourself and the
+                        work you’ve done, please take clear pictures of your
+                        completed services. Keep these photos for your records
+                        and safety, and feel free to delete them once they are
+                        no longer needed.
+                      </p>
+                      <div className="w-[130px] mx-auto">
+                        <Button
+                          text={"Ok"}
+                          onClick={() => setConfirmJobComplete(false)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {status == "pending" && (
                   <>
                     <div className="flex justify-center mb-4  gap-3">
@@ -500,7 +540,6 @@ const Jobdetails = () => {
                     </div>
                   </>
                 )}
-
                 {status === "waiting" && !isExpired && (
                   <Button
                     text={"Start Job"}
@@ -520,7 +559,6 @@ const Jobdetails = () => {
                     }
                   />
                 )}
-
                 {/* Job Details */}
                 <div className="mt-4">
                   <h4 className="text-lg font-semibold mb-4">Job Detail</h4>
@@ -551,7 +589,6 @@ const Jobdetails = () => {
                     </div>
                   </div>
                 </div>
-
                 {/* Total Payment */}
                 <div className="mb-6 mt-3">
                   <h4 className="text-lg font-semibold mb-3">Total Payment</h4>
@@ -593,14 +630,12 @@ const Jobdetails = () => {
                     </div>
                   </div>
                 </div>
-
                 {status == "completed" && (
                   <Feedback
                     review={bookingRequestDetail?.review}
                     setReportUser={setReportUser}
                   />
                 )}
-
                 {/* Cancel Button */}
                 {status !== "accepted" &&
                   status !== "completed" &&
@@ -616,7 +651,6 @@ const Jobdetails = () => {
                       Cancel Booking
                     </button>
                   )}
-
                 {status === "rejected" && (
                   <div>
                     <h1>Rejection Reason </h1>
@@ -626,7 +660,6 @@ const Jobdetails = () => {
                     </p>
                   </div>
                 )}
-
                 {status === "completed" && user_data?.role == "user" && (
                   <div className="space-y-3">
                     <button
@@ -643,9 +676,7 @@ const Jobdetails = () => {
                     </button>
                   </div>
                 )}
-
                 <ServiceRatingUI isOpen={rating} setIsOpen={setRating} />
-
                 {inProgressModal && (
                   <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white rounded-xl p-10 md:w-[26em] shadow-2xl text-center">
@@ -667,7 +698,6 @@ const Jobdetails = () => {
                     </div>
                   </div>
                 )}
-
                 {cancelbooking && (
                   <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white rounded-xl p-5 md:w-[26em] shadow-2xl text-center">
@@ -724,7 +754,6 @@ const Jobdetails = () => {
                     </div>
                   </div>
                 )}
-
                 {cancelreason && (
                   <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                     <div className="bg-white rounded-xl p-6 md:w-[30em] shadow-2xl text-center space-y-4">
