@@ -18,6 +18,7 @@ import {
 import { ErrorToast } from "../../../components/global/Toaster";
 import { Button } from "../../../components/global/GlobalButton";
 import BookingCountdown from "../../../components/Serviceprovider/Appointment/BookingStartTimer";
+import ReportUser from "../../../components/Serviceprovider/Reportuser";
 
 const Bookingdetails = () => {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ const Bookingdetails = () => {
   const [inProgressModal, setInProgressModal] = useState(false);
   const [cancelbooking, setCancelbooking] = useState(false);
   const [cancelreason, setCancelreason] = useState(false);
+  const [reportUser, setReportUser] = useState(false);
   const { bookingDetail, isLoading } = useSelector((state) => state?.user);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -95,7 +97,6 @@ const Bookingdetails = () => {
 
     return () => clearInterval(interval);
   }, [bookingDetail]);
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -350,7 +351,7 @@ const Bookingdetails = () => {
                     }
                     <button
                       className="w-full bg-[#208BC733] text-[#208BC7] py-3 rounded-lg font-medium hover:bg-[#208ac742]"
-                      onClick={() => alert("Booking Canceled")}
+                      onClick={() => setReportUser(true)}
                     >
                       Report Service Provider
                     </button>
@@ -461,6 +462,12 @@ const Bookingdetails = () => {
                     </div>
                   </div>
                 )}
+                <ReportUser
+                  isOpen={reportUser}
+                  userId={bookingDetail?.service_provider?.uid}
+                  setIsOpen={setReportUser}
+                  isProvider={true}
+                />
               </div>
             </div>
           </div>

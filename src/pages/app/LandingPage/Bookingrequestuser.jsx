@@ -19,6 +19,7 @@ import {
 import { ErrorToast } from "../../../components/global/Toaster";
 import { Button } from "../../../components/global/GlobalButton";
 import BookingCountdown from "../../../components/Serviceprovider/Appointment/BookingStartTimer";
+import ReportUser from "../../../components/Serviceprovider/Reportuser";
 
 const Bookingrequestuser = () => {
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ const Bookingrequestuser = () => {
   const [inProgressModal, setInProgressModal] = useState(false);
   const [cancelbooking, setCancelbooking] = useState(false);
   const [cancelreason, setCancelreason] = useState(false);
+  const [reportUser, setReportUser] = useState(false);
   const { bookingDetail, isLoading, bookingrequestdetailbyid } = useSelector(
     (state) => state?.user
   );
@@ -48,25 +50,24 @@ const Bookingrequestuser = () => {
     navigate("/booking-requests");
   };
 
-
-    return (
-        <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <div
-                className="flex items-center bg-cover bg-center -mt-[6em] pt-[10em] pb-[18em]"
-                style={{
-                    backgroundImage: `linear-gradient(234.85deg, rgb(39, 168, 226, 1) -20.45%, rgb(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
-                }}
-            >
-                <div className="flex items-center gap-3 lg:px-32">
-                    <button type="button" onClick={() => navigate(-1)}>
-                        <FaArrowLeft color="white" size={20} />
-                    </button>
-                    <h2 className="text-white text-[30px] mt-0 font-bold leading-[48px] capitalize">
-                        Booking details
-                    </h2>
-                </div>
-            </div>
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div
+        className="flex items-center bg-cover bg-center -mt-[6em] pt-[10em] pb-[18em]"
+        style={{
+          backgroundImage: `linear-gradient(234.85deg, rgb(39, 168, 226, 1) -20.45%, rgb(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
+        }}
+      >
+        <div className="flex items-center gap-3 lg:px-32">
+          <button type="button" onClick={() => navigate(-1)}>
+            <FaArrowLeft color="white" size={20} />
+          </button>
+          <h2 className="text-white text-[30px] mt-0 font-bold leading-[48px] capitalize">
+            Booking details
+          </h2>
+        </div>
+      </div>
 
       {/* Main Content */}
       <div className=" p-3">
@@ -209,7 +210,9 @@ const Bookingrequestuser = () => {
                   </div>
 
                   {status !== "Completed" && (
-                    <BookingCountdown bookingRequestDetail={bookingrequestdetailbyid} />
+                    <BookingCountdown
+                      bookingRequestDetail={bookingrequestdetailbyid}
+                    />
                   )}
                 </div>
 
@@ -313,7 +316,7 @@ const Bookingrequestuser = () => {
                     </button>
                     <button
                       className="w-full bg-[#208BC733] text-[#208BC7] py-3 rounded-lg font-medium hover:bg-[#208ac742]"
-                      // onClick={() => }
+                      onClick={() => setReportUser(true)}
                     >
                       Report Service Provider
                     </button>
@@ -429,6 +432,11 @@ const Bookingrequestuser = () => {
           </div>
         </div>
       </div>
+      <ReportUser
+        isOpen={reportUser}
+        userId={bookingrequestdetailbyid?.user?.uid}
+        setIsOpen={setReportUser}
+      />
     </div>
   );
 };

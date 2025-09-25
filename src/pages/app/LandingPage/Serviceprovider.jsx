@@ -909,9 +909,7 @@ const Serviceprovider = () => {
                 <div>
                   <span className="font-semibold">Distance</span>
                   <br />
-                  {data?.distance && data.distance > 0
-                    ? data.distance
-                    : "0 miles"}
+                  {data?.distance || "0"}
                 </div>
                 <div>
                   <span className="font-semibold">Completed Job</span>
@@ -1141,11 +1139,10 @@ const Serviceprovider = () => {
                       key={idx}
                       onClick={() => handleSelect(slot.time)} // Use slot.time as the time to select
                       className={`px-4 py-2 rounded-lg border text-sm transition 
-                ${
-                  selectedTime === slot.time
-                    ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
-                    : "bg-white text-gray-800"
-                }`}
+                ${selectedTime === slot.time
+                          ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
+                          : "bg-white text-gray-800"
+                        }`}
                     >
                       {slot.time} {/* Display the available time */}
                     </button>
@@ -1167,9 +1164,8 @@ const Serviceprovider = () => {
                   value={duration}
                   onChange={handleDurationChange} // Update the state with validation
                   placeholder="0"
-                  className={`w-full border rounded-lg px-4 py-2 pr-10 ${
-                    parseInt(duration) > 15 ? "border-red-500" : ""
-                  }`} // Add red border if duration is greater than 15
+                  className={`w-full border rounded-lg px-4 py-2 pr-10 ${parseInt(duration) > 15 ? "border-red-500" : ""
+                    }`} // Add red border if duration is greater than 15
                   required
                   onKeyDown={(e) => {
                     if (["-", "+", "e", "E"].includes(e.key)) {
@@ -1673,15 +1669,14 @@ const Serviceprovider = () => {
                     (select the payment method)
                   </span>
                   {paymentmethoduser?.payment_methods &&
-                  paymentmethoduser.payment_methods.length > 0 ? (
+                    paymentmethoduser.payment_methods.length > 0 ? (
                     paymentmethoduser.payment_methods.map((card) => (
                       <div
                         key={card.id}
-                        className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${
-                          selectedCard?.id === card.id
+                        className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${selectedCard?.id === card.id
                             ? "bg-blue-100 border-blue-500"
                             : ""
-                        }`}
+                          }`}
                         onClick={() => handleCardSelect(card)}
                       >
                         <div className="flex gap-3">
@@ -1857,8 +1852,7 @@ const Serviceprovider = () => {
             </h2>
             {/* Message */}
             <p className="text-gray-600 text-sm mb-4">
-              Great news! [Service Provider Name] has accepted your booking
-              request. The payment has now been securely held in escrow. Once
+              Great news! Your Custom Booking has been accepted. The payment has now been securely held in escrow. Once
               the job is completed, the funds will be released to the service
               provider.
             </p>
@@ -1892,9 +1886,8 @@ const Serviceprovider = () => {
                       {Array.from({ length: 5 }).map((_, i) => (
                         <FaStar
                           key={i}
-                          className={`text-yellow-400 ${
-                            i < Math.floor(review.rating) ? "" : "opacity-50"
-                          }`}
+                          className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
+                            }`}
                         />
                       ))}
                       <span className="ml-1 font-medium text-sm">
@@ -2125,11 +2118,10 @@ const Serviceprovider = () => {
                     <div
                       key={card.id}
                       className={`flex justify-between items-center border cursor-pointer rounded p-2 mb-2 
-              ${
-                selectedCard?.id === card.id
-                  ? "bg-blue-100 border-blue-500"
-                  : ""
-              } 
+              ${selectedCard?.id === card.id
+                          ? "bg-blue-100 border-blue-500"
+                          : ""
+                        } 
             `} // Highlight the selected card with a background
                       onClick={() => handleCardSelect(card)} // Set the card as selected when clicked
                     >
