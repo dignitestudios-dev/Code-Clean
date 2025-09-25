@@ -131,10 +131,11 @@ export const submitBookingReview = createAsyncThunk(
 );
 // Fetch request details based on ID
 export const fetchRequestDetails = createAsyncThunk(
-  "/user/requests/{id}/details", // Action type
-  async (id, thunkAPI) => {
+  "/user/requests/details", // Action type (unchanged)
+  async ({ id, url }, thunkAPI) => {
     try {
-      const res = await axios.get(`/user/requests/${id}/details`); // API request to fetch the request details
+      // Use the provided URL and ID to make the API call
+      const res = await axios.get(`${url}/${id}/details`);
       return res.data; // Return the response data
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data?.message);
