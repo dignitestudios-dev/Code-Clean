@@ -253,11 +253,11 @@ const Navbar = () => {
               {isPopupOpen && (
                 <div 
                  ref={popupRef}
-                className="absolute top-10 right-0 w-[400px] bg-white shadow-lg rounded-lg p-4 z-50">
+                className="absolute top-10 right-0 w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50">
                   <h3 className="text-lg font-semibold text-black">
                     Notifications
                   </h3>
-                  <div className="mt-4 space-y-4 max-h-60 overflow-y-auto">
+                  <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
                     {notifications.length > 0 ? (
                       notifications.map((n, idx) => (
                         <div
@@ -265,21 +265,21 @@ const Navbar = () => {
                           onClick={() => markAsRead(idx)}
                           className="cursor-pointer"
                         >
-                          <div className="flex justify-between">
+                          <div className="flex w-full justify-between">
                             <div>
                               <span className="text-[14px] font-bold text-black">
                                 {n.title}
                               </span>
-                              <p className="text-[13px] text-[#18181880]">
+                              <p className="text-[13px] mt-2 text-[#18181880]">
                                 {n.message}
                               </p>
                             </div>
-                            <div>
+                            <div className="flex flex-col items-end px-2">
                               <div className="text-xs text-gray-600">
                                 {n.time}
                               </div>
                               {n.unreadCount > 0 && (
-                                <div className="bg-red-600 text-white text-xs rounded-full w-[19px] h-[19px] flex items-center justify-center">
+                                <div className="bg-red-600 mt-2 text-white text-xs rounded-full w-[19px] h-[19px] flex items-center justify-center">
                                   {n.unreadCount}
                                 </div>
                               )}
