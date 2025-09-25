@@ -95,7 +95,7 @@ const Favorites = () => {
           backgroundImage: `linear-gradient(234.85deg, rgba(39,168,226,1) -20.45%, rgba(0,3,74,0.8) 124.53%), url(${HeroBg})`,
         }}
       >
-        <div className="flex items-center gap-3 ml-[11em]">
+        <div className="flex items-center gap-3 px-40">
           <button type="button" onClick={() => navigate(-1)}>
             <FaArrowLeft color="white" size={20} />
           </button>
@@ -104,8 +104,9 @@ const Favorites = () => {
           </h2>
         </div>
       </div>
+  <div className="px-40" >
 
-      <div className="bg-[#F9FAFA] p-6 rounded-2xl mx-auto max-w-[74em] -mt-[16em] mb-[4em]">
+      <div className="bg-[#F9FAFA] p-6 rounded-2xl mx-auto  -mt-[16em] mb-[4em]">
         {/* favoritesLoading state */}
         {favoritesLoading && (
 
@@ -229,6 +230,7 @@ const Favorites = () => {
           </div>
         )}
       </div>
+  </div>
 
       <Footer />
     </div>

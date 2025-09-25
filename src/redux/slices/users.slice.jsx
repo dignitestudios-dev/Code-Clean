@@ -81,8 +81,7 @@ export const HireServiceProvider = createAsyncThunk(
       const res = await axios.post(endpoint, dataToSend, config);
       return res.data;
     } catch (error) {
-      console.error("HireServiceProvider error:", error);
-      return thunkAPI.rejectWithValue("Failed to submit provider data");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -97,11 +96,7 @@ export const RequestCustomService = createAsyncThunk(
       // Return the response data after submission
       return res.data;
     } catch (error) {
-      // Reject the promise with a custom error message
-      ErrorToast(
-        error.response?.data?.message || "Failed to submit Booking Request"
-      );
-      // return thunkAPI.rejectWithValue("Failed to submit provider data");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -113,11 +108,7 @@ export const DeleteBroadCastRequest = createAsyncThunk(
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {
-      ErrorToast(error.response?.data?.message || "Delete Request failed");
-      return;
-      // return thunkAPI.rejectWithValue(
-      //   error.response?.data?.message || "Delete Request failed"
-      // );
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -126,17 +117,15 @@ export const submitBookingReview = createAsyncThunk(
   "/user/bookings/{id}/review", // Action type
   async (payload, thunkAPI) => {
     try {
-      console.log(payload, "test review data")
+      console.log(payload, "test review data");
       const res = await axios.post(`/bookings/${payload?.booking_id}/review`, {
         rating: payload?.rating,
-        text: payload?.feedback
+        text: payload?.feedback,
       }); // API request to submit the review
       SuccessToast("Review submitted successfully!");
       return res.data;
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to submit review";
-      ErrorToast(msg);
-      return thunkAPI.rejectWithValue(msg);
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -148,7 +137,7 @@ export const fetchRequestDetails = createAsyncThunk(
       const res = await axios.get(`/user/requests/${id}/details`); // API request to fetch the request details
       return res.data; // Return the response data
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch request details"); // Handle rejection
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -161,11 +150,7 @@ export const getPaymentMethoduser = createAsyncThunk(
       const response = await axios.get("/payment-methods"); // API request to fetch the profile
       return response.data; // Assuming the API returns the user profile data
     } catch (error) {
-      const msg =
-        error?.response?.data?.message ||
-        "Failed to Get Payment Method of User";
-      ErrorToast(msg); // Show error toast
-      return thunkAPI.rejectWithValue(msg); // Handle rejection
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -178,7 +163,7 @@ export const getPaymentMethoduser = createAsyncThunk(
 //       const res = await axios.get("/profile");
 //       return res.data;
 //     } catch (error) {
-//       return thunkAPI.rejectWithValue("Failed to fetch profile");
+//       return thunkAPI.rejectWithValue( error.response?.data?.message);
 //     }
 //   }
 // );
@@ -188,10 +173,12 @@ export const fetchDailyAvailability = createAsyncThunk(
   "/user/availability", // Action type
   async (payload, thunkAPI) => {
     try {
-      const res = await axios.get(`/availability?provider_id=${payload?.providerId}&date=${payload?.date}`); // API request to fetch the daily availability
+      const res = await axios.get(
+        `/availability?provider_id=${payload?.providerId}&date=${payload?.date}`
+      ); // API request to fetch the daily availability
       return res.data; // Return the response data (availability)
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch daily availability");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -222,11 +209,7 @@ export const fetchUserProfile = createAsyncThunk(
       if (axios.isCancel?.(error)) {
         return thunkAPI.rejectWithValue("Request cancelled");
       }
-      return thunkAPI.rejectWithValue(
-        error?.response?.data?.message ||
-        error?.message ||
-        "Failed to fetch profile"
-      );
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -239,9 +222,7 @@ export const getuserfavorites = createAsyncThunk(
       const response = await axios.get("/user/favorites");
       return response.data;
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to Get Favorites";
-      ErrorToast(msg);
-      return thunkAPI.rejectWithValue(msg);
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -288,7 +269,7 @@ export const unfavoriteProvider = createAsyncThunk(
           isFavorite === false
             ? serverMsg || "Your favorite has been removed successfully."
             : // if server says it's still favorite, force a sane message
-            "Your favorite has been removed successfully.";
+              "Your favorite has been removed successfully.";
 
         return {
           providerId,
@@ -315,7 +296,7 @@ export const fetchCurrentBooking = createAsyncThunk(
       const res = await axios.get(_);
       return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch profile");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -328,7 +309,7 @@ export const fetchBookingRequest = createAsyncThunk(
       const res = await axios.get(_);
       return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch profile");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -339,7 +320,7 @@ export const fetchBookingDetail = createAsyncThunk(
       const res = await axios.get(`/user/bookings/${_}/details`);
       return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch profile");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -351,7 +332,7 @@ export const fetchbookingrequestbyid = createAsyncThunk(
       const res = await axios.get(`/user/requests/${_}/details`);
       return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch profile");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -365,7 +346,7 @@ export const fetchUserPreferences = createAsyncThunk(
       const res = await axios.get(`/user/preferences`);
       return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch profile");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -377,7 +358,7 @@ export const updateUserPreferences = createAsyncThunk(
       const res = await axios.post(`/user/preferences`, payload);
       return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to update preferences");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -390,7 +371,7 @@ export const fetchBookinghistory = createAsyncThunk(
       const res = await axios.get(_);
       return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch profile");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -402,7 +383,7 @@ export const fetchallservices = createAsyncThunk(
       const res = await axios.get(_);
       return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch services");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -413,7 +394,7 @@ export const filterAllService = createAsyncThunk(
       const res = await axios.post("/search/providers", _);
       return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch services");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -425,7 +406,7 @@ export const CancelBookingRequest = createAsyncThunk(
       SuccessToast("Booking Canceled Successfull");
       return res.data;
     } catch (error) {
-      return thunkAPI.rejectWithValue("Failed to fetch services");
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -486,9 +467,7 @@ export const changePassword = createAsyncThunk(
 
       return res.data;
     } catch (error) {
-      const msg = error?.response?.data?.message || "Failed to update password";
-      ErrorToast(msg);
-      return thunkAPI.rejectWithValue(msg);
+      return thunkAPI.rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -520,6 +499,7 @@ const userSlice = createSlice({
       .addCase(fetchUserProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
       .addCase(DeleteBroadCastRequest.pending, (state) => {
         state.isLoading = true;
@@ -532,6 +512,7 @@ const userSlice = createSlice({
       .addCase(DeleteBroadCastRequest.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
       .addCase(getFilteredProviders.pending, (state) => {
         state.allservicesloading = true;
@@ -546,6 +527,7 @@ const userSlice = createSlice({
       .addCase(getFilteredProviders.rejected, (state, action) => {
         state.allservicesloading = false;
         state.error = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
       // ----- fetch Preference -----
       .addCase(fetchUserPreferences.pending, (state) => {
@@ -560,6 +542,7 @@ const userSlice = createSlice({
       .addCase(fetchUserPreferences.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
       .addCase(updateUserPreferences.pending, (state) => {
         state.bookinghistoryLoading = true;
@@ -572,6 +555,7 @@ const userSlice = createSlice({
       .addCase(updateUserPreferences.rejected, (state, action) => {
         state.bookinghistoryLoading = false;
         state.error = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
 
       .addCase(changePassword.pending, (state) => {
@@ -586,6 +570,7 @@ const userSlice = createSlice({
       .addCase(changePassword.rejected, (state, action) => {
         state.updateLoading = false;
         state.updateError = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
 
       .addCase(submitBookingReview.pending, (state) => {
@@ -601,6 +586,7 @@ const userSlice = createSlice({
       .addCase(submitBookingReview.rejected, (state, action) => {
         state.bookingReviewLoading = false;
         state.bookingReviewError = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
 
       // ----- fetch all services -----
@@ -617,6 +603,7 @@ const userSlice = createSlice({
       .addCase(fetchallservices.rejected, (state, action) => {
         state.allservicesloading = false;
         state.allserviceserror = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
       .addCase(filterAllService.pending, (state) => {
         state.allservicesloading = true;
@@ -631,6 +618,7 @@ const userSlice = createSlice({
       .addCase(filterAllService.rejected, (state, action) => {
         state.allservicesloading = false;
         state.allserviceserror = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
 
       // ----- Fetch all Current Booking -----
@@ -647,6 +635,7 @@ const userSlice = createSlice({
       .addCase(fetchCurrentBooking.rejected, (state, action) => {
         state.currentbookingLoading = false;
         state.currentbookingerror = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
       // ----- Fetch Booking Detail---
       .addCase(fetchBookingDetail.pending, (state) => {
@@ -661,6 +650,7 @@ const userSlice = createSlice({
       .addCase(fetchBookingDetail.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
 
       // ----- Fetch Booking Detail---
@@ -676,6 +666,7 @@ const userSlice = createSlice({
       .addCase(fetchbookingrequestbyid.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
 
       // Booking Cancel
@@ -690,6 +681,7 @@ const userSlice = createSlice({
       .addCase(CancelBookingRequest.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
       //Get payment Method for user
       .addCase(getPaymentMethoduser.pending, (state) => {
@@ -705,6 +697,7 @@ const userSlice = createSlice({
       .addCase(getPaymentMethoduser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
 
       //GET FetchDailyAvailability
@@ -721,6 +714,7 @@ const userSlice = createSlice({
       .addCase(fetchDailyAvailability.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload; // Handle the error state
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
 
       // ----- Fetch all Current Booking -----
@@ -737,6 +731,7 @@ const userSlice = createSlice({
       .addCase(fetchBookingRequest.rejected, (state, action) => {
         state.requestbookingLoading = false;
         state.requestbookingerror = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
 
       // ----- Fetch all Current Booking -----
@@ -753,6 +748,7 @@ const userSlice = createSlice({
       .addCase(fetchBookinghistory.rejected, (state, action) => {
         state.bookinghistoryLoading = false;
         state.bookinghistoryerror = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
 
       // ----- Fetch all Favorites -----
@@ -769,6 +765,7 @@ const userSlice = createSlice({
       .addCase(getuserfavorites.rejected, (state, action) => {
         state.favoritesLoading = false;
         state.favoritesError = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
 
       // ----- Unfavorite Provider -----
@@ -844,6 +841,7 @@ const userSlice = createSlice({
       .addCase(fetchRequestDetails.rejected, (state, action) => {
         state.requestisLoading = false; // Set loading state to false
         state.error = action.payload || "Failed to fetch request details"; // Set error message
+        ErrorToast(action.payload); // ✅ error toast show karega
       })
 
       // ----- update profile -----
@@ -867,6 +865,7 @@ const userSlice = createSlice({
       .addCase(updateUserProfile.rejected, (state, action) => {
         state.updateLoading = false;
         state.updateError = action.payload;
+        ErrorToast(action.payload); // ✅ error toast show karega
       });
   },
 });

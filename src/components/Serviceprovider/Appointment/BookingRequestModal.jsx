@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   AcceptBookingRequest,
   getBookingRequest,
+  getCalendar,
   RejectBookingRequest,
 } from "../../../redux/slices/provider.slice";
 import { RiLoader2Fill } from "react-icons/ri";
@@ -14,40 +15,6 @@ import { Button } from "../../global/GlobalButton";
 import { TiWarning } from "react-icons/ti";
 import { ErrorToast } from "../../global/Toaster";
 const BookingRequestModal = ({ isOpen, setIsOpen, date }) => {
-  const [requests, setRequests] = useState([
-    {
-      id: "ID12345",
-      name: "Sophia Rose",
-      time: "18:00 AM",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face&auto=format",
-      bgColor: "bg-green-200",
-    },
-    {
-      id: "ID12345",
-      name: "Sophia Rose",
-      time: "12:00 AM",
-      avatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=60&h=60&fit=crop&crop=face&auto=format",
-      bgColor: "bg-pink-200",
-    },
-    {
-      id: "ID12345",
-      name: "Sophia Rose",
-      time: "08:00 AM",
-      avatar:
-        "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=60&h=60&fit=crop&crop=face&auto=format",
-      bgColor: "bg-pink-100",
-    },
-    {
-      id: "ID12345",
-      name: "Sophia Rose",
-      time: "10:00 AM",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&h=60&fit=crop&crop=face&auto=format",
-      bgColor: "bg-green-200",
-    },
-  ]);
   const [selectedId, setSelectedId] = useState("");
   const [isAction, setAction] = useState("");
   const [reason, setReason] = useState("");
@@ -58,12 +25,15 @@ const BookingRequestModal = ({ isOpen, setIsOpen, date }) => {
   const { bookingRequest, isLoading, bookingRequestLoader } = useSelector(
     (state) => state?.provider
   );
+  console.log(bookingRequest, "booking request");
   useEffect(() => {
     dispatch(getBookingRequest(`provider/booking/requests?date=${date}`));
   }, [date]);
   const handleApprove = async (index) => {
     await dispatch(AcceptBookingRequest(index));
-    dispatch(getBookingRequest(`provider/booking/requests?date=${date}`));
+    await dispatch(getBookingRequest(`provider/booking/requests?date=${date}`));
+    await dispatch(getCalendar());
+    setSelectedId("");
   };
 
   const handleDecline = () => {
@@ -72,16 +42,19 @@ const BookingRequestModal = ({ isOpen, setIsOpen, date }) => {
   };
   const HandleRejectRequest = async () => {
     if (!reason) return ErrorToast("Reason is required");
+
     const data = {
       requestId: selectedId,
       reason: reason,
     };
 
     await dispatch(RejectBookingRequest(data)).unwrap();
+    await dispatch(getCalendar(date));
     setRejectedpopup(false); // Close warning popup
     setRejectedreasons(false); // Close reason popup
     setRejectedreqcomplete(true); // Show success modal
     dispatch(getBookingRequest());
+    setSelectedId("");
   };
 
   return (
@@ -108,7 +81,7 @@ const BookingRequestModal = ({ isOpen, setIsOpen, date }) => {
             </button>
           </div>
           <span className="text-[#181818] text-[16px] font-[500]">
-            Tuesday, 03
+          {date}
           </span>
           <div className="w-full flex flex-col mt-4 items-center">
             <div className="px-4 pb-6 w-full space-y-4 max-h-[60vh] overflow-y-auto">
@@ -135,8 +108,8 @@ const BookingRequestModal = ({ isOpen, setIsOpen, date }) => {
                     </div>
                   </div>
                 ))
-              ) : bookingRequest?.length > 0 ? (
-                bookingRequest.map((request, index) => (
+              ) : bookingRequest?.data?.length > 0 ? (
+                bookingRequest?.data?.map((request, index) => (
                   <div
                     key={index}
                     className="bg-[#fafafa] border-[#E8E8E8] border-2  rounded-[12px] p-4 flex items-center justify-between"
@@ -195,7 +168,7 @@ const BookingRequestModal = ({ isOpen, setIsOpen, date }) => {
                           setSelectedId(request?.request_id);
                           setAction("approved");
                         }}
-                        disabled={selectedId === request?.request_id}
+                        disabled={selectedId == request?.request_id}
                         className="w-10 h-10 bg-gradient-to-tr from-[#00034A] to-[#27A8E2] rounded-full flex items-center justify-center transition-colors"
                       >
                         {bookingRequestLoader &&

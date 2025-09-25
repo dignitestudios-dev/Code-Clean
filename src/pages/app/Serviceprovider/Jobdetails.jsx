@@ -206,8 +206,7 @@ const Jobdetails = () => {
                     <FaMapMarkerAlt className="text-[#353adf]" />
                     <p className="font-medium">
                       {" "}
-                      {bookingRequestDetail?.city},{" "}
-                      {bookingRequestDetail?.state}
+                      {bookingRequestDetail?.location}
                     </p>
                   </div>
                 </div>

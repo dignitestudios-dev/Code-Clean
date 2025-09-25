@@ -58,7 +58,13 @@ export default function Badge() {
                     setIsOpen(!isOpen);
                   }}
                 >
-                  <div className="w-[140px] h-[100px] rounded-[50%] border-2 border-[#D18537]">
+                  <div
+                    className={`w-[140px] h-[100px] rounded-[50%] ${
+                      item?.criteria?.jobs
+                        ? "border-2 border-[#27A8E2]"
+                        : "border-2 border-[#D18537]"
+                    } `}
+                  >
                     <img
                       src={import.meta.env.VITE_APP_AWS_URL + item?.url}
                       className="w-20 mx-auto mt-3"

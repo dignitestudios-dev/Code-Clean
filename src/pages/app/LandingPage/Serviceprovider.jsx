@@ -618,9 +618,9 @@ const Serviceprovider = () => {
     formDataPayload.append("time", formattedTime);
     formDataPayload.append("location", locations);
     formDataPayload.append("duration", duration);
-    formDataPayload.append("city", formData.city || "Default City");
-    formDataPayload.append("state", formData.state || "Default State");
-    formDataPayload.append("country", formData.country || "Default Country");
+    formDataPayload.append("city", formData.city);
+    formDataPayload.append("state", formData.state);
+    formDataPayload.append("country", formData.country);
     formDataPayload.append("lat", formData.lat || 0);
     formDataPayload.append("long", formData.long || 0);
     formDataPayload.append("description", description);
@@ -649,10 +649,15 @@ const Serviceprovider = () => {
     // userId
     formDataPayload.append("userId", id);
 
-    await dispatch(HireServiceProvider(formDataPayload));
+    await dispatch(HireServiceProvider(formDataPayload)).unwrap();
     setBookrequestsend(true);
 
     setRequestservicefive(false);
+    setDuration("");
+    setSelectedTime("");
+    // selectedDate("");
+    setLocations("");
+    setDescription("");
   };
 
   useEffect(() => {
@@ -736,7 +741,7 @@ const Serviceprovider = () => {
       const now = new Date();
 
       const availableSlots = dailyAvailability?.slots
-        ?.filter((slot) => slot.status === "Available")
+        ?.filter((slot) => slot.status == "Available")
         ?.filter((slot) => {
           // Parse slot.time manually
           const timeStr = slot.time.toLowerCase(); // "05:00pm"
@@ -909,7 +914,7 @@ const Serviceprovider = () => {
                 <div>
                   <span className="font-semibold">Distance</span>
                   <br />
-                    {data?.distance || "0"}
+                  {data?.distance || "0"}
                 </div>
                 <div>
                   <span className="font-semibold">Completed Job</span>
@@ -982,7 +987,6 @@ const Serviceprovider = () => {
                         )}
                         <span className="ml-2 text-gray-700 font-medium">
                           {(review.rating || 0).toFixed(1)}
-
                         </span>
                       </div>
                       <p className="text-sm text-gray-600">
@@ -1751,12 +1755,6 @@ const Serviceprovider = () => {
                     }
 
                     handleHireNow(); // Proceed with booking
-
-                    setDuration("");
-                    setSelectedTime("");
-                    // selectedDate("");
-                    setLocations("");
-                    setDescription("");
                   }}
                   className="w-full bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white py-2 rounded-full font-semibold"
                 >
