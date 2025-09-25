@@ -92,7 +92,7 @@ const Bookingsrequests = () => {
     if (s === "inprogress") return "In Progress Jobs";
     if (s === "completed") return "Completed Jobs";
     if (s === "cancelled" || s === "canceled") return "Canceled Jobs";
-    if (s === "accepted") return "Accepted";
+    if (s === "accepted") return "Approved";
     if (s === "rejected") return "Rejected";
     if (s === "pending") return "Pending";
     if (["accepted", "approved", "pending"].includes(s)) return "Upcoming Jobs";

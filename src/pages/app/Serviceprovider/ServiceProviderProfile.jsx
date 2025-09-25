@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import Navbar from "../../../components/layout/Navbar";
-import { FaArrowLeft, FaCheck, FaStar } from "react-icons/fa";
+import { FaArrowLeft, FaCheck, FaRegStar, FaStar } from "react-icons/fa";
 import {
   badgesImage,
   EditWhiteIcon,
@@ -196,7 +196,7 @@ const ServiceproviderProfile = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                   {user_data?.certificates &&
-                  user_data.certificates.length > 0 ? (
+                    user_data.certificates.length > 0 ? (
                     user_data.certificates.slice(0, 2).map((item, i) => (
                       <div key={i} className="space-y-1">
                         <h4 className="font-medium text-gradient">
@@ -230,8 +230,12 @@ const ServiceproviderProfile = () => {
                     {user_data?.experience}+ Years Experience
                   </p>
                   <div className="flex items-center text-yellow-500 mt-1">
-                    {[...Array(7)].map((_, i) => (
-                      <FaStar key={i} />
+                    {[...Array(5)].map((_, i) => (
+                      i < Math.floor(user_data?.rating) ? (
+                        <FaStar key={i} />
+                      ) : (
+                        <FaRegStar key={i} />
+                      )
                     ))}
                     <span className="ml-2 text-gray-700 font-medium">
                       {user_data?.rating}
@@ -257,13 +261,20 @@ const ServiceproviderProfile = () => {
               <div className="mt-4 text-sm text-gray-700 border-t-2 pt-3">
                 <h3 className="font-semibold mb-1 text-black">Earned Badges</h3>
                 <div className="mt-2 grid grid-cols-10 gap-4">
-                  {badges?.alloted_badges?.map((item, i) => (
-                    <img
-                      key={i}
-                      src={import.meta.env.VITE_APP_AWS_URL + item?.url}
-                      alt="badgesImage"
-                    />
-                  ))}
+                  {
+                    badges?.alloted_badges?.length > 0 ? (
+                      badges.alloted_badges.map((item, i) => (
+                        <img
+                          key={i}
+                          src={import.meta.env.VITE_APP_AWS_URL + item?.url}
+                          alt="badgesImage"
+                        />
+                      ))
+                    ) : (
+                      <p className="w-[10em]">No Badges</p> // Message to show when no badges are available
+                    )
+                  }
+
                 </div>
               </div>
 
@@ -313,8 +324,8 @@ const ServiceproviderProfile = () => {
                     <span className="text-[#181818] break-words
                      uppercase font-[500]">
                       {" "}
-                      {user_data?.availability?.days?.map((item, i) => <span key={i} >{item?.slice(0,3)},</span> )}
-                     
+                      {user_data?.availability?.days?.map((item, i) => <span key={i} >{item?.slice(0, 3)},</span>)}
+
                     </span>
                   </div>
                 </div>
@@ -573,13 +584,12 @@ const ServiceproviderProfile = () => {
                 ].map((time, idx) => (
                   <button
                     key={idx}
-                    className={`px-4 py-2 rounded-lg border text-sm ${
-                      idx === 0
-                        ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
-                        : idx % 2 === 0
+                    className={`px-4 py-2 rounded-lg border text-sm ${idx === 0
+                      ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
+                      : idx % 2 === 0
                         ? "bg-pink-100 text-gray-800"
                         : "bg-white"
-                    }`}
+                      }`}
                   >
                     {time}
                   </button>
@@ -1208,9 +1218,8 @@ const ServiceproviderProfile = () => {
                     {Array.from({ length: 5 }).map((_, i) => (
                       <FaStar
                         key={i}
-                        className={`text-yellow-400 ${
-                          i < Math.floor(review.rating) ? "" : "opacity-50"
-                        }`}
+                        className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
+                          }`}
                       />
                     ))}
                     <span className="ml-1 font-medium text-sm">

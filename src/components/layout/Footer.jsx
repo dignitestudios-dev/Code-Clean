@@ -18,7 +18,6 @@ const Footer = () => {
           <div className="flex flex-col items-center md:items-center">
             <img src={Logo} alt="CodeClean Logo" className="h-[10em] mb-2" />
           </div>
-
           {/* Middle: Social Links */}
           <div className="text-center md:ml-20">
             <h4 className="font-semibold text-[22px] mb-3 pt-[2.6em]">
