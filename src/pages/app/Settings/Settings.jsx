@@ -23,6 +23,7 @@ export default function Settings() {
   const dispatch = useDispatch();
   const [role, setRole] = useState();
   const { userProfile } = useSelector((state) => state.user);
+
   const menuItems = [
     { label: "Notification Settings", color: "text-gray-800" },
     { label: "Subscription", color: "text-gray-800" },
@@ -40,17 +41,15 @@ export default function Settings() {
     }
   }, [userProfile?.role]);
 
-
   useEffect(() => {
     dispatch(fetchUserProfile());
   }, [dispatch]);
-
 
   const handleItemClick = (item) => {
     setIsOpen(!isOpen);
     setActiveModal(item);
   };
-
+ 
   return (
     <div>
       <Navbar />
@@ -68,29 +67,27 @@ export default function Settings() {
           <h1 className="text-2xl font-semibold text-white">Settings</h1>
         </div>
         <div className="bg-[#F9FAFA] shadow-lg flex flex-col gap-3 mb-48 rounded-[8px] p-4 mt-3">
-          {menuItems
-            // .filter(item => !(role === "service_provider" && item.label === "Subscription")) // hide for user
-            .map((item, index) => (
-              <div
-                key={index}
-                onClick={() =>
-                  item?.label === "Payment Method"
-                    ? navigate("/app/payment-method")
-                    : item?.label === "Subscription"
-                    ? navigate("/app/subscription")
-                    : handleItemClick(item.label)
-                }
-                className="flex items-center justify-between rounded-[12px] px-6 py-4 bg-[#FFFFFF] border-b border-gray-100 hover:bg-gray-200 cursor-pointer transition-colors duration-200"
-              >
-                <span className={`text-[14px] font-medium ${item.color}`}>
-                  {item.label}
-                </span>
-                <MdOutlineKeyboardArrowRight
-                  size={20}
-                  className=" text-[#181818]"
-                />
-              </div>
-            ))}
+          {menuItems.map((item, index) => (
+            <div
+              key={index}
+              onClick={() =>
+                item?.label === "Payment Method"
+                  ? navigate("/app/payment-method")
+                  : item?.label === "Subscription"
+                  ? navigate("/app/subscription")                  
+                  : handleItemClick(item.label)
+              }
+              className="flex items-center justify-between rounded-[12px] px-6 py-4 bg-[#FFFFFF] border-b border-gray-100 hover:bg-gray-200 cursor-pointer transition-colors duration-200"
+            >
+              <span className={`text-[14px] font-medium ${item.color}`}>
+                {item.label}
+              </span>
+              <MdOutlineKeyboardArrowRight
+                size={20}
+                className=" text-[#181818]"
+              />
+            </div>
+          ))}
         </div>
       </div>
       {activeModal == "Terms & Conditions" && (

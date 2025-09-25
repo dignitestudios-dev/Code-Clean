@@ -16,10 +16,10 @@ import Cookies from "js-cookie";
 import Feedback from "../../../components/global/FeedBack";
 import ReportUser from "../../../components/Serviceprovider/Reportuser";
 import { useDispatch, useSelector } from "react-redux";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import {
   AcceptBookingRequest,
   CancelBookingRequest,
-  getBookingRequest,
   getRequestDetail,
   MarkStartJob,
   RejectBookingRequest,
@@ -28,6 +28,7 @@ import { Button } from "../../../components/global/GlobalButton";
 import { ErrorToast } from "../../../components/global/Toaster";
 import BookingCountdown from "../../../components/Serviceprovider/Appointment/BookingStartTimer";
 import { HiXMark } from "react-icons/hi2";
+import dayjs from "dayjs";
 const Jobdetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -144,6 +145,15 @@ const Jobdetails = () => {
     setRejectedreqcomplete(true); // Show success modal
     getRequestDetailData();
   };
+  dayjs.extend(customParseFormat);
+
+  const bookingDateTime =
+    bookingRequestDetail?.date + bookingRequestDetail?.time;
+  // e.g. "24 Sep, 2025 18:27 PM"
+
+  const isExpired = bookingDateTime
+    ? dayjs(bookingDateTime, "DD MMM, YYYY HH:mm A").isBefore(dayjs())
+    : false;
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar type="serviceprovider" />
@@ -310,11 +320,11 @@ const Jobdetails = () => {
                       : status && status[0]?.toUpperCase() + status.slice(1)}
                   </div>
 
-                  {
+                  {status != "cancelled" && (
                     <BookingCountdown
                       bookingRequestDetail={bookingRequestDetail}
                     />
-                  }
+                  )}
                 </div>
 
                 {/* Message Button */}
@@ -491,10 +501,10 @@ const Jobdetails = () => {
                   </>
                 )}
 
-                {status == "waiting" && (
+                {status === "waiting" && !isExpired && (
                   <Button
                     text={"Start Job"}
-                    disabled={!canStart} // ✅ disabled until time reached
+                    disabled={!canStart} // ✅ still disabled until time reached
                     loading={StartJobLoading}
                     onClick={() =>
                       handleJob(bookingRequestDetail?.booking_id, "start")
@@ -550,16 +560,22 @@ const Jobdetails = () => {
                       <span className="text-gray-500">Subtotal</span>
                       <span className="font-medium">
                         $
-                        {bookingRequestDetail?.total_payment
-                          ? bookingRequestDetail?.total_payment
-                          : bookingRequestDetail?.sub_total}
+                        {Number(
+                          bookingRequestDetail?.total_payment
+                            ? bookingRequestDetail?.total_payment
+                            : bookingRequestDetail?.sub_total
+                        ).toFixed(2)}
                       </span>
                     </div>
+
                     {bookingRequestDetail?.transaction_fees && (
                       <div className="flex justify-between border-t-[1px] border-slate-300 pt-3">
                         <span className="text-gray-500">Transaction Fees</span>
                         <span className="font-medium">
-                          ${bookingRequestDetail?.transaction_fees}
+                          $
+                          {Number(
+                            bookingRequestDetail?.transaction_fees
+                          ).toFixed(2)}
                         </span>
                       </div>
                     )}
@@ -568,9 +584,11 @@ const Jobdetails = () => {
                       <span>Total</span>
                       <span>
                         $
-                        {bookingRequestDetail?.total_payment
-                          ? bookingRequestDetail?.total_payment
-                          : bookingRequestDetail?.total_amount}
+                        {Number(
+                          bookingRequestDetail?.total_payment
+                            ? bookingRequestDetail?.total_payment
+                            : bookingRequestDetail?.total_amount
+                        ).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -652,8 +670,13 @@ const Jobdetails = () => {
 
                 {cancelbooking && (
                   <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white rounded-xl p-10 md:w-[26em] shadow-2xl text-center">
+                    <div className="bg-white rounded-xl p-5 md:w-[26em] shadow-2xl text-center">
                       {/* Checkmark Icon */}
+                      <div className="flex justify-end items-center">
+                        <button onClick={() => setCancelbooking(false)}>
+                          <HiXMark size={22} />
+                        </button>
+                      </div>
                       <div className="mb-4 flex justify-center items-center">
                         <div className=" w-[70px] h-[70px] rounded-full flex justify-center items-center">
                           <TiWarning size={70} color="red" />
@@ -661,35 +684,43 @@ const Jobdetails = () => {
                       </div>
                       {/* Title */}
                       <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                        Cancel Booking!
+                        {status == "inprogress"
+                          ? "Unable to Cancel"
+                          : "Cancel Booking!"}
                       </h2>
                       {/* Message */}
                       <p className="text-gray-600 text-sm mb-4">
-                        If you cancel your booking 24 hours in advance, you will
+                        {status == "inprogress"
+                          ? `
+                        This booking cannot be canceled at the moment as the service is already in progress.
+                        `
+                          : `If you cancel your booking 24 hours in advance, you will
                         receive a full refund. Cancelling 12 hours before the
                         scheduled service will result in a 50% refund, while
                         cancellations made less than 12 hours before the service
-                        start time will not be eligible for a refund.
+                        start time will not be eligible for a refund.`}
                       </p>
-                      <div className="flex gap-4 justify-center">
-                        <button
-                          className="bg-[#F2F1F1] text-black px-8 p-3 text-sm rounded-xl"
-                          onClick={() => {
-                            setCancelbooking(false);
-                          }}
-                        >
-                          Don’t cancel
-                        </button>
-                        <button
-                          onClick={() => {
-                            setCancelreason(true);
-                            setCancelbooking(false);
-                          }}
-                          className="rounded-xl px-8 bg-[#EE3131] text-sm  p-3 text-white"
-                        >
-                          Cancel now
-                        </button>
-                      </div>
+                      {status != "inprogress" && (
+                        <div className="flex gap-4 justify-center">
+                          <button
+                            className="bg-[#F2F1F1] text-black px-8 p-3 text-sm rounded-xl"
+                            onClick={() => {
+                              setCancelbooking(false);
+                            }}
+                          >
+                            Don’t cancel
+                          </button>
+                          <button
+                            onClick={() => {
+                              setCancelreason(true);
+                              setCancelbooking(false);
+                            }}
+                            className="rounded-xl px-8 bg-[#EE3131] text-sm  p-3 text-white"
+                          >
+                            Cancel now
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

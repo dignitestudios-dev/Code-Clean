@@ -8,6 +8,7 @@ import { useNavigate } from "react-router";
 import { Button } from "../../global/GlobalButton";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  ConnectWithStripeAccount,
   DeletePaymentMethod,
   getPaymentMethod,
 } from "../../../redux/slices/provider.slice";
@@ -26,7 +27,9 @@ export default function PaymentMethod() {
     dispatch(DeletePaymentMethod(id));
     dispatch(getPaymentMethod());
   };
-
+  const handleStripeConnect = async () => {
+    await dispatch(ConnectWithStripeAccount());
+  };
 
   return (
     <div>
@@ -51,10 +54,24 @@ export default function PaymentMethod() {
             <h1 className="text-3xl font-normal text-gray-900 mb-4">
               Credit/debit card
             </h1>
-            <div>
+            <div className="flex items-center gap-2">
               <Button
                 text={"Add Card"}
                 onClick={() => navigate("/app/create-card")}
+              />
+              <Button
+              className={"w-[150px]"}
+                text={
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={stripe}
+                      className="w-[30px]"
+                      alt="Stripe logo"
+                    />
+                    Connect</div>                
+                }
+                loading={isLoading}
+                onClick={()=>handleStripeConnect()}
               />
             </div>
           </div>

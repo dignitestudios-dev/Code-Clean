@@ -716,8 +716,19 @@ const Serviceprovider = () => {
   const { dailyAvailability } = useSelector((state) => state.user);
 
   useEffect(() => {
-    dispatch(fetchDailyAvailability(providerId));
-  }, [dispatch]);
+    if (!selectedDate) return;
+
+    const formattedDate = new Date(selectedDate).toISOString().split("T")[0];
+    // gives "2025-09-25"
+
+    const data = {
+      providerId,
+      date: formattedDate,
+    };
+
+    dispatch(fetchDailyAvailability(data));
+  }, [dispatch, providerId, selectedDate]);
+
   const [todaytime, setTodaytime] = useState([]);
 
   useEffect(() => {

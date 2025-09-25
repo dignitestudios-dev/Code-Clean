@@ -163,9 +163,9 @@ export const getPaymentMethoduser = createAsyncThunk(
 // Fetch daily availability for a provider
 export const fetchDailyAvailability = createAsyncThunk(
   "/user/availability", // Action type
-  async (providerId, thunkAPI) => {
+  async (payload, thunkAPI) => {
     try {
-      const res = await axios.get(`/availability?provider_id=${providerId}`); // API request to fetch the daily availability
+      const res = await axios.get(`/availability?provider_id=${payload?.providerId}&date=${payload?.date}`); // API request to fetch the daily availability
       return res.data; // Return the response data (availability)
     } catch (error) {
       return thunkAPI.rejectWithValue("Failed to fetch daily availability");

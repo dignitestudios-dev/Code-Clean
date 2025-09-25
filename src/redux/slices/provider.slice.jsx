@@ -409,9 +409,7 @@ export const DeleteBank = createAsyncThunk(
       SuccessToast(response?.data?.message);
       return { success: true, message: response?.data?.message };
     } catch (error) {
-      ErrorToast(
-        error?.response.data?.message || "Delete Bank failed"
-      );
+      ErrorToast(error?.response.data?.message || "Delete Bank failed");
       return thunkAPI.rejectWithValue(
         error?.response.data?.message || "Delete Bank failed"
       );
@@ -469,6 +467,21 @@ export const AddBank = createAsyncThunk(
     }
   }
 );
+export const ConnectWithStripeAccount = createAsyncThunk(
+  "//provider/connect/onboarding/link",
+  async (payload, thunkAPI) => {
+    try {
+      const response = await axios.get("/provider/connect/onboarding/link");
+      return { success: true, data: response?.data };
+    } catch (error) {
+      ErrorToast(error?.response.data?.message || "Bank Add failed");
+      return thunkAPI.rejectWithValue(
+        error?.response.data?.message || "Bank Add failed"
+      );
+    }
+  }
+);
+
 export const widrawFunds = createAsyncThunk(
   "/withdrawals",
   async (payload, thunkAPI) => {
@@ -514,6 +527,20 @@ const providerSlice = createSlice({
       })
       .addCase(getProfile.rejected, (state, action) => {
         state.getprofileloading = false;
+        state.error = action.payload;
+      })
+      .addCase(ConnectWithStripeAccount.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(ConnectWithStripeAccount.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.success = action.payload.success;
+        window.open(action.payload.data?.url, "_blank");
+      })
+      .addCase(ConnectWithStripeAccount.rejected, (state, action) => {
+        state.isLoading = false;
         state.error = action.payload;
       })
       .addCase(getUserProfile.pending, (state) => {
@@ -770,7 +797,7 @@ const providerSlice = createSlice({
       .addCase(getFilteredJobs.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-      })      
+      })
       //Add Card
       .addCase(AddBank.pending, (state) => {
         state.isLoading = true;
