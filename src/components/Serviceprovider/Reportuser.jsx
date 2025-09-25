@@ -5,7 +5,7 @@ import { ErrorToast } from "../global/Toaster";
 import { useDispatch, useSelector } from "react-redux";
 import { reportUser, resetError } from "../../redux/slices/provider.slice";
 
-const ReportUser = ({ isOpen, setIsOpen, userId }) => {
+const ReportUser = ({ isOpen, setIsOpen, userId, isProvider }) => {
   const [reason, setReason] = useState("");
   const dispatch = useDispatch();
   const { isLoading } = useSelector((state) => state.provider);
@@ -33,10 +33,11 @@ const ReportUser = ({ isOpen, setIsOpen, userId }) => {
       >
         <div className="bg-white rounded-xl shadow-lg w-[440px] p-6">
           <h2 className="text-[26px] font-bold text-black text-center mb-1">
-            Report User
+            Report {isProvider ? "Provider" : "User"}
           </h2>
           <p className="text-sm text-center text-gray-700 mb-5">
-            Are you sure you want to report this user?
+            Are you sure you want to report this{" "}
+            {isProvider ? "Provider" : "User"}?
           </p>
 
           <label className="block text-sm font-medium text-black mb-1">

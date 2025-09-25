@@ -909,9 +909,7 @@ const Serviceprovider = () => {
                 <div>
                   <span className="font-semibold">Distance</span>
                   <br />
-                  {data?.distance && data.distance > 0
-                    ? data.distance
-                    : "0 miles"}
+                    {data?.distance || "0"}
                 </div>
                 <div>
                   <span className="font-semibold">Completed Job</span>
