@@ -52,9 +52,11 @@ const DiscoverJobDetail = () => {
   } = useSelector((state) => state.provider);
   const { user_data } = useSelector((state) => state.auth);
   const status = bookingRequestDetail?.status;
-  console.log(bookingRequestDetail)
+  console.log(bookingRequestDetail);
   const getRequestDetailData = async () => {
-    await dispatch(getRequestDetail(`provider/requests/${queryParams.get("id")}/details`)).unwrap();
+    await dispatch(
+      getRequestDetail(`provider/requests/${queryParams.get("id")}/details`)
+    ).unwrap();
     SetRole(Cookies.get("role"));
   };
   useEffect(() => {
@@ -310,11 +312,11 @@ const DiscoverJobDetail = () => {
                       : status && status[0]?.toUpperCase() + status.slice(1)}
                   </div>
 
-                  {
+                  {status != "cancelled" && (
                     <BookingCountdown
                       bookingRequestDetail={bookingRequestDetail}
                     />
-                  }
+                  )}
                 </div>
 
                 {/* Message Button */}
