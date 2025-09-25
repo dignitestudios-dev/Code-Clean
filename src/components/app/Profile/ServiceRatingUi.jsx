@@ -1,15 +1,20 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaCheck, FaStar } from 'react-icons/fa';
-import { HiOutlineXMark } from 'react-icons/hi2';
+import { HiOutlineXMark, HiXMark } from 'react-icons/hi2';
 import Modal from "react-modal";
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-export default function ServiceRatingUI({ isOpen, setIsOpen }) {
+import { submitBookingReview } from '../../../redux/slices/users.slice';
+import { Button } from '../../global/GlobalButton';
+export default function ServiceRatingUI({ isOpen, setIsOpen, booking_id }) {
     const [rating, setRating] = useState(0);
     const [hoveredRating, setHoveredRating] = useState(0);
     const [feedback, setFeedback] = useState('');
     const [isThankYouModalOpen, setIsThankYouModalOpen] = useState(false);
     const navigate = useNavigate("");
-    
+    const dispatch = useDispatch();
+    const {bookingReviewLoading}=useSelector(state=>state?.user)
+
 
 
     const handleStarClick = (starIndex) => {
@@ -26,14 +31,29 @@ export default function ServiceRatingUI({ isOpen, setIsOpen }) {
 
     const handleSubmit = () => {
         if (rating > 0) {
-            setIsThankYouModalOpen(true); // Show thank you modal
-            setIsOpen(false);
-            // Optionally reset form after showing the modal
-           setTimeout(() => {
-            navigate("/home");
-        }, 1000);
-            setRating(0);
-            setFeedback('');
+            // Dispatch the API call to submit the review
+            const data = {
+                booking_id: booking_id,
+                rating: rating,
+                feedback: feedback
+            }
+            dispatch(submitBookingReview(data))
+                .then(() => {
+                    setIsThankYouModalOpen(true); // Show thank you modal
+                    setIsOpen(false);
+
+                    // Optionally reset form after showing the modal
+                    setTimeout(() => {
+                        navigate("/home");
+                    }, 1000);
+
+                    setRating(0);
+                    setFeedback('');
+                })
+                .catch((error) => {
+                    // Handle error if the API call fails
+                    alert('Something went wrong while submitting your review. Please try again.');
+                });
         } else {
             alert('Please select a rating before submitting.');
         }
@@ -116,12 +136,8 @@ export default function ServiceRatingUI({ isOpen, setIsOpen }) {
                     </div>
 
                     {/* Submit Button */}
-                    <button
-                        onClick={handleSubmit}
-                        className="w-full bg-gradient-to-r from-[#002952] to-[#0274C7] text-white text-[15px] py-3 rounded-md font-semibold hover:opacity-90 transition-all duration-200"
-                    >
-                        Submit
-                    </button>
+                    <Button text={"Submit"} loading={bookingReviewLoading} onClick={handleSubmit} />
+                   
                 </div>
             </Modal>
             <Modal
@@ -131,8 +147,13 @@ export default function ServiceRatingUI({ isOpen, setIsOpen }) {
                 overlayClassName="fixed inset-0 bg-[#C6C6C6]/50 backdrop-blur-sm flex items-center justify-center z-[1000]"
             >
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                    <div className="bg-white rounded-xl p-8 md:w-[30em] shadow-2xl text-center">
+                    <div className="bg-white rounded-xl p-5 md:w-[30em] shadow-2xl text-center">
                         {/* Checkmark Icon */}
+                        <div className="flex justify-end items-center">
+                            <button onClick={() => setIsThankYouModalOpen(false)}>
+                                <HiXMark size={22} />
+                            </button>
+                        </div>
                         <div className="mb-4 flex justify-center items-center">
                             <div className="bg-gradient-to-r from-[#27A8E2] to-[#00034A] w-[70px] h-[70px] rounded-full flex justify-center items-center">
                                 <FaCheck color='white' size={30} />
