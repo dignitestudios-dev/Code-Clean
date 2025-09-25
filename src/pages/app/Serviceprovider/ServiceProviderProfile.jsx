@@ -24,6 +24,7 @@ import ProviderEditCertificate from "../../../components/Serviceprovider/profile
 import { useDispatch, useSelector } from "react-redux";
 import { formatDate } from "../../../hooks/utils/Utils";
 import { getProviderProfile } from "../../../redux/slices/auth.slice";
+import { ErrorToast } from "../../../components/global/Toaster";
 
 const ServiceproviderProfile = () => {
   const { user_data } = useSelector((state) => state.auth);
@@ -125,6 +126,11 @@ const ServiceproviderProfile = () => {
 
   useEffect(() => {
     dispatch(getProviderProfile());
+    if (!user_data?.address) {
+      ErrorToast(
+        "Your profile is incomplete. Please add your address before booking a service."
+      );
+    }
   }, [dispatch]);
 
   const [editMode, setEditMode] = useState(false);
@@ -1180,9 +1186,9 @@ const ServiceproviderProfile = () => {
             </h2>
             {/* Message */}
             <p className="text-gray-600 text-sm mb-4">
-              Great news! The booking request has been accepted. The payment has now been securely held in escrow. Once
-              the job is completed, the funds will be released to the service
-              provider.
+              Great news! The booking request has been accepted. The payment has
+              now been securely held in escrow. Once the job is completed, the
+              funds will be released to the service provider.
             </p>
           </div>
         </div>

@@ -49,12 +49,14 @@ const BookingRequestModal = ({ isOpen, setIsOpen, date }) => {
     };
 
     await dispatch(RejectBookingRequest(data)).unwrap();
-    await dispatch(getCalendar(date));
+    console.log(date);
+    await dispatch(getCalendar());
     setRejectedpopup(false); // Close warning popup
     setRejectedreasons(false); // Close reason popup
     setRejectedreqcomplete(true); // Show success modal
-    dispatch(getBookingRequest());
+    await dispatch(getBookingRequest(`provider/booking/requests?date=${date}`));
     setSelectedId("");
+    setReason("")
   };
 
   return (
@@ -80,9 +82,7 @@ const BookingRequestModal = ({ isOpen, setIsOpen, date }) => {
               <HiOutlineXMark />
             </button>
           </div>
-          <span className="text-[#181818] text-[16px] font-[500]">
-          {date}
-          </span>
+          <span className="text-[#181818] text-[16px] font-[500]">{date}</span>
           <div className="w-full flex flex-col mt-4 items-center">
             <div className="px-4 pb-6 w-full space-y-4 max-h-[60vh] overflow-y-auto">
               {isLoading ? (
