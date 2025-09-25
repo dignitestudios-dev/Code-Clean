@@ -245,7 +245,7 @@ const Bookingdetails = () => {
                     {status === "Pending" ? "Waiting" : status}
                   </div>
 
-                  {status !== "Completed" && (
+                  {status !== "Completed" && status !== "cancelled" && (
                     <BookingCountdown bookingRequestDetail={bookingDetail} />
                   )}
                 </div>
