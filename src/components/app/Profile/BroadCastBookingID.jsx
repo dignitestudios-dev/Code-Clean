@@ -8,7 +8,7 @@ import { useNavigate, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchRequestDetails } from "../../../redux/slices/users.slice";
 
-export default function BroadCastBookingDetail() {
+export default function BroadCastBookingID() {
   const navigate = useNavigate();
   const { id } = useParams(); // Access the dynamic `id`
   const dispatch = useDispatch();
@@ -17,20 +17,11 @@ export default function BroadCastBookingDetail() {
   );
   const [data, setData] = useState();
 
-  // useEffect(() => {
-  //   dispatch(fetchRequestDetails(id)); // Fetch data when component mounts
-  // }, [dispatch, id]);
-
   useEffect(() => {
-  const url = "/user/requests"; // You can define the URL here dynamically if needed
+  const url = "/user/bookings"; // You can define the URL here dynamically if needed
   dispatch(fetchRequestDetails({ id, url })); // Pass both id and url
 }, [dispatch, id]);
 
-
-//   dispatch(fetchRequestDetails({
-//   id: requestId,
-//   url: "/user/requests"
-// }));
 
 console.log(data,"data")
 
@@ -102,7 +93,7 @@ console.log(data,"data")
                       <div className="mt-0">
                         <p
                           className={`text-xs font-semibold ${
-                            data?.status === "pending"
+                            data?.status === "pending" || "waiting"
                               ? "text-white bg-yellow-300 rounded-xl capitalize w-[5em] flex text-center justify-center"
                               : "text-green-500"
                           }`}

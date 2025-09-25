@@ -13,6 +13,7 @@ import Profile from "../../pages/app/Profile/Profile";
 import Settings from "../../pages/app/Settings/Settings";
 import SettingAddCard from "../../pages/app/Settings/SettingAddCard";
 import Bookingrequestuser from "../../pages/app/LandingPage/Bookingrequestuser";
+import BroadCastBookingID from "../../components/app/Profile/BroadCastBookingID";
 
 export const appRoutes = [
   {
@@ -20,7 +21,7 @@ export const appRoutes = [
     page: <Home />,
     name: "Home",
     isPublic: false,
-  },  
+  },
   {
     url: "service-provider",
     page: <Serviceprovider />,
@@ -33,7 +34,7 @@ export const appRoutes = [
     name: "Booking details",
     isPublic: false,
   },
-   {
+  {
     url: "booking-request",
     page: <Bookingrequestuser />,
     name: "Booking details",
@@ -80,6 +81,12 @@ export const appRoutes = [
     url: "service-detail/:id",
     page: <BroadCastBookingDetail />,
     name: "Service Detail",
+    isPublic: false,
+  },
+  {
+    url: "accept-detail/:id",
+    page: <BroadCastBookingID />,
+    name: "accept Detail",
     isPublic: false,
   },
   {

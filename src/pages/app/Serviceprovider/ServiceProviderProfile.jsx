@@ -1186,8 +1186,7 @@ const ServiceproviderProfile = () => {
             </h2>
             {/* Message */}
             <p className="text-gray-600 text-sm mb-4">
-              Great news! [Service Provider Name] has accepted your booking
-              request. The payment has now been securely held in escrow. Once
+              Great news! The booking request has been accepted. The payment has now been securely held in escrow. Once
               the job is completed, the funds will be released to the service
               provider.
             </p>

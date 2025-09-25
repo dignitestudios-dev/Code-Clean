@@ -113,6 +113,8 @@ const Navbar = () => {
     if (role === "service_provider") return navigate("/dashboard");
     if (role === "user") return navigate("/home");
     return navigate("/app/landing");
+    console.log(isLoggedIn,"isLoggedIn")
+    console.log(role)
   };
 
   useEffect(() => {

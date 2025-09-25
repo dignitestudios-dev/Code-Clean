@@ -445,6 +445,12 @@ const Serviceprovider = () => {
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files); // Get selected files
 
+    // Check if the number of files exceeds 3
+    if (selectedFiles.length + files.length > 3) {
+      ErrorToast("You can upload a maximum of 3 images.");
+      return; // Prevent further action if the limit is exceeded
+    }
+
     const updatedFiles = selectedFiles.map((file) => {
       const fileType = file.type.split("/")[0]; // Check file type (image)
       let preview = null;
@@ -909,9 +915,7 @@ const Serviceprovider = () => {
                 <div>
                   <span className="font-semibold">Distance</span>
                   <br />
-                  {data?.distance && data.distance > 0
-                    ? data.distance
-                    : "0 miles"}
+                  {data?.distance || "0"}
                 </div>
                 <div>
                   <span className="font-semibold">Completed Job</span>
@@ -968,13 +972,13 @@ const Serviceprovider = () => {
               </div>
               <div className="">
                 {data?.reviews?.length > 0 ? (
-                  data.reviews.map((review, i) => (
+                  data.reviews.slice(0, 2).map((review, i) => (
                     <div
                       key={i}
                       className="mb-4 bg-gray-50 p-4 rounded-md border"
                     >
                       <p className="font-medium">
-                        {review.name || "Anonymous"}
+                        {review.user_name || "Anonymous"}
                       </p>
                       <div className="flex items-center text-yellow-500 mb-1">
                         {[...Array(Math.round(Number(review.rating || 0)))].map(
@@ -1141,11 +1145,10 @@ const Serviceprovider = () => {
                       key={idx}
                       onClick={() => handleSelect(slot.time)} // Use slot.time as the time to select
                       className={`px-4 py-2 rounded-lg border text-sm transition 
-                ${
-                  selectedTime === slot.time
-                    ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
-                    : "bg-white text-gray-800"
-                }`}
+                ${selectedTime === slot.time
+                          ? "bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white"
+                          : "bg-white text-gray-800"
+                        }`}
                     >
                       {slot.time} {/* Display the available time */}
                     </button>
@@ -1167,9 +1170,8 @@ const Serviceprovider = () => {
                   value={duration}
                   onChange={handleDurationChange} // Update the state with validation
                   placeholder="0"
-                  className={`w-full border rounded-lg px-4 py-2 pr-10 ${
-                    parseInt(duration) > 15 ? "border-red-500" : ""
-                  }`} // Add red border if duration is greater than 15
+                  className={`w-full border rounded-lg px-4 py-2 pr-10 ${parseInt(duration) > 15 ? "border-red-500" : ""
+                    }`} // Add red border if duration is greater than 15
                   required
                   onKeyDown={(e) => {
                     if (["-", "+", "e", "E"].includes(e.key)) {
@@ -1488,9 +1490,13 @@ const Serviceprovider = () => {
               <h3>Review Details</h3>
               <div className="flex items-center space-x-3">
                 <img
-                  src="https://www.w3schools.com/w3images/avatar2.png"
-                  alt="User Avatar"
-                  className="h-[3em] w-auto rounded-full"
+                  src={
+                    data?.avatar
+                      ? `https://code-clean-bucket.s3.us-east-2.amazonaws.com/${data.avatar}`
+                      : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png"
+                  }
+                  alt="Profile"
+                   className="h-[3em] w-[3.0em] object-cover rounded-full"
                 />
                 <div>
                   <h3 className="font-semibold text-gray-800">{data.name}</h3>
@@ -1673,15 +1679,14 @@ const Serviceprovider = () => {
                     (select the payment method)
                   </span>
                   {paymentmethoduser?.payment_methods &&
-                  paymentmethoduser.payment_methods.length > 0 ? (
+                    paymentmethoduser.payment_methods.length > 0 ? (
                     paymentmethoduser.payment_methods.map((card) => (
                       <div
                         key={card.id}
-                        className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${
-                          selectedCard?.id === card.id
-                            ? "bg-blue-100 border-blue-500"
-                            : ""
-                        }`}
+                        className={`flex justify-between items-center border cursor-pointer rounded mt-2 p-2 mb-2 ${selectedCard?.id === card.id
+                          ? "bg-blue-100 border-blue-500"
+                          : ""
+                          }`}
                         onClick={() => handleCardSelect(card)}
                       >
                         <div className="flex gap-3">
@@ -1857,8 +1862,7 @@ const Serviceprovider = () => {
             </h2>
             {/* Message */}
             <p className="text-gray-600 text-sm mb-4">
-              Great news! [Service Provider Name] has accepted your booking
-              request. The payment has now been securely held in escrow. Once
+              Great news! Your Custom Booking has been accepted. The payment has now been securely held in escrow. Once
               the job is completed, the funds will be released to the service
               provider.
             </p>
@@ -1886,15 +1890,14 @@ const Serviceprovider = () => {
                 data.reviews.map((review, index) => (
                   <div key={index} className="border-b pb-4">
                     <p className="font-semibold">
-                      {review.name || "Anonymous"}
+                      {review.user_name || "Anonymous"}
                     </p>
                     <div className="flex items-center space-x-1 mt-1">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <FaStar
                           key={i}
-                          className={`text-yellow-400 ${
-                            i < Math.floor(review.rating) ? "" : "opacity-50"
-                          }`}
+                          className={`text-yellow-400 ${i < Math.floor(review.rating) ? "" : "opacity-50"
+                            }`}
                         />
                       ))}
                       <span className="ml-1 font-medium text-sm">
@@ -2125,11 +2128,10 @@ const Serviceprovider = () => {
                     <div
                       key={card.id}
                       className={`flex justify-between items-center border cursor-pointer rounded p-2 mb-2 
-              ${
-                selectedCard?.id === card.id
-                  ? "bg-blue-100 border-blue-500"
-                  : ""
-              } 
+              ${selectedCard?.id === card.id
+                          ? "bg-blue-100 border-blue-500"
+                          : ""
+                        } 
             `} // Highlight the selected card with a background
                       onClick={() => handleCardSelect(card)} // Set the card as selected when clicked
                     >

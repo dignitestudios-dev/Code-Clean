@@ -182,7 +182,7 @@ export default function Profile() {
                                             <div>
                                                 <p className="text-base font-medium text-black">Phone Number</p>
                                                 <p className="text-gray-500 mt-1">
-                                                   +1 {userdata?.phone_number ? userdata.phone_number : "00000000000"}
+                                                   {userdata?.phone_number ? userdata.phone_number : "00000000000"}
                                                 </p>
                                             </div>
                                             <div>

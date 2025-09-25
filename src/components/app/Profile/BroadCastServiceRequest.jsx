@@ -28,14 +28,14 @@ const canDelete = (req) => {
     return (req?.status || '').toLowerCase() === 'pending' && !req?.booking_id;
 };
 
-const BroadcastServiceRequests = ({ setCustombooking, setIsOpen, setIsRestrict,setSelectedData }) => {
+const BroadcastServiceRequests = ({ setCustombooking, setIsOpen, setIsRestrict, setSelectedData }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const navigate = useNavigate();
     const { userProfile, isLoading } = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const [userdata, setUserdata] = useState(null);
-  
+
     // initial + page-based fetch
     useEffect(() => {
         // first load
@@ -242,7 +242,7 @@ const BroadcastServiceRequests = ({ setCustombooking, setIsOpen, setIsRestrict,s
                                                 onClick={() =>
                                                     navigate(
                                                         req.booking_id
-                                                            ? `/service-detail/${req.booking_id}`
+                                                            ? `/accept-detail/${req.booking_id}`
                                                             : `/service-detail/${req.request_id}`
                                                     )
                                                 }
@@ -251,6 +251,7 @@ const BroadcastServiceRequests = ({ setCustombooking, setIsOpen, setIsRestrict,s
                                             >
                                                 <FaChevronRight className="w-5 h-5" />
                                             </button>
+
                                         </div>
                                     </div>
                                 </div>
@@ -279,8 +280,8 @@ const BroadcastServiceRequests = ({ setCustombooking, setIsOpen, setIsRestrict,s
                                     onClick={() => goToPage(currentPage - 1)}
                                     disabled={isLoading || currentPage <= 1}
                                     className={`h-9 px-3 rounded-md border text-sm transition ${currentPage <= 1
-                                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                                            : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                                         }`}
                                 >
                                     ‹ Prev
@@ -292,8 +293,8 @@ const BroadcastServiceRequests = ({ setCustombooking, setIsOpen, setIsRestrict,s
                                     onClick={() => goToPage(currentPage + 1)}
                                     disabled={isLoading || currentPage >= lastPage}
                                     className={`h-9 px-3 rounded-md border text-sm transition ${currentPage >= lastPage
-                                            ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
-                                            : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                                        ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                                         }`}
                                 >
                                     Next ›
