@@ -121,7 +121,7 @@ const Bookinghistory = () => {
           backgroundImage: `linear-gradient(234.85deg, rgba(39, 168, 226, 1) -20.45%, rgba(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
         }}
       >
-        <div className="flex justify-between items-center gap-3 ml-[11em] w-[74em] -mb-10">
+        <div className="flex justify-between items-center gap-3 px-10 lg:px-40  w-full -mb-10">
           <div className="flex gap-3">
             <button type="button" onClick={() => navigate(-1)}>
               <FaArrowLeft color="white" size={20} />
@@ -153,8 +153,8 @@ const Bookinghistory = () => {
       </div>
 
       {/* Booking Table Section */}
-      <div className="px-[10em] py-[4em] bg-[#f5f8fb00] -mt-[18em] relative mb-10">
-        <div className="bg-white rounded-xl shadow-md mb-4 overflow-x-auto">
+      <div className="px-10 lg:px-[10em] py-[4em] bg-[#f5f8fb00] -mt-[18em] relative mb-10">
+        <div className="bg-white rounded-xl h-[400px] shadow-md mb-4 overflow-x-auto">
           {/* Tabs */}
           <div className="flex border-b px-6 pt-6">
             {["All", "Completed Jobs", "Canceled Jobs"].map((tab, index) => (

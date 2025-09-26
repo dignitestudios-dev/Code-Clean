@@ -12,7 +12,7 @@ const SuccessModal = ({ isOpen, setIsOpen, title, des }) => {
             className="flex items-center justify-center border-none outline-none z-[1000] "
             overlayClassName="fixed inset-0 bg-[#C6C6C6] bg-opacity-50 backdrop-blur-sm z-[1000]  flex justify-center items-center"
         >
-            <div className="bg-white w-[500px] px-[1em] py-10 rounded-[16px] shadow-lg   items-center flex flex-col justify-center gap-3   text-center">
+            <div className="bg-white w-[500px] px-[1em] py-8 rounded-[16px] shadow-lg   items-center flex flex-col justify-center gap-3   text-center">
                 <div className="w-full flex justify-end" >
                     <button onClick={() => {
                         setIsOpen(!isOpen)

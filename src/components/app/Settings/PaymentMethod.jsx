@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Navbar from "../../layout/Navbar";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaCcMastercard } from "react-icons/fa";
 import { RiEdit2Fill, RiLoader5Line } from "react-icons/ri";
 import { LuTrash2 } from "react-icons/lu";
 import { HeroBg, stripe } from "../../../assets/export";
@@ -55,12 +55,14 @@ export default function PaymentMethod() {
               Credit/debit card
             </h1>
             <div className="flex items-center gap-2">
+
               <Button
                 text={"Add Card"}
                 onClick={() => navigate("/app/create-card")}
               />
+
               <Button
-              className={"w-[150px]"}
+              className={"!w-[160px]"}
                 text={
                   <div className="flex items-center gap-2">
                     <img

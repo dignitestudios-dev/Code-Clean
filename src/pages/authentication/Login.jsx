@@ -76,9 +76,17 @@ const Login = () => {
 
       // Redirect to appropriate page
       if (user_data?.role == "service_provider") {
-        navigate("/dashboard");
+        if (user_data?.address) {
+          navigate("/dashboard");
+        } else {
+          navigate("/provider-profile");
+        }
       } else {
-        navigate("/Home");
+        if (user_data?.address) {
+          navigate("/Home");
+        } else {
+          navigate("/app/profile");
+        }
       }
 
       dispatch(resetAuthState());

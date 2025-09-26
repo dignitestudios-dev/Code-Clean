@@ -167,64 +167,58 @@ const DiscoverJobDetail = () => {
 
       {/* Main Content */}
       <div className="bg-[#F9FAFA] p-3">
-        <div className="max-w-7xl mx-auto px-4 py-8 border-2 rounded-2xl -mt-[17em] bg-[#F9FAFA]">
+        <div className="max-w-7xl mx-auto px-4 py-4 border-2 rounded-2xl -mt-[17em] bg-[#F9FAFA]">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column - Booking Details */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-                <h3 className="text-xl font-bold mb-4">Job Description</h3>
-                <p className="text-gray-600 mb-6">
+              <div className="bg-white rounded-lg shadow-md p-6 ">
+                <p className="text-gray-600 font-[500] text-[22px]">
+                  {bookingRequestDetail?.title}
+                </p>
+                <div className="mb-6">
+                  <div className="flex items-center space-x-2">
+                    <FaMapMarkerAlt className="text-[#353adf]" />
+                    <p className="font-[400] text-[14px]">
+                      {" "}
+                      {bookingRequestDetail?.location}
+                    </p>
+                  </div>
+                </div>
+                {bookingRequestDetail.images &&
+                  bookingRequestDetail.images.length > 0 && (
+                    <div className="flex gap-3 mb-4">
+                      {bookingRequestDetail.images.map((image, index) => (
+                        <div
+                          key={index}
+                          className="w-40 h-15 bg-gray-200 rounded-lg overflow-hidden"
+                        >
+                          <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400">
+                            <img
+                              src={import.meta.env.VITE_APP_AWS_URL + image}
+                              alt=""
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                <p className="text-gray-600 mb-2">
                   {bookingRequestDetail?.description}
                 </p>
 
                 {/* Date and Time */}
-                <div className="flex items-center gap-8 mb-6 border-t-[1px] pt-6">
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Date</p>
-                    <p className="font-medium"> {bookingRequestDetail?.date}</p>
+                <div className="flex items-center gap-8 lg:w-[400px] mb-6 pt-2">
+                  <div className="border-r-2 w-full" >
+                    <p className="text-sm text-gray-500 mb-1">Proposed Price</p>
+                    <p className="font-medium"> {bookingRequestDetail?.total_payment}</p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-500 mb-1">Time</p>
-                    <p className="font-medium"> {bookingRequestDetail?.time}</p>
-                  </div>
-                </div>
-
-                {/* Location */}
-                <div className="mb-6 border-t-[1px] pt-6">
-                  <p className="text-sm text-gray-500 mb-1">Location</p>
-                  <div className="flex items-center space-x-2">
-                    <FaMapMarkerAlt className="text-[#353adf]" />
-                    <p className="font-medium">
-                      {" "}
-                      {bookingRequestDetail?.city},{" "}
-                      {bookingRequestDetail?.state}
-                    </p>
+                  <div className="w-full" >
+                    <p className="text-sm text-gray-500 mb-1">Preferred Date & Time</p>
+                    <p className="font-medium"> {bookingRequestDetail?.date} {bookingRequestDetail?.time}</p>
                   </div>
                 </div>
-
-                {/* Cleaning Services */}
-                <div className="mb-6 border-t-[1px] pt-6">
-                  <h4 className="text-lg font-semibold mb-4">
-                    Cleaning Services
-                  </h4>
-                  <div className="grid grid-cols-3 gap-4">
-                    {bookingRequestDetail?.cleaning_services?.map((item, i) => (
-                      <div key={i} className="text-left border-r-2">
-                        <p className="text-1xl text-gray-500">{item?.title}</p>
-                        <p className="text-sm font-bold">{item?.quantity}</p>
-                      </div>
-                    ))}
-
-                    {/* <div className="text-left border-r-2">
-                      <p className="text-1xl text-gray-500">Bedroom Cleaning</p>
-                      <p className="text-sm font-bold">04</p>
-                    </div>
-                    <div className="text-left">
-                      <p className="text-1xl text-gray-500">Kitchen Cleaning</p>
-                      <p className="text-sm font-bold">01</p>
-                    </div> */}
-                  </div>
-                </div>
+              
 
                 {/* Service Provider Details */}
                 <div className="pb-10">

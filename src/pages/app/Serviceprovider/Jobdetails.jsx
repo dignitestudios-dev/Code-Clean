@@ -206,8 +206,7 @@ const Jobdetails = () => {
                     <FaMapMarkerAlt className="text-[#353adf]" />
                     <p className="font-medium">
                       {" "}
-                      {bookingRequestDetail?.city},{" "}
-                      {bookingRequestDetail?.state}
+                      {bookingRequestDetail?.location}
                     </p>
                   </div>
                 </div>
@@ -259,9 +258,9 @@ const Jobdetails = () => {
                         <p className="font-medium">
                           {bookingRequestDetail?.user?.name}
                         </p>
-                        <p className="text-yellow-500 text-sm">
+                        {/* <p className="text-yellow-500 text-sm">
                           ⭐{bookingRequestDetail?.user?.rating}
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                     <button

@@ -8,10 +8,14 @@ const BookingAvaliable = ({ isOpen, setIsOpen, date }) => {
   const { DailyAvaliablity, bookingRequestLoader } = useSelector(
     (state) => state?.provider
   );
+  const { user_data, } = useSelector(
+    (state) => state?.auth
+  );
+  console.log(user_data,"userdata")
 
   useEffect(() => {
     if (date) {
-      dispatch(getDailyAvaliablity(`/availability?date=${date}`));
+      dispatch(getDailyAvaliablity(`/availability?date=${date}&provider_id=${user_data?.id}`));
     }
   }, [date]);
 
@@ -59,7 +63,7 @@ const BookingAvaliable = ({ isOpen, setIsOpen, date }) => {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">Booking Requests</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Booking Availability</h2>
           <button
             onClick={() => setIsOpen(false)}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"

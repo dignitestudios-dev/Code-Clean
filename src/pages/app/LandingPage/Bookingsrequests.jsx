@@ -244,7 +244,7 @@ const Bookingsrequests = () => {
           backgroundImage: `linear-gradient(234.85deg, rgba(39, 168, 226, 1) -20.45%, rgba(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
         }}
       >
-        <div className="flex justify-between items-center gap-3 ml-[11em] w-[74em] -mb-10">
+        <div className="flex justify-between w-full items-center gap-3 px-8 lg:px-40 -mb-10">
           <div className="flex gap-3 items-center">
             <button type="button" onClick={() => navigate(-1)}>
               <FaArrowLeft color="white" size={20} />
@@ -297,7 +297,7 @@ const Bookingsrequests = () => {
       </div>
 
       {/* Booking Table Section */}
-      <div className="px-[10em] py-[4em] bg-[#f5f8fb00] -mt-[16em] relative mb-10">
+      <div className="px-10 lg:px-[10em] py-[4em] bg-[#f5f8fb00] -mt-[16em] relative mb-10">
         <div className="bg-white rounded-xl shadow-md overflow-x-auto">
           {/* Status Filter Row */}
           <div className="flex border-b px-6 pt-6">
