@@ -102,7 +102,7 @@ console.log(loc?.state,"this is data")
             <div>
               <p className="font-medium">Phone Number</p>
               <p className="text-gray-500">
-                +1 {loc?.state?.user?.phone}
+                {loc?.state?.user?.phone}
               </p>
             </div>
             <div>

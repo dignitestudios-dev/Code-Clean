@@ -94,7 +94,7 @@ console.log(data,"data")
                         <p
                           className={`text-xs font-semibold ${
                             data?.status === "pending" || "waiting"
-                              ? "text-white bg-yellow-300 rounded-xl capitalize w-[5em] flex text-center justify-center"
+                              ? "text-white bg-yellow-300 rounded-xl capitalize w-[8em] flex text-center justify-center"
                               : "text-green-500"
                           }`}
                         >
