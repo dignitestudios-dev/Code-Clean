@@ -43,7 +43,7 @@ export default function DiscoverDetail() {
 
   useEffect(() => {
     fetchDiscoverJob();
-  }, []);
+  }, [dispatch]);
 
   console.log(bookingRequestDetail, "bookingRequestDetail");
 
@@ -129,12 +129,12 @@ export default function DiscoverDetail() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h2 className="text-xl font-semibold text-gray-900">
-                        {bookingRequestDetail.title}
+                        {bookingRequestDetail?.title}
                       </h2>
                     </div>
                     <div className="flex items-center text-gray-500 text-sm">
                       <CiLocationOn color="#00034A" />
-                      {bookingRequestDetail.location}
+                      {bookingRequestDetail?.location}
                     </div>
                   </div>
                   {bookingRequestDetail?.status == "pending" && (
@@ -176,10 +176,10 @@ export default function DiscoverDetail() {
                 </div>
 
                 {/* Images */}
-                {bookingRequestDetail.images &&
-                  bookingRequestDetail.images.length > 0 && (
+                {bookingRequestDetail?.images &&
+                  bookingRequestDetail?.images?.length > 0 && (
                     <div className="flex gap-3 mb-4">
-                      {bookingRequestDetail.images.map((image, index) => (
+                      {bookingRequestDetail?.images.map((image, index) => (
                         <div
                           key={index}
                           className="w-40 h-15 bg-gray-200 rounded-lg overflow-hidden"
@@ -197,7 +197,7 @@ export default function DiscoverDetail() {
 
                 {/* Description */}
                 <p className="text-gray-600 mb-6 leading-relaxed">
-                  {bookingRequestDetail.description}
+                  {bookingRequestDetail?.description}
                 </p>
 
                 {/* Price and Date */}

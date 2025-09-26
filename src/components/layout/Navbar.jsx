@@ -24,7 +24,7 @@ const Navbar = () => {
   const [logoutpopup, setLogoutpopup] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isReport, setIsReport] = useState(false);
-  const { user_data, token,accessToken, logoutLoading } = useSelector(
+  const { user_data, token, accessToken, logoutLoading } = useSelector(
     (state) => state.auth
   );
   const dispatch = useDispatch();
@@ -32,36 +32,30 @@ const Navbar = () => {
   const userPopupRef = useRef(null);
   const popupRef = useRef(null);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setIsPopupOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (popupRef.current && !popupRef.current.contains(event.target)) {
-      setIsPopupOpen(false);
-    }
-  };
+    const handleClickOutside = (event) => {
+      if (
+        userPopupRef.current &&
+        !userPopupRef.current.contains(event.target)
+      ) {
+        setUserPopup(false);
+      }
+    };
 
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-}, []);
-
-
-
-  useEffect(() => {
-  const handleClickOutside = (event) => {
-    if (
-      userPopupRef.current &&
-      !userPopupRef.current.contains(event.target)
-    ) {
-      setUserPopup(false);
-    }
-  };
-
-  document.addEventListener("mousedown", handleClickOutside);
-  return () => document.removeEventListener("mousedown", handleClickOutside);
-}, []);
-
-
-
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -113,8 +107,8 @@ const Navbar = () => {
     if (role === "service_provider") return navigate("/dashboard");
     if (role === "user") return navigate("/home");
     return navigate("/app/landing");
-    console.log(isLoggedIn,"isLoggedIn")
-    console.log(role)
+    console.log(isLoggedIn, "isLoggedIn");
+    console.log(role);
   };
 
   useEffect(() => {
@@ -253,9 +247,10 @@ const Navbar = () => {
                 </div>
               )}
               {isPopupOpen && (
-                <div 
-                 ref={popupRef}
-                className="absolute top-10 right-0 w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50">
+                <div
+                  ref={popupRef}
+                  className="absolute top-10 right-0 w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50"
+                >
                   <h3 className="text-lg font-semibold text-black">
                     Notifications
                   </h3>
@@ -309,9 +304,10 @@ const Navbar = () => {
               alt="Avatar"
             />
             {userPopup && (
-              <div 
-              ref={userPopupRef}
-              className="absolute top-20 right-4 bg-white w-[155px] h-[157px] text-black rounded-[8px] shadow-lg p-4 space-y-2 z-[99999]">
+              <div
+                ref={userPopupRef}
+                className="absolute top-20 right-4 bg-white w-[155px] h-[157px] text-black rounded-[8px] shadow-lg p-4 space-y-2 z-[99999]"
+              >
                 <span
                   className="block font-[400] py-1 text-sm border-b  border-[#E4E4E4] cursor-pointer"
                   onClick={() =>
@@ -397,12 +393,102 @@ const Navbar = () => {
         <div className="md:hidden flex items-center gap-3">
           {isLoggedIn && (
             <>
-              <FaBell className="text-lg" />
-              <img
-                src={Avatar}
-                alt="User Avatar"
-                className="w-9 h-9 rounded-full object-cover border-2 border-white"
-              />
+              <div className="relative">
+                <IoNotificationsOutline
+                  className="text-white text-2xl cursor-pointer"
+                  onClick={()=>{
+                    
+                    togglePopup()
+                  }}
+                />
+                {/* Show unread count badge if there are unread notifications */}
+                {notifications.filter((n) => n.unreadCount > 0).length > 0 && (
+                  <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] rounded-full w-[13px] h-[13px] flex items-center justify-center">
+                    {notifications.filter((n) => n.unreadCount > 0).length}
+                  </div>
+                )}
+                {isPopupOpen && (
+                  <div
+                    ref={popupRef}
+                    className="absolute top-10 right-0 w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50"
+                  >
+                    <h3 className="text-lg font-semibold text-black">
+                      Notifications
+                    </h3>
+                    <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
+                      {notifications.length > 0 ? (
+                        notifications.map((n, idx) => (
+                          <div
+                            key={idx}
+                            onClick={() => markAsRead(idx)}
+                            className="cursor-pointer"
+                          >
+                            <div className="flex w-full justify-between">
+                              <div>
+                                <span className="text-[14px] font-bold text-black">
+                                  {n.title}
+                                </span>
+                                <p className="text-[13px] mt-2 text-[#18181880]">
+                                  {n.message}
+                                </p>
+                              </div>
+                              <div className="flex flex-col items-end px-2">
+                                <div className="text-xs text-gray-600">
+                                  {n.time}
+                                </div>
+                                {n.unreadCount > 0 && (
+                                  <div className="bg-red-600 mt-2 text-white text-xs rounded-full w-[19px] h-[19px] flex items-center justify-center">
+                                    {n.unreadCount}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            <hr className="mt-2" />
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-gray-700">No notifications</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="relative">
+                <img
+                  src={Avatar}
+                  alt="User Avatar"
+                  className="w-9 h-9 rounded-full cursor-pointer object-cover border-2 border-white"
+                  onClick={toggleUserpopup}
+                />
+                {userPopup && (
+                  <div className="bg-white text-black right-4 w-[200px] rounded absolute shadow-lg p-4 space-y-2 mt-2">
+                    <span
+                      className="block text-sm cursor-pointer"
+                      onClick={() => navigate("/app/profile")}
+                    >
+                      View Profile
+                    </span>
+                    <span
+                      className="block text-sm cursor-pointer"
+                      onClick={() => navigate("/app/settings")}
+                    >
+                      Settings
+                    </span>
+                    <span
+                      className="block text-sm cursor-pointer"
+                      onClick={() => setIsReport(true)}
+                    >
+                      Report an Issue
+                    </span>
+                    <span
+                      className="block text-sm text-red-600 cursor-pointer"
+                      onClick={() => setLogoutpopup(true)}
+                    >
+                      Log Out
+                    </span>
+                  </div>
+                )}
+              </div>
             </>
           )}
           <button onClick={toggleMobileMenu}>
@@ -430,44 +516,6 @@ const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
-              <IoNotificationsOutline
-                className="text-white text-2xl cursor-pointer"
-                onClick={togglePopup}
-              />
-              <img
-                src={Avatar}
-                className="h-10 w-10 rounded-full object-cover cursor-pointer"
-                alt="User Avatar"
-                onClick={toggleUserpopup}
-              />
-              {userPopup && (
-                <div className="bg-white text-black w-full rounded shadow-lg p-4 space-y-2 mt-2">
-                  <span
-                    className="block text-sm cursor-pointer"
-                    onClick={() => navigate("/app/profile")}
-                  >
-                    View Profile
-                  </span>
-                  <span
-                    className="block text-sm cursor-pointer"
-                    onClick={() => navigate("/app/settings")}
-                  >
-                    Settings
-                  </span>
-                  <span
-                    className="block text-sm cursor-pointer"
-                    onClick={() => setIsReport(true)}
-                  >
-                    Report an Issue
-                  </span>
-                  <span
-                    className="block text-sm text-red-600 cursor-pointer"
-                    onClick={() => setLogoutpopup(true)}
-                  >
-                    Log Out
-                  </span>
-                </div>
-              )}
             </>
           ) : (
             <>

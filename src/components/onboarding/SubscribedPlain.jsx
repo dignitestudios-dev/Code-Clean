@@ -4,7 +4,7 @@ import { HiOutlineXMark } from "react-icons/hi2";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import Cookies from "js-cookie";
-const SubscribedPlan = ({ isOpen, setIsOpen, handleNext }) => {
+const SubscribedPlan = ({ isOpen, setIsOpen, selectedPlane }) => {
   const [step, setStep] = useState(1); // 1 = first modal, 2 = second modal
   const navigage = useNavigate("");
   const handleClose = () => {
@@ -38,10 +38,10 @@ const SubscribedPlan = ({ isOpen, setIsOpen, handleNext }) => {
             <div className="flex flex-col items-center gap-2">
               <img src={SuccessIcon} className="w-20 h-20" alt="mail-img" />
               <h3 className="capitalize text-[36px] text-[#181818] font-[600]">
-                Subscribe Plan 1!
+                {selectedPlane?.name}
               </h3>
               <p className="text-[16px] font-[400] text-[#565656]">
-                You have successfully subscribed plan 1.
+                You have successfully subscribed {selectedPlane?.name}.
               </p>
             </div>
           </div>

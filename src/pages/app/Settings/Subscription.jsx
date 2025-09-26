@@ -53,7 +53,7 @@ export default function Subscription() {
           backgroundImage: `linear-gradient(234.85deg, rgb(39, 168, 226, 1) -20.45%, rgb(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
         }}
       ></div>
-      <div className="h-full px-40   -mt-80 bottom-0 items-center gap-3 ">
+      <div className="h-full px-10 lg:px-40   -mt-80 bottom-0 items-center gap-3 ">
         <div className="flex items-center gap-2 mb-6">
           <button type="button" onClick={() => navigate("/app/settings")}>
             <FaArrowLeft color="white" size={16} />

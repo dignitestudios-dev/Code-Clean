@@ -155,6 +155,7 @@ const UpdgradePlane = ({ isOpen, setIsOpen, selectedPlane }) => {
       </Modal>
 
       <SubscribedPlan
+      selectedPlane={selectedPlane}
         setIsOpen={setSubscriptionSuccess}
         isOpen={subscriptionSuccess}
       />
