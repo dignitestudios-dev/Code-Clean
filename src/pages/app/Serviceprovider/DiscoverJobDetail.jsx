@@ -243,9 +243,9 @@ const DiscoverJobDetail = () => {
                         <p className="font-medium">
                           {bookingRequestDetail?.user?.name}
                         </p>
-                        <p className="text-yellow-500 text-sm">
+                        {/* <p className="text-yellow-500 text-sm">
                           ⭐{bookingRequestDetail?.user?.rating}
-                        </p>
+                        </p> */}
                       </div>
                     </div>
                     <button
