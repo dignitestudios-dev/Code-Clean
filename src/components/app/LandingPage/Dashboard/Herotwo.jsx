@@ -29,8 +29,8 @@ export default function Herotwo() {
       }}
     >
       {/* Title Section */}
-      <div className="w-[56em]">
-        <h3 className="text-[#FFFFFF] font-semibold text-[64px] leading-[64px] text-shadow-xs">
+      <div className="md:w-[56em]">
+        <h3 className="text-[#FFFFFF] font-semibold text-4xl md:text-[64px] md:leading-[64px] text-shadow-xs">
           Find Trusted Professionals for Your Needs
         </h3>
       </div>
@@ -41,7 +41,7 @@ export default function Herotwo() {
       </p>
 
       {/* Search Bar */}
-      <div className="flex justify-center items-center p-3 rounded-[10px] bg-white/20 w-[40em] mt-0">
+      <div className="flex justify-center items-center p-3 rounded-[10px] bg-white/20 md:w-[40em] mt-0">
         <div className="relative w-[71%]">
           <CiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white text-xl" />
 
