@@ -221,7 +221,8 @@ const Dashboard = () => {
                     className="border-t cursor-pointer"
                     onClick={() =>
                       navigate(
-                        `/job-details?id=${row?.request_id}&status=${
+                        
+                      row?.type=="custom" ?`/discover-job-details?id=${row?.request_id}`: `/job-details?id=${row?.request_id}&status=${
                           row?.status
                         }&type=${
                           activeTab == "Booking Request"

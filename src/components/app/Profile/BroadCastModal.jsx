@@ -567,6 +567,8 @@ export default function BroadCastModal({
             <label className="block mb-1 font-medium">
               Payment Method<span className="text-red-500">*</span>
             </label>
+
+            <div className="max-h-[8em] overflow-y-auto pr-1">
             {paymentmethoduser?.payment_methods?.length > 0 ? (
               paymentmethoduser.payment_methods?.map((card) => (
                 <div
@@ -620,6 +622,8 @@ export default function BroadCastModal({
                 {errors.payment_method}
               </p>
             ) : null}
+
+            </div>
           </div>
 
           {/* Submit */}

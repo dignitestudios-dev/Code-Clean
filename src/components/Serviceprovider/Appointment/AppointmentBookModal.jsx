@@ -77,7 +77,7 @@ const AppointmentBookModal = ({ isOpen, setIsOpen, date }) => {
           </button>
         </div>
         <span className="text-[#181818] text-[16px] font-[500]">
-          Tuesday, 03
+         {date}
         </span>
         <div className="w-full flex flex-col mt-4 items-center">
           <div className="px-4 pb-6 w-full space-y-4 max-h-[60vh] overflow-y-auto">
