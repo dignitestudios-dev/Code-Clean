@@ -476,7 +476,7 @@ const Wallet = () => {
                   <th className="px-6 py-4 text-[#082166] ">
                     Card Holder Name
                   </th>
-                  <th className="px-6 py-4 text-[#082166] ">Account Number</th>
+                  {/* <th className="px-6 py-4 text-[#082166] ">Account Number</th> */}
                   <th className="px-6 py-4 text-[#082166] ">Transfer Date</th>
                   <th className="px-6 py-4 text-[#082166] ">Transfer Time</th>
                   <th className="px-6 py-4 text-[#082166] ">Total Amount</th>
@@ -497,9 +497,9 @@ const Wallet = () => {
                       <td className="px-6 py-4 text-[12px] font-[400]">
                         {t.account_name}
                       </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
+                      {/* <td className="px-6 py-4 text-[12px] font-[400]">
                         {t.account_number}
-                      </td>
+                      </td> */}
                       <td className="px-6 py-4 text-[12px] font-[400]">
                         {t.date}
                       </td>

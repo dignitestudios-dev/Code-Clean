@@ -101,30 +101,85 @@ const Home = () => {
       <Herotwo />
       <div className="mx-auto max-w-[87em] mt-6">
         <div className="px-10 py-8">
-          <div className="flex gap-3 justify-between items-center mb-10">
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-[600]">
+
+
+          <div
+            className="
+    flex flex-col sm:flex-row
+    gap-4 sm:gap-3
+    justify-between
+    items-start sm:items-center
+    mb-6 sm:mb-10
+    w-full
+  "
+          >
+            {/* Left: Title + count */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <h1
+                className="
+        font-semibold
+        text-2xl leading-7
+        sm:text-3xl sm:leading-8
+      "
+              >
                 Hire Top-Rated Professionals
               </h1>
-              <span className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white px-4 py-0 rounded-xl text-sm">
-                {data?.length}
+
+              <span
+                className="
+        bg-gradient-to-r from-[#00034A] to-[#27A8E2]
+        text-white
+        px-3 py-0.5 sm:px-4 sm:py-0
+        rounded-lg sm:rounded-xl
+        text-xs sm:text-sm
+        inline-flex items-center
+      "
+              >
+                {data?.length ?? 0}
               </span>
             </div>
-            <div className="flex items-center gap-3">
+
+            {/* Right: Actions */}
+            <div
+              className="
+      flex w-full sm:w-auto
+      flex-col sm:flex-row
+      items-stretch sm:items-center
+      gap-2 sm:gap-3
+    "
+            >
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white p-2 rounded-md"
+                className="
+        bg-gradient-to-r from-[#00034A] to-[#27A8E2]
+        text-white
+        px-4 py-2
+        rounded-md
+        w-full sm:w-auto
+        text-sm sm:text-base
+      "
               >
                 Broadcast a Request
               </button>
+
               <button
                 onClick={() => setIsFilter(!isFilter)}
-                className="bg-gradient-to-r from-[#00034A] to-[#27A8E2] text-white p-3 rounded-md"
+                className="
+        bg-gradient-to-r from-[#00034A] to-[#27A8E2]
+        text-white
+        p-2 sm:p-3
+        rounded-md
+        w-full sm:w-auto
+        inline-flex items-center justify-center
+      "
+                aria-label="Open filters"
+                title="Filters"
               >
-                <LuSettings2 />
+                <LuSettings2 className="w-5 h-5 sm:w-4 sm:h-4" />
               </button>
             </div>
           </div>
+
           {isFilter && <Filter endPoint={"providers/filter"} setIsFilter={setIsFilter} />}
           {/* Show loading spinner when data is being fetched */}
           {allservicesloading ? (
@@ -181,17 +236,16 @@ const Home = () => {
                             onClick={() => onToggleFavorite(pro)}
                             disabled={isPend}
                             aria-label={isFav ? "Unfavorite" : "Favorite"}
-                            className={`transition ${
-                              isPend
+                            className={`transition ${isPend
                                 ? "opacity-70 cursor-not-allowed"
                                 : "hover:scale-110"
-                            }`}
+                              }`}
                             title={
                               isPend
                                 ? "Updating…"
                                 : isFav
-                                ? "Remove from favorites"
-                                : "Add to favorites"
+                                  ? "Remove from favorites"
+                                  : "Add to favorites"
                             }
                           >
                             {isPend ? (
@@ -298,11 +352,10 @@ const Home = () => {
                       <button
                         key={i}
                         onClick={() => setCurrentPage(i + 1)}
-                        className={`px-4 py-2 ${
-                          currentPage === i + 1
+                        className={`px-4 py-2 ${currentPage === i + 1
                             ? "bg-[#00034A]/10 text-[#00034A] border-2 border-[#27A8E2]"
                             : "bg-white"
-                        }`}
+                          }`}
                       >
                         {i + 1}
                       </button>
