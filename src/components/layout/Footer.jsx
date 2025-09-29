@@ -10,27 +10,27 @@ const Footer = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-const handleFaqClick = (e) => {
-  e.preventDefault();
-  if (location.pathname === "/app/landing") {
-    // Same page -> smooth scroll
-    const faqSection = document.querySelector("#faq");
-    if (faqSection) {
-      faqSection.scrollIntoView({ behavior: "smooth" });
-    }
-  } else {
-    // Dusre page -> navigate
-    navigate("/app/landing#faq");
-
-    // Small delay tak wait karo, taake DOM load ho jaye
-    setTimeout(() => {
+  const handleFaqClick = (e) => {
+    e.preventDefault();
+    if (location.pathname === "/app/landing") {
+      // Same page -> smooth scroll
       const faqSection = document.querySelector("#faq");
       if (faqSection) {
         faqSection.scrollIntoView({ behavior: "smooth" });
       }
-    }, 300); // 300ms is enough after navigation
-  }
-};
+    } else {
+      // Dusre page -> navigate
+      navigate("/app/landing#faq");
+
+      // Small delay tak wait karo, taake DOM load ho jaye
+      setTimeout(() => {
+        const faqSection = document.querySelector("#faq");
+        if (faqSection) {
+          faqSection.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 300); // 300ms is enough after navigation
+    }
+  };
 
 
   return (
