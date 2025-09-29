@@ -30,7 +30,7 @@ export default function Herotwo() {
     >
       {/* Title Section */}
       <div className="md:w-[56em]">
-        <h3 className="text-[#FFFFFF] font-semibold text-[64px] leading-[64px] text-shadow-xs">
+        <h3 className="text-[#FFFFFF] font-semibold text-4xl md:text-[64px] md:leading-[64px] text-shadow-xs">
           Find Trusted Professionals for Your Needs
         </h3>
       </div>
