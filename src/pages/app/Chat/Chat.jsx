@@ -215,7 +215,7 @@ const Chat = () => {
                       </div>
                     </div>
                     <div>
-                      <button className="border-b border-[#00034A] bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent">
+                      <button onClick={() => navigate(-1)} className="cursor-pointer border-b border-[#00034A] bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent">
                         Job Detail
                       </button>
                     </div>
