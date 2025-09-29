@@ -121,7 +121,7 @@ const Bookinghistory = () => {
           backgroundImage: `linear-gradient(234.85deg, rgba(39, 168, 226, 1) -20.45%, rgba(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
         }}
       >
-        <div className="flex justify-between items-center gap-3 px-10 lg:px-40  w-full -mb-10">
+        <div className="md:flex justify-between items-center gap-3 px-10 lg:px-40  w-full -mb-10">
           <div className="flex gap-3">
             <button type="button" onClick={() => navigate(-1)}>
               <FaArrowLeft color="white" size={20} />

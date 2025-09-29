@@ -244,19 +244,19 @@ const Bookingsrequests = () => {
           backgroundImage: `linear-gradient(234.85deg, rgba(39, 168, 226, 1) -20.45%, rgba(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
         }}
       >
-        <div className="flex justify-between w-full items-center gap-3 px-8 lg:px-40 -mb-10">
-          <div className="flex gap-3 items-center">
+        <div className="flex justify-between w-full items-center gap-3 px-8 lg:px-40 -mb-10 flex-wrap">
+          <div className="flex gap-3 items-center w-full sm:w-auto">
             <button type="button" onClick={() => navigate(-1)}>
               <FaArrowLeft color="white" size={20} />
             </button>
-            <h2 className="text-white text-[28px] font-bold leading-[48px] capitalize">
+            <h2 className="text-white text-[24px] sm:text-[28px] font-bold leading-[48px] capitalize">
               {isCurrent ? "Current Bookings" : "Booking Requests"}
               {loading && <Spinner />}
             </h2>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="relative">
+          <div className="md:flex items-center gap-4 w-full sm:w-auto mt-4 sm:mt-0">
+            <div className="relative w-full sm:w-[260px]">
               <CiSearch
                 className="absolute left-3 top-1/2 transform -translate-y-1/2"
                 color="white"
@@ -268,13 +268,12 @@ const Bookingsrequests = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search for bookings"
                 disabled={loading}
-                className={`w-[260px] py-3 pl-10 pr-5 rounded-lg border !text-white border-[#ccc] bg-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF] ${loading ? "opacity-60 cursor-not-allowed" : ""
-                  }`}
+                className={`w-full py-3 pl-10 pr-5 rounded-lg border !text-white border-[#ccc] bg-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF] ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
               />
             </div>
 
             {/* Tab Switch */}
-            <div className="flex gap-4 bg-white rounded-xl p-[6px] text-sm">
+            <div className="flex gap-4 bg-white rounded-xl p-[6px] text-sm flex-wrap sm:w-auto w-full mt-4 sm:mt-0">
               {["Current Bookings", "Booking Request"].map((tab) => (
                 <button
                   key={tab}
@@ -283,9 +282,9 @@ const Bookingsrequests = () => {
                     setStatusFilter("All");
                     setActiveTab(tab);
                   }}
-                  className={`px-4 py-2 rounded-lg ${activeTab === tab
-                      ? "bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white"
-                      : "bg-white text-text-[#181818]"
+                  className={`px-4 py-2 rounded-lg w-full sm:w-auto ${activeTab === tab
+                    ? "bg-gradient-to-r from-[#27A8E2] to-[#00034A] text-white"
+                    : "bg-white text-text-[#181818]"
                     } ${loading ? "opacity-60 cursor-not-allowed" : ""}`}
                 >
                   {tab}
@@ -294,6 +293,7 @@ const Bookingsrequests = () => {
             </div>
           </div>
         </div>
+
       </div>
 
       {/* Booking Table Section */}
@@ -306,8 +306,8 @@ const Bookingsrequests = () => {
                 key={index}
                 onClick={() => setStatusFilter(status)}
                 className={`px-4 py-2 text-sm font-medium hover:text-[#00AEEF] focus:outline-none border-b-2 ${statusFilter === status
-                    ? "border-[#00AEEF] text-gradient"
-                    : "border-transparent text-[#3F3F3F]"
+                  ? "border-[#00AEEF] text-gradient"
+                  : "border-transparent text-[#3F3F3F]"
                   }`}
               >
                 {status}

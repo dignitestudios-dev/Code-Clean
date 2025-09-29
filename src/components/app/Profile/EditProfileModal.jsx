@@ -207,7 +207,7 @@ export default function EditProfileModal({
                 type="email"
                 value={formData.email}
                 disabled
-                className="w-full px-4 py-3 bg-gray-100 border rounded-lg"
+                className="w-full lowercase px-4 py-3 bg-gray-100 border rounded-lg"
               />
             </div>
 

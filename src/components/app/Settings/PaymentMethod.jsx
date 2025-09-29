@@ -50,35 +50,39 @@ export default function PaymentMethod() {
             Payment Method
           </h1>
         </div>
-        <div className="bg-[#F9FAFA] shadow-lg flex h-[300px] flex-col gap-3 mb-48 rounded-[8px] p-10 mt-3">
+        <div className="bg-[#F9FAFA] shadow-lg flex h-auto flex-col gap-3 mb-48 rounded-[8px] p-10 mt-3">
           <div className="flex justify-between items-center">
+            
             <h1 className="text-3xl font-normal text-gray-900 mb-4">
               Credit/debit card
             </h1>
-            <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <Button
                 text={"Add Card"}
                 onClick={() => navigate("/app/create-card")}
               />
 
               <Button
-                className={"!w-[160px]"}
+                className="!w-full sm:!w-[160px]"
                 disabled={user_data?.has_active_stripe_connect}
                 text={
-                  <div className="flex items-center gap-2">
-                    <img src={stripe} className="w-[30px]" alt="Stripe logo" />
+                  <div className="flex items-center justify-center gap-2">
+                    <img src={stripe} className="w-[24px] sm:w-[30px]" alt="Stripe logo" />
                     {user_data?.has_active_stripe_connect
                       ? "Connected"
-                      : "Connect"}{" "}
+                      : "Connect"}
                   </div>
                 }
                 loading={isLoading}
                 onClick={() => handleStripeConnect()}
               />
             </div>
+
           </div>
           <p className="text-[16px] text-[#212935] mb-1">Attached Stripe</p>
-          {paymentMethod?.payment_methods &&
+          <div>
+
+              {paymentMethod?.payment_methods &&
           paymentMethod?.payment_methods.length > 0 ? (
             paymentMethod?.payment_methods.map((item) => (
               <div key={item?.id} className="bg-[#FFFFFF] p-4 rounded-lg">
@@ -134,6 +138,8 @@ export default function PaymentMethod() {
               </div>
             </div>
           )}
+          </div>
+        
         </div>
       </div>
     </div>

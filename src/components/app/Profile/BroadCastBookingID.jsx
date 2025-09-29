@@ -18,12 +18,12 @@ export default function BroadCastBookingID() {
   const [data, setData] = useState();
 
   useEffect(() => {
-  const url = "/user/bookings"; // You can define the URL here dynamically if needed
-  dispatch(fetchRequestDetails({ id, url })); // Pass both id and url
-}, [dispatch, id]);
+    const url = "/user/bookings"; // You can define the URL here dynamically if needed
+    dispatch(fetchRequestDetails({ id, url })); // Pass both id and url
+  }, [dispatch, id]);
 
 
-console.log(data,"data")
+  console.log(data, "data")
 
   useEffect(() => {
     if (requestDetails) {
@@ -91,15 +91,21 @@ console.log(data,"data")
                         </h2>
                       </div>
                       <div className="mt-0">
-                        <p
-                          className={`text-xs font-semibold ${
-                            data?.status === "pending" || "waiting"
-                              ? "text-white bg-yellow-300 rounded-xl capitalize w-[8em] flex text-center justify-center"
-                              : "text-green-500"
-                          }`}
-                        >
-                          {data?.status}
-                        </p>
+                    <p
+  className={`text-xs font-semibold ${
+    data?.status === "pending" || data?.status === "waiting"
+      ? "text-white bg-yellow-300 rounded-xl capitalize w-[8em] flex text-center justify-center"
+      : data?.status === "completed"
+      ? "bg-green-500 text-white rounded-xl capitalize w-[8em] flex text-center justify-center"
+      : data?.status === "cancelled"
+      ? "bg-red-500 text-white rounded-xl capitalize w-[8em] flex text-center justify-center"
+      : "text-green-500"
+  }`}
+>
+  {data?.status}
+</p>
+
+
                       </div>
                     </div>
                   </div>

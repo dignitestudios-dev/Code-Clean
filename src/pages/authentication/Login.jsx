@@ -129,7 +129,7 @@ const Login = () => {
   };
 
   return (
-    <div className="w-full h-auto grid grid-cols-2 gap-4 rounded-[19px] bg-white">
+    <div className="w-full h-auto grid md:grid-cols-2 gap-4 rounded-[19px] bg-white">
       <div className="w-auto flex flex-col mt-4 justify-center items-center">
         <img src={Logo} alt="orange_logo" className="w-[148.4px]" />
         <div className="text-center mt-2">
@@ -231,8 +231,9 @@ const Login = () => {
           </div>
         </div>
       </div>
+      
       <div
-        className="p-4 rounded-[20px]"
+        className="p-4 rounded-[20px] md:block hidden"
         style={{
           backgroundImage: `linear-gradient(234.85deg, rgba(39, 168, 226, 0.8) -20.45%, rgba(0, 3, 74,1) 124.53%), url(${LoginRight})`,
           backgroundSize: "cover",

@@ -86,12 +86,12 @@ export default function Badge() {
             )}
           </div>
 
-          {/* Badges You Can Still Earn */}
+           {/* Badges You Can Still Earn */}
           <h3 className="flex items-center mt-40 gap-2 text-[#000000] font-[700] text-[24px]">
             <img src={LockIcon} className="w-4" alt="CupIcon" /> Badges You Can
             Still Earn
           </h3>
-          <div className="mt-8 grid gap-3 gap-y-6 grid-cols-3">
+          <div className="mt-8 grid gap-3 gap-y-6 md:grid-cols-3">
             {badges?.remaining_badges?.length > 0 ? (
               badges.remaining_badges.map((item, i) => (
                 <div key={i} className="flex items-center gap-3">

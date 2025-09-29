@@ -396,6 +396,7 @@ export default function ProviderEditProfile({ isOpen, setIsOpen }) {
 
           {showModal && (
             <AddAvailabilityModal
+            data={user_data}
               onClose={() => setShowModal(false)}
               edit={true}
               onSave={(data) => {

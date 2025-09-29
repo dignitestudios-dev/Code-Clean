@@ -31,16 +31,19 @@ const Navbar = () => {
 
   const userPopupRef = useRef(null);
   const popupRef = useRef(null);
+  const iconRef = useRef(null);
 
+// Close the popup when clicking outside the popup or the icon
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        setIsPopupOpen(false);
+      // Check if the click is outside of the popup and the notification icon
+      if (popupRef.current && !popupRef.current.contains(event.target) && !iconRef.current.contains(event.target)) {
+        setIsPopupOpen(false); // Close the popup
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside); // Listen for clicks outside
+    return () => document.removeEventListener("mousedown", handleClickOutside); // Cleanup listener
   }, []);
 
   useEffect(() => {
@@ -156,9 +159,10 @@ const Navbar = () => {
     });
   }, [notifications]);
 
-  const togglePopup = () => {
-    setUserPopup(false);
-    setIsPopupOpen(!isPopupOpen);
+  // Toggle the popup open/close
+  const togglePopup = (e) => {
+    e.stopPropagation(); // Prevent event from propagating to the document level
+    setIsPopupOpen((prevState) => !prevState);
   };
 
   const toggleUserpopup = () => {
@@ -182,30 +186,29 @@ const Navbar = () => {
   const menuLinks =
     role === "service_provider"
       ? [
-          { label: "Dashboard", path: "/dashboard" },
-          { label: "Discover", path: "/discover-job" },
-          { label: "Availability", path: "/calendar" },
-          { label: "Messages", path: "/messages" },
-          { label: "Badges", path: "/badge-sp" },
-          { label: "Wallet", path: "/wallet" },
-        ]
+        { label: "Dashboard", path: "/dashboard" },
+        { label: "Discover", path: "/discover-job" },
+        { label: "Availability", path: "/calendar" },
+        { label: "Messages", path: "/messages" },
+        { label: "Badges", path: "/badge-sp" },
+        { label: "Wallet", path: "/wallet" },
+      ]
       : role === "user"
-      ? [
+        ? [
           { label: "Current Bookings", path: "/booking-requests" },
           { label: "Booking History", path: "/booking-history" },
           { label: "Badges", path: "/app/badge" },
           { label: "Favorites", path: "/favorites" },
           { label: "Messages", path: "/messages" },
         ]
-      : [];
+        : [];
 
   return (
     <nav
-      className={`w-full ${
-        isMobileMenuOpen
-          ? "fixed top-0 left-0 min-h-screen bg-[#181818] z-50"
-          : ""
-      } text-white`}
+      className={`w-full ${isMobileMenuOpen
+        ? "fixed top-0 left-0 min-h-screen bg-[#181818] z-50"
+        : ""
+        } text-white`}
     >
       <div className="max-w-7xl border-b border-white/40 mx-auto px-4 py-2 flex z-10 items-center justify-between relative">
         <div className="w-[60%]">
@@ -224,69 +227,69 @@ const Navbar = () => {
               <Link
                 key={link.label}
                 to={link.path}
-                className={`pb-1 relative text-[12px] lg:text-[16px] lg:font-[500] transition-all duration-300 ${
-                  currentPath === link.path
-                    ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
-                    : ""
-                }`}
+                className={`pb-1 relative text-[12px] lg:text-[16px] lg:font-[500] transition-all duration-300 ${currentPath === link.path
+                  ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
+                  : ""
+                  }`}
               >
                 {link.label}
               </Link>
             ))}
-            <div ref={popupRef} className="relative">
-              <IoNotificationsOutline
-                className="text-white text-2xl cursor-pointer"
-                onClick={togglePopup}
-              />
-              {/* Show unread count badge if there are unread notifications */}
-              {notifications.filter((n) => n.unreadCount > 0).length > 0 && (
-                <div className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] rounded-full w-[13px] h-[13px] flex items-center justify-center">
-                  {notifications.filter((n) => n.unreadCount > 0).length}
-                </div>
-              )}
-              {isPopupOpen && (
-                <div className="absolute top-10 right-0 w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50">
-                  <h3 className="text-lg font-semibold text-black">
-                    Notifications
-                  </h3>
-                  <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
-                    {notifications.length > 0 ? (
-                      notifications.map((n, idx) => (
-                        <div
-                          key={idx}
-                          onClick={() => markAsRead(idx)}
-                          className="cursor-pointer"
-                        >
-                          <div className="flex w-full justify-between">
-                            <div>
-                              <span className="text-[14px] font-bold text-black">
-                                {n.title}
-                              </span>
-                              <p className="text-[13px] mt-2 text-[#18181880]">
-                                {n.message}
-                              </p>
-                            </div>
-                            <div className="flex flex-col items-end px-2">
-                              <div className="text-xs text-gray-600">
-                                {n.time}
-                              </div>
-                              {n.unreadCount > 0 && (
-                                <div className="bg-red-600 mt-2 text-white text-xs rounded-full w-[19px] h-[19px] flex items-center justify-center">
-                                  {n.unreadCount}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                          <hr className="mt-2" />
+             <div ref={popupRef} className="relative">
+      {/* Notification Icon */}
+      <IoNotificationsOutline
+        ref={iconRef}
+        className="text-white text-2xl cursor-pointer"
+        onClick={togglePopup} // Toggle popup on icon click
+      />
+      {/* Show unread count badge if there are unread notifications */}
+      {notifications.filter((n) => n.unreadCount > 0).length > 0 && (
+        <div className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] rounded-full w-[13px] h-[13px] flex items-center justify-center">
+          {notifications.filter((n) => n.unreadCount > 0).length}
+        </div>
+      )}
+
+      {/* Popup content */}
+      {isPopupOpen && (
+        <div className="absolute top-10 right-0 w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50" ref={popupRef}>
+          <h3 className="text-lg font-semibold text-black">Notifications</h3>
+          <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
+            {notifications.length > 0 ? (
+              notifications.map((n, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => {
+                    // Handle marking notification as read (Optional)
+                    const updatedNotifications = [...notifications];
+                    updatedNotifications[idx].unreadCount = 0; // Mark as read
+                    setNotifications(updatedNotifications);
+                  }}
+                  className="cursor-pointer"
+                >
+                  <div className="flex w-full justify-between">
+                    <div>
+                      <span className="text-[14px] font-bold text-black">{n.title}</span>
+                      <p className="text-[13px] mt-2 text-[#18181880]">{n.message}</p>
+                    </div>
+                    <div className="flex flex-col items-end px-2">
+                      <div className="text-xs text-gray-600">{n.time}</div>
+                      {n.unreadCount > 0 && (
+                        <div className="bg-red-600 mt-2 text-white text-xs rounded-full w-[19px] h-[19px] flex items-center justify-center">
+                          {n.unreadCount}
                         </div>
-                      ))
-                    ) : (
-                      <p className="text-gray-700">No notifications</p>
-                    )}
+                      )}
+                    </div>
                   </div>
+                  <hr className="mt-2" />
                 </div>
-              )}
-            </div>
+              ))
+            ) : (
+              <p className="text-gray-700">No notifications</p>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
             <div >
               <img
                 src={
@@ -339,11 +342,10 @@ const Navbar = () => {
             <ul className="flex gap-6">
               <li className="relative">
                 <Link
-                  className={`relative pb-1 text-[16px] font-[500] transition-all duration-300 ${
-                    currentPath === "/app/landing"
-                      ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
-                      : ""
-                  }`}
+                  className={`relative pb-1 text-[16px] font-[500] transition-all duration-300 ${currentPath === "/app/landing"
+                    ? "after:content-[''] after:absolute after:left-0 after:bottom-[-4px] after:w-2/3 after:h-[2px] after:bg-white after:rounded"
+                    : ""
+                    }`}
                   to="/app/landing"
                 >
                   Home
@@ -386,7 +388,7 @@ const Navbar = () => {
         <div className="md:hidden flex items-center gap-3">
           {isLoggedIn && (
             <>
-              <div   ref={popupRef} className="relative">
+              <div ref={popupRef} className="relative">
                 <IoNotificationsOutline
                   className="text-white text-2xl cursor-pointer"
                   onClick={() => {
@@ -401,7 +403,7 @@ const Navbar = () => {
                 )}
                 {isPopupOpen && (
                   <div
-                  
+
                     className="absolute top-10 left-[-250px]  md:left-0 md:right-0 w-[370px] md:w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50"
                   >
                     <h3 className="text-lg font-semibold text-black">

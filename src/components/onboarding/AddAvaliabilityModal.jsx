@@ -1,20 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-export default function AddAvailabilityModal({ onClose, onSave, edit }) {
+export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("18:00");
   const [error, setError] = useState("");
 
   const [workingDays, setWorkingDays] = useState({
     all: false,
-    monday: true,
-    tuesday: true,
-    wednesday: true,
-    thursday: true,
-    friday: true,
+    monday: false,
+    tuesday: false,
+    wednesday: false,
+    thursday: false,
+    friday: false,
     saturday: false,
     sunday: false,
   });
+
+  const days = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ];
+
+  // jab data load ho to update karna
+  useEffect(() => {
+    if (data?.availability) {
+      setStartTime(data.availability.start_time || "09:00");
+      setEndTime(data.availability.end_time || "18:00");
+
+      const newDays = days.reduce((acc, day) => {
+        acc[day] = data.availability.days.includes(day);
+        return acc;
+      }, {});
+
+      setWorkingDays({ all: false, ...newDays });
+    }
+  }, [data]);
 
   const toggleDay = (day) => {
     if (day === "all") {
@@ -29,20 +54,8 @@ export default function AddAvailabilityModal({ onClose, onSave, edit }) {
     }
   };
 
-  const days = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-  ];
-
   const validateTimes = (start, end) => {
-    // Convert HH:mm to Date objects (same day for comparison)
     const today = new Date().toDateString();
-
     const startDate = new Date(`${today} ${start}`);
     const endDate = new Date(`${today} ${end}`);
 
