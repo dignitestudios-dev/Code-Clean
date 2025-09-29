@@ -25,6 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { formatDate } from "../../../hooks/utils/Utils";
 import { getProviderProfile } from "../../../redux/slices/auth.slice";
 import { ErrorToast } from "../../../components/global/Toaster";
+import Footer from "../../../components/layout/Footer";
 
 const ServiceproviderProfile = () => {
   const { user_data } = useSelector((state) => state.auth);
@@ -156,7 +157,7 @@ const ServiceproviderProfile = () => {
           backgroundImage: `linear-gradient(234.85deg, rgb(39, 168, 226, 1) -20.45%, rgb(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
         }}
       >
-        <div className="flex items-center gap-3 ml-[11em]">
+        <div className="flex items-center px-5 lg:px-40 gap-3">
           <button type="button" onClick={() => navigate(-1)}>
             <FaArrowLeft color="white" size={20} />
           </button>
@@ -165,7 +166,7 @@ const ServiceproviderProfile = () => {
           </h2>
         </div>
       </div>
-      <div className="px-10 lg:px-40">
+      <div className="px-5 lg:px-40">
         <div className=" mx-auto px-6 py-10 bg-white shadow-md rounded-xl -mt-[16em]">
           {/* Profile Header */}
           <div className="flex flex-col md:flex-row gap-8">
@@ -287,7 +288,7 @@ const ServiceproviderProfile = () => {
                 <p className="pt-1 text-sm">
                   {user_data?.biography || "No Bio"}
                 </p>
-                <div className="mt-4 grid grid-cols-4 gap-5 text-sm text-[#787878] border-t-2 pt-3">
+                <div className="mt-4 grid md:grid-cols-4 gap-5 text-sm text-[#787878] border-t-2 pt-3">
                   <div>
                     <span className="font-semibold">Location</span>
                     <br />
@@ -1186,9 +1187,9 @@ const ServiceproviderProfile = () => {
             </h2>
             {/* Message */}
             <p className="text-gray-600 text-sm mb-4">
-              Great news! The booking request has been accepted. The payment has now been securely held in escrow. Once
-              the job is completed, the funds will be released to the service
-              provider.
+              Great news! The booking request has been accepted. The payment has
+              now been securely held in escrow. Once the job is completed, the
+              funds will be released to the service provider.
             </p>
           </div>
         </div>
@@ -1638,6 +1639,7 @@ const ServiceproviderProfile = () => {
           setIsOpen={setEditProfile}
         />
       )}
+      <Footer/> 
     </>
   );
 };

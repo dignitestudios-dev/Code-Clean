@@ -108,15 +108,15 @@ export default function Badgesp() {
           backgroundImage: `linear-gradient(234.85deg, rgb(39, 168, 226, 1) -20.45%, rgb(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
         }}
       ></div>
-      <div className="h-full px-10 lg:px-40  -mt-80 bottom-0 items-center gap-3 ">
+      <div className="h-full px-5 lg:px-40  -mt-80 bottom-0 items-center gap-3 ">
         <h3 className="font-semibold text-[#FFFFFF]  text-[32px]">Badges</h3>
-        <div className="bg-white shadow-lg mb-48 rounded-[8px] p-10 mt-3">
+        <div className="bg-white shadow-lg mb-48 rounded-[8px] p-5 lg:p-10 mt-3">
           {/* Badges You've Earned */}
           <h3 className="flex items-center gap-2 text-[#000000] font-[700] text-[24px]">
             <img src={CupIcon} className="w-4" alt="CupIcon" /> Badges You've
             Earned
           </h3>
-          <div className="mt-8 grid gap-3 grid-cols-3">
+          <div className="mt-8 grid gap-3 md:grid-cols-3">
             {badges?.alloted_badges?.length > 0 ? (
               badges.alloted_badges.map((item, i) => (
                 <div
@@ -154,7 +154,7 @@ export default function Badgesp() {
             <img src={LockIcon} className="w-4" alt="CupIcon" /> Badges You Can
             Still Earn
           </h3>
-          <div className="mt-8 grid gap-3 gap-y-6 grid-cols-3">
+          <div className="mt-8 grid gap-3 gap-y-6 md:grid-cols-3">
             {badges?.remaining_badges?.length > 0 ? (
               badges.remaining_badges.map((item, i) => (
                 <div key={i} className="flex items-center gap-3">

@@ -100,14 +100,14 @@ const Dashboard = () => {
           backgroundImage: `linear-gradient(234.85deg, rgba(39, 168, 226, 1) -20.45%, rgba(0, 3, 74, 0.8) 124.53%), url(${HeroBg})`,
         }}
       >
-        <div className="flex justify-between items-center gap-3 px-4 md:px-28 w-full -mb-10">
+        <div className="md:flex justify-between items-center gap-3 px-4 md:px-28 w-full -mb-10">
           <div className="flex gap-3 items-center">
             <h2 className="text-white text-[28px] font-bold leading-[48px] capitalize">
               Dashboard
             </h2>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="md:flex  items-center gap-4">
             <div className="relative">
               <CiSearch
                 className="absolute left-3 top-1/2 transform -translate-y-1/2"
@@ -119,12 +119,12 @@ const Dashboard = () => {
                 value={searchQuery}
                 onChange={handleSearchChange}
                 placeholder="Search for bookings"
-                className="w-[260px] py-3 pl-10 pr-5  rounded-lg border !text-white border-[#ccc] bg-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF]"
+                className="w-full md:w-[260px] py-3 pl-10 pr-5  rounded-lg border !text-white border-[#ccc] bg-white/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#00AEEF]"
               />
             </div>
 
             {/* Tab Section */}
-            <div className="flex gap-4 bg-white rounded-xl p-[6px] text-sm">
+            <div className="flex gap-4 mt-5 lg:mt-0 bg-white rounded-xl p-[6px] text-sm">
               {["Booking Request", "Current Bookings"].map((tab) => (
                 <button
                   key={tab}

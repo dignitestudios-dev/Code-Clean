@@ -107,8 +107,6 @@ const Navbar = () => {
     if (role === "service_provider") return navigate("/dashboard");
     if (role === "user") return navigate("/home");
     return navigate("/app/landing");
-    console.log(isLoggedIn, "isLoggedIn");
-    console.log(role);
   };
 
   useEffect(() => {
@@ -221,12 +219,12 @@ const Navbar = () => {
 
         {/* Desktop Menu */}
         {isLoggedIn ? (
-          <div className="hidden md:flex justify-end items-center gap-10 font-medium text-sm w-full">
+          <div className="hidden md:flex justify-end items-center gap-5 lg:gap-10 font-medium text-sm w-full">
             {menuLinks.map((link) => (
               <Link
                 key={link.label}
                 to={link.path}
-                className={`pb-1 relative text-[16px] font-[500] transition-all duration-300 ${
+                className={`pb-1 relative text-[12px] lg:text-[16px] lg:font-[500] transition-all duration-300 ${
                   currentPath === link.path
                     ? "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white"
                     : ""
@@ -235,22 +233,19 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
-            <div className="relative">
+            <div ref={popupRef} className="relative">
               <IoNotificationsOutline
                 className="text-white text-2xl cursor-pointer"
                 onClick={togglePopup}
               />
               {/* Show unread count badge if there are unread notifications */}
               {notifications.filter((n) => n.unreadCount > 0).length > 0 && (
-                <div className="absolute top-0 right-0 bg-red-600 text-white text-[10px] rounded-full w-[13px] h-[13px] flex items-center justify-center">
+                <div className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] rounded-full w-[13px] h-[13px] flex items-center justify-center">
                   {notifications.filter((n) => n.unreadCount > 0).length}
                 </div>
               )}
               {isPopupOpen && (
-                <div
-                  ref={popupRef}
-                  className="absolute top-10 right-0 w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50"
-                >
+                <div className="absolute top-10 right-0 w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50">
                   <h3 className="text-lg font-semibold text-black">
                     Notifications
                   </h3>
@@ -292,54 +287,52 @@ const Navbar = () => {
                 </div>
               )}
             </div>
-
-            <img
-              src={
-                user_data?.avatar
-                  ? `${import.meta.env.VITE_APP_AWS_URL}${user_data?.avatar}`
-                  : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ3AH9WTlcacKErfpKhk-lJ7serN0eQje6Qg&s"
-              }
-              className="h-10 w-10 object-cover rounded-full cursor-pointer border-2"
-              onClick={toggleUserpopup}
-              alt="Avatar"
-            />
-            {userPopup && (
-              <div
-                ref={userPopupRef}
-                className="absolute top-20 right-4 bg-white w-[155px] h-[157px] text-black rounded-[8px] shadow-lg p-4 space-y-2 z-[99999]"
-              >
-                <span
-                  className="block font-[400] py-1 text-sm border-b  border-[#E4E4E4] cursor-pointer"
-                  onClick={() =>
-                    navigate(
-                      role == "service_provider"
-                        ? "/provider-profile"
-                        : "/app/profile"
-                    )
-                  }
-                >
-                  View Profile
-                </span>
-                <span
-                  className="block font-[400] py-1 border-b  border-[#E4E4E4] text-sm cursor-pointer"
-                  onClick={() => navigate("/app/settings")}
-                >
-                  Settings
-                </span>
-                <span
-                  className="block font-[400] py-1 border-b  border-[#E4E4E4] text-sm cursor-pointer"
-                  onClick={() => setIsReport(true)}
-                >
-                  Report an Issue
-                </span>
-                <span
-                  className="block font-[400] py-1  text-sm text-red-600 cursor-pointer"
-                  onClick={() => setLogoutpopup(true)}
-                >
-                  Log Out
-                </span>
-              </div>
-            )}
+            <div >
+              <img
+                src={
+                  user_data?.avatar
+                    ? `${import.meta.env.VITE_APP_AWS_URL}${user_data?.avatar}`
+                    : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ3AH9WTlcacKErfpKhk-lJ7serN0eQje6Qg&s"
+                }
+                className="h-10 w-10 object-cover rounded-full cursor-pointer border-2"
+                onClick={toggleUserpopup}
+                alt="Avatar"
+              />
+              {userPopup && (
+                <div className="absolute top-20 right-4 bg-white w-[155px] h-[157px] text-black rounded-[8px] shadow-lg p-4 space-y-2 z-[99999]">
+                  <span
+                    className="block font-[400] py-1 text-sm border-b  border-[#E4E4E4] cursor-pointer"
+                    onClick={() =>
+                      navigate(
+                        role == "service_provider"
+                          ? "/provider-profile"
+                          : "/app/profile"
+                      )
+                    }
+                  >
+                    View Profile
+                  </span>
+                  <span
+                    className="block font-[400] py-1 border-b  border-[#E4E4E4] text-sm cursor-pointer"
+                    onClick={() => navigate("/app/settings")}
+                  >
+                    Settings
+                  </span>
+                  <span
+                    className="block font-[400] py-1 border-b  border-[#E4E4E4] text-sm cursor-pointer"
+                    onClick={() => setIsReport(true)}
+                  >
+                    Report an Issue
+                  </span>
+                  <span
+                    className="block font-[400] py-1  text-sm text-red-600 cursor-pointer"
+                    onClick={() => setLogoutpopup(true)}
+                  >
+                    Log Out
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <div className="hidden md:flex items-center gap-6 text-sm font-medium w-full justify-between">
@@ -393,12 +386,11 @@ const Navbar = () => {
         <div className="md:hidden flex items-center gap-3">
           {isLoggedIn && (
             <>
-              <div className="relative">
+              <div   ref={popupRef} className="relative">
                 <IoNotificationsOutline
                   className="text-white text-2xl cursor-pointer"
-                  onClick={()=>{
-                    
-                    togglePopup()
+                  onClick={() => {
+                    togglePopup();
                   }}
                 />
                 {/* Show unread count badge if there are unread notifications */}
@@ -409,8 +401,8 @@ const Navbar = () => {
                 )}
                 {isPopupOpen && (
                   <div
-                    ref={popupRef}
-                    className="absolute top-10 right-0 w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50"
+                  
+                    className="absolute top-10 left-[-250px]  md:left-0 md:right-0 w-[370px] md:w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50"
                   >
                     <h3 className="text-lg font-semibold text-black">
                       Notifications

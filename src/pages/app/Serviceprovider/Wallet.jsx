@@ -112,12 +112,12 @@ const Wallet = () => {
     setAddbankaccount(false);
     setShowModal(true);
     setFormData({
-       bankName: "",
-    accountHolderName: "",
-    accountNumber: "",
-    routingNumber: "",
-    saveDetails: false,
-    })
+      bankName: "",
+      accountHolderName: "",
+      accountNumber: "",
+      routingNumber: "",
+      saveDetails: false,
+    });
   };
   const handleWidraw = async () => {
     if (!selectedBank) return ErrorToast("Please Select Bank");
@@ -148,7 +148,7 @@ const Wallet = () => {
           backgroundImage: `linear-gradient(234.85deg, rgba(39,168,226,1) -20.45%, rgba(0,3,74,0.8) 124.53%), url(${HeroBg})`,
         }}
       >
-        <div className="flex items-center gap-3 ml-[8em]">
+        <div className="flex items-center gap-3 px-5 md:px-[40px]">
           <button onClick={() => navigate(-1)}>
             <FaArrowLeft color="white" size={20} />
           </button>
@@ -159,7 +159,7 @@ const Wallet = () => {
       </div>
 
       {/* Balance Card */}
-      <div className="max-w-7xl mx-auto -mt-[17em] relative mb-8">
+      <div className="px-5 md:px-[40px] mx-auto -mt-[17em] relative mb-8">
         <div className="bg-white/30 rounded-xl shadow-md p-6 flex justify-between items-center">
           <div>
             <p className="text-white text-[18px] font-[500]">
@@ -404,7 +404,7 @@ const Wallet = () => {
                   className="w-full p-2 mt-2 border rounded-md"
                   placeholder="Enter your number"
                   required
-                   maxLength={12} // Account number max 12 digits
+                  maxLength={12} // Account number max 12 digits
                 />
               </div>
               <div className="mb-4">
@@ -419,7 +419,7 @@ const Wallet = () => {
                   className="w-full p-2 mt-2 border rounded-md"
                   placeholder="Enter your routing number"
                   required
-                  maxLength={9} 
+                  maxLength={9}
                 />
               </div>
               <div className="flex items-center">
@@ -442,7 +442,7 @@ const Wallet = () => {
       )}
 
       {/* Transactions Section */}
-      <div className="max-w-7xl mx-auto px-0 pb-16">
+      <div className="px-5 md:px-[40px] mx-auto px-0 pb-16">
         <h3 className="text-xl font-bold text-white mb-4">
           Transaction History
         </h3>
@@ -486,31 +486,39 @@ const Wallet = () => {
                 <SkeletonRows count={5} />
               ) : (
                 <tbody className="text-[#181818]">
-                  {transaction?.transactions?.data?.map((t, index) => (
-                    <tr key={index} className="border-t">
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {index + 1}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {t.transaction_id}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {t.account_name}
-                      </td>
-                      {/* <td className="px-6 py-4 text-[12px] font-[400]">
-                        {t.account_number}
-                      </td> */}
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {t.date}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {t.time}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {t.amount}
+                  {transaction?.transactions?.data?.length > 0 ? (
+                    transaction.transactions.data.map((t, index) => (
+                      <tr key={index} className="border-t">
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {index + 1}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {t.transaction_id}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {t.account_name}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {t.date}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {t.time}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {t.amount}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="px-6 py-4 text-center text-[12px] font-[400] text-gray-500"
+                      >
+                        No record found
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               )}
             </table>
@@ -535,37 +543,48 @@ const Wallet = () => {
                 <SkeletonRows count={5} />
               ) : (
                 <tbody className="text-[#181818]">
-                  {transaction?.withdrawals?.data?.map((w, index) => (
-                    <tr key={index} className="border-t">
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {index + 1}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {w.payout_id}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {w.bank_name}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {w.account_name}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {w.last_digits}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {w.type}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {w.date}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {w.amount}
-                      </td>
-                      <td className="px-6 py-4 text-[12px] font-[400]">
-                        {w.status}
+                  {transaction?.withdrawals?.data?.length > 0 ? (
+                    transaction.withdrawals.data.map((w, index) => (
+                      <tr key={index} className="border-t">
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {index + 1}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {w.payout_id}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {w.bank_name}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {w.account_name}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {w.last_digits}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {w.type}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {w.date}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {w.amount}
+                        </td>
+                        <td className="px-6 py-4 text-[12px] font-[400]">
+                          {w.status}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan={9} // total number of columns in your table
+                        className="px-6 py-4 text-center text-[12px] font-[400] text-gray-500"
+                      >
+                        No record found
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               )}
             </table>

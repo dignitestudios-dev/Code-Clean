@@ -47,7 +47,7 @@ export default function Badge() {
             <img src={CupIcon} className="w-4" alt="CupIcon" /> Badges You've
             Earned
           </h3>
-          <div className="mt-8 grid gap-3 grid-cols-3">
+          <div className="mt-8 grid gap-3 md:grid-cols-3">
             {badges?.alloted_badges?.length > 0 ? (
               badges.alloted_badges.map((item, i) => (
                 <div

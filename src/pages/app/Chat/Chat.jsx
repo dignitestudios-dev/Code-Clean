@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { IoSend } from "react-icons/io5";
 import { FaArrowLeft } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
@@ -14,6 +14,7 @@ import {
   markMessagesAsSeen,
   sendMessage,
 } from "../../../redux/slices/chat.slice";
+import { HiOutlineMenuAlt2 } from "react-icons/hi";
 
 const Chat = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const Chat = () => {
   const [receiverId, setReceiverId] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [input, setInput] = useState("");
-
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   useEffect(() => {
     if (user?.uid && user_data?.uid) {
       setReceiverId(user.uid);
@@ -111,9 +112,12 @@ const Chat = () => {
             <h1 className="text-2xl font-semibold text-white">Messages</h1>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Sidebar */}
-            <div className="bg-white rounded-2xl  p-3 shadow-sm">
+          {/* Overlay for Drawer */}
+          {isDrawerOpen && (
+            <div
+              className="fixed inset-0 bg-white w-[70%] rounded-lg z-40 md:hidden"
+              onClick={() => setIsDrawerOpen(false)}
+            >
               <div className="px-4 py-4 relative">
                 <CiSearch
                   className="absolute left-[20px] top-7 text-[#18181880]"
@@ -135,7 +139,7 @@ const Chat = () => {
                     (id) => id !== user_data?.uid
                   );
                   const otherMember = chat.memberInfo?.[otherMemberId] || {};
-        
+
                   return (
                     <div
                       key={chat.id}
@@ -147,11 +151,86 @@ const Chat = () => {
                       className={`flex items-start gap-3 p-4 cursor-pointer transition-all ${
                         selectedChatId === chat.id
                           ? "bg-[#E8F0FE] rounded-md"
-                          : "hover:bg-gray-100"                          
+                          : "hover:bg-gray-100"
                       }
-                       ${
-                        chat.unseenCount > 0&&"bg-[#E8F0FE] rounded-md"
-                       }
+                       ${chat.unseenCount > 0 && "bg-[#E8F0FE] rounded-md"}
+                      `}
+                    >
+                      <img
+                        src={
+                          otherMember.avatar
+                            ? import.meta.env.VITE_APP_AWS_URL +
+                              otherMember.avatar
+                            : "/default-avatar.png"
+                        }
+                        alt="avatar"
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                      <div className="flex-1">
+                        <h4 className="text-sm font-semibold">
+                          {otherMember.name || "Chat"}
+                        </h4>
+                        <p className="text-xs text-gray-600">
+                          {chat.lastMessage?.text
+                            ? `${
+                                chat.lastMessage.senderId === user_data.uid
+                                  ? "You: "
+                                  : ""
+                              }${chat.lastMessage.text.slice(0, 25)}`
+                            : "No messages yet"}
+                        </p>
+                      </div>
+                      {chat.unseenCount > 0 && (
+                        <span className="bg-[#208BC733] text-[#082166] text-xs font-semibold w-[20px] flex justify-center items-center h-[20px] rounded-full">
+                          {chat.unseenCount}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Sidebar */}
+            <div className="bg-white hidden md:block rounded-2xl  p-3 shadow-sm">
+              <div className="px-4 py-4 relative">
+                <CiSearch
+                  className="absolute left-[20px] top-7 text-[#18181880]"
+                  size={24}
+                />
+                <input
+                  type="text"
+                  placeholder="Search"
+                  className="w-full bg-[#EDEDED] text-[#18181880] h-[50px] outline-none px-8 py-2 mb-2 rounded-xl border text-sm"
+                />
+              </div>
+
+              <div className="space-y-3">
+                {chats?.map((chat) => {
+                  // const lastMessage =
+                  //   Array.isArray(messages?.[chat.id]) &&
+                  //   messages[chat.id][messages[chat.id].length - 1];
+                  const otherMemberId = chat.members.find(
+                    (id) => id !== user_data?.uid
+                  );
+                  const otherMember = chat.memberInfo?.[otherMemberId] || {};
+
+                  return (
+                    <div
+                      key={chat.id}
+                      onClick={() => {
+                        setSelectedChatId(chat.id);
+                        setSelectedUser(otherMember);
+                        setReceiverId(otherMemberId);
+                      }}
+                      className={`flex items-start gap-3 p-4 cursor-pointer transition-all ${
+                        selectedChatId === chat.id
+                          ? "bg-[#E8F0FE] rounded-md"
+                          : "hover:bg-gray-100"
+                      }
+                       ${chat.unseenCount > 0 && "bg-[#E8F0FE] rounded-md"}
                       `}
                     >
                       <img
@@ -196,6 +275,12 @@ const Chat = () => {
                   {/* Header */}
                   <div className="flex items-center gap-3 justify-between">
                     <div className="flex items-center gap-3">
+                      <button
+                        className="md:hidden p-2 rounded-md hover:bg-gray-100"
+                        onClick={() => setIsDrawerOpen(true)}
+                      >
+                        <HiOutlineMenuAlt2 size={22} />
+                      </button>
                       <div className="w-10 h-10 rounded-full">
                         <img
                           className="w-full h-full rounded-full"
@@ -215,7 +300,10 @@ const Chat = () => {
                       </div>
                     </div>
                     <div>
-                      <button onClick={() => navigate(-1)} className="cursor-pointer border-b border-[#00034A] bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent">
+                      <button
+                        onClick={() => navigate(-1)}
+                        className="cursor-pointer border-b border-[#00034A] bg-gradient-to-r from-[#00034A] to-[#27A8E2] bg-clip-text text-transparent"
+                      >
                         Job Detail
                       </button>
                     </div>
