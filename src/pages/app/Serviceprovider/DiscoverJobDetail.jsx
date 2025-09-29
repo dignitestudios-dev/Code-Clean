@@ -183,10 +183,10 @@ const DiscoverJobDetail = () => {
                     </p>
                   </div>
                 </div>
-                {bookingRequestDetail.images &&
-                  bookingRequestDetail.images.length > 0 && (
+                {bookingRequestDetail?.images &&
+                  bookingRequestDetail?.images.length > 0 && (
                     <div className="flex gap-3 mb-4">
-                      {bookingRequestDetail.images.map((image, index) => (
+                      {bookingRequestDetail?.images.map((image, index) => (
                         <div
                           key={index}
                           className="w-40 h-15 bg-gray-200 rounded-lg overflow-hidden"
