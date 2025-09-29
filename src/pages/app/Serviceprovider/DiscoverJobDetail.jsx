@@ -54,9 +54,7 @@ const DiscoverJobDetail = () => {
   const status = bookingRequestDetail?.status;
   console.log(bookingRequestDetail);
   const getRequestDetailData = async () => {
-    await dispatch(
-      getRequestDetail(`provider/requests/${queryParams.get("id")}/details`)
-    ).unwrap();
+    await dispatch(getRequestDetail(queryParams.get("type"))).unwrap();
     SetRole(Cookies.get("role"));
   };
   useEffect(() => {
@@ -146,6 +144,7 @@ const DiscoverJobDetail = () => {
     setRejectedreqcomplete(true); // Show success modal
     getRequestDetailData();
   };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar type="serviceprovider" />
@@ -209,16 +208,23 @@ const DiscoverJobDetail = () => {
 
                 {/* Date and Time */}
                 <div className="flex items-center gap-8 lg:w-[400px] mb-6 pt-2">
-                  <div className="border-r-2 w-full" >
+                  <div className="border-r-2 w-full">
                     <p className="text-sm text-gray-500 mb-1">Proposed Price</p>
-                    <p className="font-medium"> {bookingRequestDetail?.total_payment}</p>
+                    <p className="font-medium">
+                      {" "}
+                      {bookingRequestDetail?.total_payment}
+                    </p>
                   </div>
-                  <div className="w-full" >
-                    <p className="text-sm text-gray-500 mb-1">Preferred Date & Time</p>
-                    <p className="font-medium"> {bookingRequestDetail?.date} {bookingRequestDetail?.time}</p>
+                  <div className="w-full">
+                    <p className="text-sm text-gray-500 mb-1">
+                      Preferred Date & Time
+                    </p>
+                    <p className="font-medium">
+                      {" "}
+                      {bookingRequestDetail?.date} {bookingRequestDetail?.time}
+                    </p>
                   </div>
                 </div>
-              
 
                 {/* Service Provider Details */}
                 <div className="pb-10">
@@ -490,11 +496,16 @@ const DiscoverJobDetail = () => {
                 {status == "waiting" && (
                   <Button
                     text={"Start Job"}
-                    disabled={!canStart} // ✅ disabled until time reached
                     loading={StartJobLoading}
-                    onClick={() =>
-                      handleJob(bookingRequestDetail?.booking_id, "start")
-                    }
+                    onClick={() => {
+                      if (canStart) {
+                        handleJob(bookingRequestDetail?.booking_id, "start");
+                      } else {
+                        ErrorToast(
+                          "The job hasn’t started yet. Please wait until the scheduled time."
+                        );
+                      }
+                    }}
                   />
                 )}
                 {status == "inprogress" && (

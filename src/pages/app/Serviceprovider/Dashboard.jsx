@@ -70,7 +70,7 @@ const Dashboard = () => {
   };
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    setStatusFilter(e.target.value)
+    setStatusFilter(e.target.value);
   };
 
   const handleTabClick = (tab) => {
@@ -221,14 +221,19 @@ const Dashboard = () => {
                     className="border-t cursor-pointer"
                     onClick={() =>
                       navigate(
-                        
-                      row?.type=="custom" ?`/discover-job-details?id=${row?.request_id}`: `/job-details?id=${row?.request_id}&status=${
-                          row?.status
-                        }&type=${
-                          activeTab == "Booking Request"
-                            ? `provider/requests/${row?.request_id}/details`
-                            : `provider/bookings/${row?.booking_id}/details`
-                        }`
+                        row?.type == "custom"
+                          ? `/discover-job-details?id=${row?.booking_id}&type=${
+                              activeTab == "Booking Request"
+                                ? `provider/requests/${row?.request_id}/details`
+                                : `provider/bookings/${row?.booking_id}/details`
+                            }`
+                          : `/job-details?id=${row?.request_id}&status=${
+                              row?.status
+                            }&type=${
+                              activeTab == "Booking Request"
+                                ? `provider/requests/${row?.request_id}/details`
+                                : `provider/bookings/${row?.booking_id}/details`
+                            }`
                       )
                     }
                   >
@@ -292,7 +297,9 @@ const Dashboard = () => {
                           />
                         </div>
                       ) : (
-                        <span><FaAngleRight className="ml-3" size={20} /></span>
+                        <span>
+                          <FaAngleRight className="ml-3" size={20} />
+                        </span>
                       )}
                     </td>
                   </tr>

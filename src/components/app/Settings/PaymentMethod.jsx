@@ -19,6 +19,7 @@ export default function PaymentMethod() {
   const { isLoading, paymentMethod, bookingRequestLoader } = useSelector(
     (state) => state.provider
   );
+  const { user_data } = useSelector((state) => state.auth);
   useEffect(() => {
     dispatch(getPaymentMethod());
   }, [dispatch]);
@@ -55,25 +56,24 @@ export default function PaymentMethod() {
               Credit/debit card
             </h1>
             <div className="flex items-center gap-2">
-
               <Button
                 text={"Add Card"}
                 onClick={() => navigate("/app/create-card")}
               />
 
               <Button
-              className={"!w-[160px]"}
+                className={"!w-[160px]"}
+                disabled={user_data?.has_active_stripe_connect}
                 text={
                   <div className="flex items-center gap-2">
-                    <img
-                      src={stripe}
-                      className="w-[30px]"
-                      alt="Stripe logo"
-                    />
-                    Connect</div>                
+                    <img src={stripe} className="w-[30px]" alt="Stripe logo" />
+                    {user_data?.has_active_stripe_connect
+                      ? "Connected"
+                      : "Connect"}{" "}
+                  </div>
                 }
                 loading={isLoading}
-                onClick={()=>handleStripeConnect()}
+                onClick={() => handleStripeConnect()}
               />
             </div>
           </div>
