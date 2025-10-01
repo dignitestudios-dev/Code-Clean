@@ -41,6 +41,7 @@ const Wallet = () => {
   // State add kardo
   const [selectedBank, setSelectedBank] = useState(null);
   const [amount, setAmount] = useState("");
+  const [currentTime, setCurrentTime] = useState("");
   const dispatch = useDispatch();
   const {
     wallet,
@@ -60,6 +61,24 @@ const Wallet = () => {
     dispatch(getWallet());
     dispatch(getPaymentMethod());
   }, [dispatch, activeTab]);
+
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const options = {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      };
+      setCurrentTime(now.toLocaleTimeString([], options));
+    };
+
+    updateTime(); // initial call
+    const timer = setInterval(updateTime, 60000); // update every 1 minute
+
+    return () => clearInterval(timer);
+  }, []);
 
   const sliceBaseUrl = (url) => {
     if (!url) return null;
@@ -342,7 +361,7 @@ const Wallet = () => {
               </div>
               <div className="border-b-2 p-3">
                 <p>Transfer Time:</p>
-                <p className="text-blue-600"> {widrawData?.time}</p>
+                <p className="text-blue-600"> {currentTime}</p>
               </div>
             </div>
           </div>

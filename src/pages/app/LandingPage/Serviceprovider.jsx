@@ -1399,15 +1399,15 @@ const Serviceprovider = () => {
                     <div className="flex items-center space-x-4">
                       <button
                         onClick={() => handleDecrement(service)}
-                        className="text-xl text-gray-500 p-1 rounded-[6px] bg-gray-300 hover:text-gray-700"
+                        className="text-xl leading-[10px] text-gray-500 p-1 rounded-[6px] bg-gray-300 hover:text-gray-700"
                       >
                         -
                       </button>
-                      <span>{services[service.id] || 0}</span>{" "}
+                      <span className="text-[15px]">{services[service.id] || 0}</span>{" "}
                       {/* Display the current quantity */}
                       <button
                         onClick={() => handleIncrement(service)}
-                        className="text-xl text-gray-500 p-1 bg-gray-300 rounded-[6px] hover:text-gray-700"
+                        className="text-[16px] leading-[10px] text-gray-500 p-1 bg-gray-300 rounded-[6px] hover:text-gray-700"
                       >
                         +
                       </button>

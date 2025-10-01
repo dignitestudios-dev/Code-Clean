@@ -78,7 +78,7 @@ export default function SignUp() {
   return (
     <div className="grid grid-cols-12 gap-6 w-full  h-auto">
       <OnboardingStepper steps={steps} currentStep={currentStep} />
-      <div className="col-span-9 h-full flex justify-center items-center">
+      <div className="md:col-span-9 col-span-12 h-full flex justify-center items-center">
         <div className="h-full w-full">
           {role == "user" ? (
             currentStep === 0 ? (

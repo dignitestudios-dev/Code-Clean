@@ -7,7 +7,7 @@ export default function OnboardingStepper({steps=[], currentStep=0}) {
         background:
           " linear-gradient(234.85deg, #27A8E2 -20.45%, #00034A 124.53%)",
       }}
-      className="col-span-3 flex justify-center px-10 items-center h-screen rounded-[28px] border"
+      className="col-span-3 justify-center px-10 items-center h-screen rounded-[28px] border hidden md:flex"
     >
       <div className="w-full max-w-sm">
         {steps?.map((step, index) => {

@@ -32,8 +32,9 @@ const Navbar = () => {
   const userPopupRef = useRef(null);
   const popupRef = useRef(null);
   const iconRef = useRef(null);
+  const avatarRef = useRef(null);
 
-// Close the popup when clicking outside the popup or the icon
+  // Close the popup when clicking outside the popup or the icon
   useEffect(() => {
     const handleClickOutside = (event) => {
       // Check if the click is outside of the popup and the notification icon
@@ -50,7 +51,9 @@ const Navbar = () => {
     const handleClickOutside = (event) => {
       if (
         userPopupRef.current &&
-        !userPopupRef.current.contains(event.target)
+        !userPopupRef.current.contains(event.target) &&
+        avatarRef.current &&
+        !avatarRef.current.contains(event.target)
       ) {
         setUserPopup(false);
       }
@@ -235,63 +238,64 @@ const Navbar = () => {
                 {link.label}
               </Link>
             ))}
-             <div ref={popupRef} className="relative">
-      {/* Notification Icon */}
-      <IoNotificationsOutline
-        ref={iconRef}
-        className="text-white text-2xl cursor-pointer"
-        onClick={togglePopup} // Toggle popup on icon click
-      />
-      {/* Show unread count badge if there are unread notifications */}
-      {notifications.filter((n) => n.unreadCount > 0).length > 0 && (
-        <div className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] rounded-full w-[13px] h-[13px] flex items-center justify-center">
-          {notifications.filter((n) => n.unreadCount > 0).length}
-        </div>
-      )}
-
-      {/* Popup content */}
-      {isPopupOpen && (
-        <div className="absolute top-10 right-0 w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50" ref={popupRef}>
-          <h3 className="text-lg font-semibold text-black">Notifications</h3>
-          <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
-            {notifications.length > 0 ? (
-              notifications.map((n, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => {
-                    // Handle marking notification as read (Optional)
-                    const updatedNotifications = [...notifications];
-                    updatedNotifications[idx].unreadCount = 0; // Mark as read
-                    setNotifications(updatedNotifications);
-                  }}
-                  className="cursor-pointer"
-                >
-                  <div className="flex w-full justify-between">
-                    <div>
-                      <span className="text-[14px] font-bold text-black">{n.title}</span>
-                      <p className="text-[13px] mt-2 text-[#18181880]">{n.message}</p>
-                    </div>
-                    <div className="flex flex-col items-end px-2">
-                      <div className="text-xs text-gray-600">{n.time}</div>
-                      {n.unreadCount > 0 && (
-                        <div className="bg-red-600 mt-2 text-white text-xs rounded-full w-[19px] h-[19px] flex items-center justify-center">
-                          {n.unreadCount}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <hr className="mt-2" />
+            <div ref={popupRef} className="relative">
+              {/* Notification Icon */}
+              <IoNotificationsOutline
+                ref={iconRef}
+                className="text-white text-2xl cursor-pointer"
+                onClick={togglePopup} // Toggle popup on icon click
+              />
+              {/* Show unread count badge if there are unread notifications */}
+              {notifications.filter((n) => n.unreadCount > 0).length > 0 && (
+                <div className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] rounded-full w-[13px] h-[13px] flex items-center justify-center">
+                  {notifications.filter((n) => n.unreadCount > 0).length}
                 </div>
-              ))
-            ) : (
-              <p className="text-gray-700">No notifications</p>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
+              )}
+
+              {/* Popup content */}
+              {isPopupOpen && (
+                <div className="absolute top-10 right-0 w-[500px] bg-white shadow-lg rounded-lg py-6 p-4 z-50" ref={popupRef}>
+                  <h3 className="text-lg font-semibold text-black">Notifications</h3>
+                  <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
+                    {notifications.length > 0 ? (
+                      notifications.map((n, idx) => (
+                        <div
+                          key={idx}
+                          onClick={() => {
+                            // Handle marking notification as read (Optional)
+                            const updatedNotifications = [...notifications];
+                            updatedNotifications[idx].unreadCount = 0; // Mark as read
+                            setNotifications(updatedNotifications);
+                          }}
+                          className="cursor-pointer"
+                        >
+                          <div className="flex w-full justify-between">
+                            <div>
+                              <span className="text-[14px] font-bold text-black">{n.title}</span>
+                              <p className="text-[13px] mt-2 text-[#18181880]">{n.message}</p>
+                            </div>
+                            <div className="flex flex-col items-end px-2">
+                              <div className="text-xs text-gray-600">{n.time}</div>
+                              {n.unreadCount > 0 && (
+                                <div className="bg-red-600 mt-2 text-white text-xs rounded-full w-[19px] h-[19px] flex items-center justify-center">
+                                  {n.unreadCount}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <hr className="mt-2" />
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-700">No notifications</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             <div >
               <img
+                ref={avatarRef}
                 src={
                   user_data?.avatar
                     ? `${import.meta.env.VITE_APP_AWS_URL}${user_data?.avatar}`
@@ -302,7 +306,9 @@ const Navbar = () => {
                 alt="Avatar"
               />
               {userPopup && (
-                <div className="absolute top-20 right-4 bg-white w-[155px] h-[157px] text-black rounded-[8px] shadow-lg p-4 space-y-2 z-[99999]">
+                <div
+                  ref={userPopupRef}
+                  className="absolute top-20 right-4 bg-white w-[155px] h-[157px] text-black rounded-[8px] shadow-lg p-4 space-y-2 z-[99999]">
                   <span
                     className="block font-[400] py-1 text-sm border-b  border-[#E4E4E4] cursor-pointer"
                     onClick={() =>

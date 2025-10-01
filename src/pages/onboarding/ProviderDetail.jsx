@@ -24,6 +24,18 @@ export default function ProviderDetail({ handleNext }) {
   const dispatch = useDispatch();
   const { error, isLoading } = useSelector((state) => state.auth);
 
+
+  const dayAbbreviations = {
+  monday: "MON",
+  tuesday: "TUE",
+  wednesday: "WED",
+  thursday: "THU",
+  friday: "FRI",
+  saturday: "SAT",
+  sunday: "SUN",
+};
+
+
   const formik = useFormik({
     initialValues: providerDetailsValues,
     validationSchema: providerDetailsSchema,
@@ -298,7 +310,7 @@ export default function ProviderDetail({ handleNext }) {
                   <div className="bg-[#F1F1F1D1] flex gap-2 items-center p-2 h-[38px] rounded-[8px] ml-1">
                     <p className="text-[14px]">
                       {availability.start_time} - {availability.end_time} (
-                      {availability.days.join(", ")}
+                       {availability.days.map((day) => dayAbbreviations[day] || day).join(", ")}
                     </p>
                     <FiTrash2
                       color={"#F01A1A"}

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router";
 import Cookies from "js-cookie";
 const SubscribedPlan = ({ isOpen, setIsOpen, selectedPlane }) => {
   const [step, setStep] = useState(1); // 1 = first modal, 2 = second modal
-  const navigage = useNavigate("");
+  const navigate = useNavigate("");
   const handleClose = () => {
     if (step === 1) {
       setStep(2); // Show second modal
@@ -14,7 +14,7 @@ const SubscribedPlan = ({ isOpen, setIsOpen, selectedPlane }) => {
       setStep(1); // Reset step
       setIsOpen(false); // Hide modal
       Cookies.set("role", "provider");
-      navigage("/dashboard");
+      navigate("/auth/login");
     }
   };
 
@@ -61,7 +61,7 @@ const SubscribedPlan = ({ isOpen, setIsOpen, selectedPlane }) => {
               </h3>
               <p className="text-[16px] font-[400] text-[#565656]">
                 You’ve just unlocked the Bronze Subscription badge! Welcome to
-                the network — time to shine.
+                the Code Clean — time to shine.
               </p>
             </div>
           </div>
