@@ -89,7 +89,7 @@ const Bookingsrequests = () => {
       .toLowerCase()
       .replace(/\s+/g, "")
       .replace(/_/g, "");
-    if (s === "inprogress") return "In Progress Jobs";
+    if (s === "inprogress") return "In Progress Job";
     if (s === "completed") return "Completed Jobs";
     if (s === "cancelled" || s === "canceled") return "Canceled Jobs";
     if (s === "accepted") return "Approved";
@@ -191,7 +191,7 @@ const Bookingsrequests = () => {
   }, [isCurrent, apiList, bookings]);
 
   const statusOptions = isCurrent
-    ? ["All", "Upcoming Jobs", "In Progress Jobs"]
+    ? ["All", "Upcoming Jobs", "In Progress Job"]
     : ["All", "Pending", "Approved", "Rejected"];
 
   const q = searchQuery.trim().toLowerCase();

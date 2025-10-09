@@ -258,7 +258,7 @@ const Dashboard = () => {
                               row.status == "waiting"
                             ? "text-[#EC8325]"
                             : row.status === "inprogress" ||
-                              row.status == "In Progress Jobs"
+                              row.status == "In Progress Job"
                             ? "text-[#208BC7]"
                             : "text-[#EE3131]"
                         }`}

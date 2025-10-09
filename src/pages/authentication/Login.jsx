@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux"; // Import useDispatch an
 import {
   login,
   resetAuthState,
+  SocialAppleLogin,
   SocialLogin,
 } from "../../redux/slices/auth.slice"; // Import login action from Redux
 import { useFormik } from "formik";
@@ -61,6 +62,26 @@ const Login = () => {
   // useEffect for Success Toast
   useEffect(() => {
     if (success && accessToken) {
+
+
+         // Check if approval status is rejected
+      if (user_data?.approval_status === "rejected") {
+        ErrorToast(
+          user_data?.rejected_reason 
+            ? `Your account has been rejected by admin. Reason: ${user_data.rejected_reason}` 
+            : "Your account has been rejected by admin. Please contact support."
+        );
+        dispatch(resetAuthState());
+        return;
+      }
+
+      // Check if approval status is pending
+      if (user_data?.approval_status === "pending") {
+        ErrorToast("Your account is pending approval from admin. Please wait for verification.");
+        dispatch(resetAuthState());
+        return;
+      }
+
       SuccessToast(typeof success === "string" ? success : "Login successful!");
       // After successful login, get FCM token and save it
       const fetchFCMToken = async () => {
@@ -109,24 +130,43 @@ const Login = () => {
       };
       await dispatch(SocialLogin(data));
     },
-    onError: () => {},
+    onError: () => { },
   });
 
-  const handleAppleLogin = async (role) => {
+  const handleAppleLogin = async () => {
     setShowRoleModal(false);
+
     try {
-      const response = await window.AppleID.auth.signIn({
-        clientId: "YOUR_CLIENT_ID", // Apple Service ID
-        redirectURI: "YOUR_REDIRECT_URI",
+      // Initialize Apple SDK
+      window.AppleID.auth.init({
+        clientId: "com.codecleanpros.app.web",
         scope: "email name",
-        state: role, // role pass kar sakte ho
-        nonce: "random_nonce_string",
+        redirectURI: "https://codecleanpros.com/auth/login",
         usePopup: true,
       });
+
+      // Trigger Apple popup login
+      const response = await window.AppleID.auth.signIn();
+
+      // Extract the ID token (JWT returned by Apple)
+      const identityToken = response?.authorization?.id_token;
+
+      if (!identityToken) {
+        throw new Error("No Apple ID token received");
+      }
+
+      // Prepare payload for your API
+      const data = {
+        token: identityToken,
+        role: selectedRole, // e.g. "service_provider" or "customer"
+      };
+
+      await dispatch(SocialAppleLogin(data));
     } catch (err) {
       console.error("Apple login failed:", err);
     }
   };
+
 
   return (
     <div className="w-full h-auto grid md:grid-cols-2 gap-4 rounded-[19px] bg-white">
@@ -231,7 +271,7 @@ const Login = () => {
           </div>
         </div>
       </div>
-      
+
       <div
         className="p-4 rounded-[20px] md:block hidden"
         style={{

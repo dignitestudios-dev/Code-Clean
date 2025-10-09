@@ -90,8 +90,8 @@ export default function EditServiceModal({ onClose, selectedItem }) {
             handleChange={(e) => {
               const { value } = e.target;
 
-              // block negatives
-              if (Number(value) < 0) return;
+              // Restrict to 10 digits only
+              if (value.length > 10) return;
 
               handleChange(e);
             }}

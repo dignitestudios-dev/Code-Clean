@@ -24,7 +24,7 @@ export default function EditCertificateModal({ onClose, selectedItem }) {
       validationSchema: certificationSchema,
       validateOnChange: true,
       validateOnBlur: true,
-      enableReinitialize: true, // important for pre-filled values
+      enableReinitialize: true,
       onSubmit: async (values) => {
         try {
           const Certificatedata = {
@@ -44,6 +44,7 @@ export default function EditCertificateModal({ onClose, selectedItem }) {
         }
       },
     });
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-[16px] p-6 w-full max-w-md shadow-lg relative">
@@ -90,17 +91,21 @@ export default function EditCertificateModal({ onClose, selectedItem }) {
             touched={touched.institution}
           />
 
-          <Input
-            text="Date of Completion"
-            name="completionDate"
-            type="text"
-            holder="Enter Date"
-            value={values.completionDate}
-            handleBlur={handleBlur}
-            handleChange={handleChange}
-            error={errors.completionDate}
-            touched={touched.completionDate}
-          />
+          {/* Date Picker for Date of Completion */}
+          <div>
+            <label className="block text-sm font-semibold mb-1">Date of Completion</label>
+            <input
+              type="date"
+              name="completionDate"
+              value={values.completionDate}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              className="w-full border border-[#BEBEBE] rounded-md px-3 py-2 text-sm outline-none"
+            />
+            {errors.completionDate && touched.completionDate && (
+              <p className="text-red-500 text-sm mt-1">{errors.completionDate}</p>
+            )}
+          </div>
 
           <div>
             <label className="block text-sm font-semibold mb-1">

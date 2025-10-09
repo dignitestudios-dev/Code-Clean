@@ -48,6 +48,7 @@ const ReportUser = ({ isOpen, setIsOpen, userId, isProvider }) => {
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Type your reason here..."
+            maxLength={130}
             className="w-full border border-gray-300 rounded-xl px-4 py-3 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 

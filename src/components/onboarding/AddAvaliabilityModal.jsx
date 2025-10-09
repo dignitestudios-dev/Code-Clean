@@ -56,9 +56,22 @@ export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
 
   const validateTimes = (start, end) => {
     const today = new Date().toDateString();
+
+    // Create Date objects for the selected times
     const startDate = new Date(`${today} ${start}`);
     const endDate = new Date(`${today} ${end}`);
 
+    // Create Date objects for the limits (9:00 AM to 6:00 PM)
+    const startLimit = new Date(`${today} 09:00`);
+    const endLimit = new Date(`${today} 18:00`);
+
+    // Validate time range
+    if (startDate < startLimit || endDate > endLimit) {
+      setError("Please select a time between 9:00 AM and 6:00 PM.");
+      return false;
+    }
+
+    // Check if end time is after start time
     if (endDate <= startDate) {
       setError("End time must be after start time.");
       return false;
@@ -67,6 +80,7 @@ export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
     setError("");
     return true;
   };
+
 
   const handleSave = () => {
     if (!validateTimes(startTime, endTime)) return;
@@ -112,6 +126,7 @@ export default function AddAvailabilityModal({ onClose, onSave, edit, data }) {
               className="w-full border border-[#BEBEBE] rounded-lg p-2 text-sm focus:outline-none"
             />
           </div>
+
         </div>
 
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
