@@ -19,22 +19,20 @@ export default function ProviderDetail({ handleNext }) {
   const [previewImage, setPreviewImage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [availability, setAvailability] = useState(null);
-  const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 });  // default Karachi
+  const [mapCenter, setMapCenter] = useState({ lat: 38.7946, lng: 106.5348 }); // default Karachi
   const autocompleteRef = useRef(null);
   const dispatch = useDispatch();
   const { error, isLoading } = useSelector((state) => state.auth);
 
-
   const dayAbbreviations = {
-  monday: "MON",
-  tuesday: "TUE",
-  wednesday: "WED",
-  thursday: "THU",
-  friday: "FRI",
-  saturday: "SAT",
-  sunday: "SUN",
-};
-
+    monday: "MON",
+    tuesday: "TUE",
+    wednesday: "WED",
+    thursday: "THU",
+    friday: "FRI",
+    saturday: "SAT",
+    sunday: "SUN",
+  };
 
   const formik = useFormik({
     initialValues: providerDetailsValues,
@@ -101,7 +99,30 @@ export default function ProviderDetail({ handleNext }) {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+
     if (file) {
+      // ✅ File size limit: 2MB
+      const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+
+      // ✅ Allowed file types
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "image/webp",
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        ErrorToast("Please upload a valid image (JPEG, PNG, JPG, or WEBP).");
+        return;
+      }
+
+      if (file.size > maxSizeInBytes) {
+        ErrorToast("File size should not exceed 2MB.")
+        return;
+      }
+
+      // ✅ Set file and preview if valid
       setFieldValue("profilePic", file);
       const imageUrl = URL.createObjectURL(file);
       setPreviewImage(imageUrl);
@@ -135,7 +156,7 @@ export default function ProviderDetail({ handleNext }) {
             if (comp.types.includes("country")) country = comp.long_name;
           }
         }
-  console.log(city,state,country,"countr test")
+        console.log(city, state, country, "countr test");
         setFieldValue("city", city);
         setFieldValue("state", state);
         setFieldValue("country", country);
@@ -310,7 +331,9 @@ export default function ProviderDetail({ handleNext }) {
                   <div className="bg-[#F1F1F1D1] flex gap-2 items-center p-2 h-[38px] rounded-[8px] ml-1">
                     <p className="text-[14px]">
                       {availability.start_time} - {availability.end_time} (
-                       {availability.days.map((day) => dayAbbreviations[day] || day).join(", ")}
+                      {availability.days
+                        .map((day) => dayAbbreviations[day] || day)
+                        .join(", ")}
                     </p>
                     <FiTrash2
                       color={"#F01A1A"}

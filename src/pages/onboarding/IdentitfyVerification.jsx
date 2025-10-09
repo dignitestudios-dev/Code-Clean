@@ -148,6 +148,27 @@ export default function IdentityVerification({ handleNext }) {
     }, 2000); // 2 sec
   };
 
+  const handleFileChange = (e, setFile) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const maxSizeInBytes = 20 * 1024 * 1024; // 20MB
+    const allowedTypes = ["image/jpeg", "image/png"];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert("❌ Please upload a valid image (JPG or PNG).");
+      return;
+    }
+
+    if (file.size > maxSizeInBytes) {
+      alert("⚠️ File size should not exceed 20MB.");
+      return;
+    }
+
+    // ✅ If valid
+    setFile(file);
+  };
+
   return (
     <div className="w-full max-w-lg mx-auto py-6">
       {currentStatus == "idcard" ? (
@@ -172,7 +193,7 @@ export default function IdentityVerification({ handleNext }) {
                     <img
                       src={URL.createObjectURL(frontFile)}
                       alt="Front ID Preview"
-                      className="cursor-pointer w-full h-full"
+                      className="cursor-pointer w-full h-full object-cover"
                     />
                   </label>
                   <input
@@ -180,7 +201,7 @@ export default function IdentityVerification({ handleNext }) {
                     id="cardfront"
                     className="hidden"
                     accept="image/png,image/jpeg"
-                    onChange={(e) => setFrontFile(e.target.files[0])}
+                    onChange={(e) => handleFileChange(e, setFrontFile)}
                   />
                 </>
               ) : (
@@ -196,11 +217,11 @@ export default function IdentityVerification({ handleNext }) {
                     id="cardfront"
                     className="hidden"
                     accept="image/png,image/jpeg"
-                    onChange={(e) => setFrontFile(e.target.files[0])}
+                    onChange={(e) => handleFileChange(e, setFrontFile)}
                   />
                   <br />
                   <span className="text-[#8F8F8F] text-[12px]">
-                    Upload files up to 20 MB JPG, PNG
+                    Upload files up to 20 MB (JPG, PNG)
                   </span>
                 </div>
               )}
@@ -220,7 +241,7 @@ export default function IdentityVerification({ handleNext }) {
                     <img
                       src={URL.createObjectURL(backFile)}
                       alt="Back ID Preview"
-                      className="cursor-pointer w-full h-full"
+                      className="cursor-pointer w-full h-full object-cover"
                     />
                   </label>
                   <input
@@ -228,7 +249,7 @@ export default function IdentityVerification({ handleNext }) {
                     id="cardback"
                     className="hidden"
                     accept="image/png,image/jpeg"
-                    onChange={(e) => setBackFile(e.target.files[0])}
+                    onChange={(e) => handleFileChange(e, setBackFile)}
                   />
                 </>
               ) : (
@@ -244,11 +265,11 @@ export default function IdentityVerification({ handleNext }) {
                     id="cardback"
                     className="hidden"
                     accept="image/png,image/jpeg"
-                    onChange={(e) => setBackFile(e.target.files[0])}
+                    onChange={(e) => handleFileChange(e, setBackFile)}
                   />
                   <br />
                   <span className="text-[#8F8F8F] text-[12px]">
-                    Upload files up to 20 MB JPG, PNG
+                    Upload files up to 20 MB (JPG, PNG)
                   </span>
                 </div>
               )}

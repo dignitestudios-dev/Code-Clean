@@ -4,7 +4,6 @@ import { Autoplay, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { FaStar } from "react-icons/fa";
-import { HiOutlineHeart } from "react-icons/hi";
 import {
   MdKeyboardArrowRight,
   MdOutlineKeyboardArrowLeft,

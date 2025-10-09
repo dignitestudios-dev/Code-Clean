@@ -15,10 +15,10 @@ export default function Verification({ handleNext, email }) {
   const navigate = useNavigate();
   const { isLoading, error, userData, success, accessToken, isResendLoading } =
     useSelector((state) => state.auth); // Get loading, error, and user data from Redux
+    const dispatch = useDispatch();
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [timer, setTimer] = useState(60);
   const otpRefs = useRef([]);
-  const dispatch = useDispatch();
   const [otp, setOtp] = useState(emailVerificationValues.otp);
   useEffect(() => {
     let interval;
