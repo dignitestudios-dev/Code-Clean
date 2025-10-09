@@ -156,12 +156,12 @@ export default function IdentityVerification({ handleNext }) {
     const allowedTypes = ["image/jpeg", "image/png"];
 
     if (!allowedTypes.includes(file.type)) {
-      alert("❌ Please upload a valid image (JPG or PNG).");
+      ErrorToast("❌ Please upload a valid image (JPG or PNG).");
       return;
     }
 
     if (file.size > maxSizeInBytes) {
-      alert("⚠️ File size should not exceed 20MB.");
+      ErrorToast("⚠️ File size should not exceed 20MB.");
       return;
     }
 
