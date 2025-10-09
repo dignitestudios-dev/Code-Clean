@@ -104,6 +104,37 @@ export const SocialLogin = createAsyncThunk(
   }
 );
 
+
+export const SocialAppleLogin = createAsyncThunk(
+  "auth/SocialAppleLogin", // 💡 use a unique action name (not API path)
+  async (credentials, thunkAPI) => {
+    try {
+      // POST request to your Apple auth endpoint
+      const response = await axios.post("/social/apple/auth", credentials);
+      const { message, token, user_data } = response?.data || {};
+      if (!token) {
+        throw new Error("Invalid response from Apple login API");
+      }
+      // Save access token locally
+      localStorage.setItem("access_token", token);
+      Cookies.set("access_token", token, { expires: 7 });
+      return {
+        message: message || "Apple login successful",
+        accessToken: token,
+        user_data,
+      };
+    } catch (error) {
+      console.error("Apple login error:", error);
+      return thunkAPI.rejectWithValue(
+        error?.response?.data?.message ||
+        error?.message ||
+        "Apple login failed"
+      );
+    }
+  }
+);
+
+
 // RESET PASSWORD
 export const resetPassword = createAsyncThunk(
   "/password/reset",
@@ -504,8 +535,8 @@ export const fetchUserProfile = createAsyncThunk(
       }
       return thunkAPI.rejectWithValue(
         error?.response?.data?.message ||
-          error?.message ||
-          "Failed to fetch profile"
+        error?.message ||
+        "Failed to fetch profile"
       );
     }
   }
@@ -651,6 +682,22 @@ const authSlice = createSlice({
         state.isResendLoading = true;
         state.error = null;
         state.success = null;
+      })
+      .addCase(SocialAppleLogin.pending, (state) => {
+        state.isResendLoading = true; // similar to SocialLogin
+        state.error = null;
+        state.success = null;
+      })
+      .addCase(SocialAppleLogin.fulfilled, (state, action) => {
+        state.isResendLoading = false;
+        state.accessToken = action.payload.accessToken;
+        state.token = action.payload.accessToken;
+        state.user_data = action.payload.user_data;
+        state.success = action.payload.message || "Apple login successful";
+      })
+      .addCase(SocialAppleLogin.rejected, (state, action) => {
+        state.isResendLoading = false;
+        state.error = action.payload || "Apple login failed";
       })
       .addCase(SocialLogin.fulfilled, (state, action) => {
         state.isResendLoading = false;

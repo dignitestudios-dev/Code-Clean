@@ -25,14 +25,13 @@ import BillingSummary from "./BillingSummary";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 export default function SignUp() {
-  const [currentStep, setCurrentStep] = useState(0);
   const location = useLocation();
   const role = location.state?.role || "user";
+  const startAtStep = location.state?.startAtStep || 0; // Ye line add karo
   const [email, setEmail] = useState("");
-  // const stripePromise = loadStripe(import.meta.env.VITE_APP_STRIPE_KEY);
-  const stripePromise = loadStripe(
-    "pk_test_51R35dTRu13l5i5sUEtVltwn9P4R1bByNOlamVhR0Vq8xVSG4kMMuFjNAXfQ0swFl3qxbuKtdRLcouiGA0I6rw7i900oTZUOMeu"
-  );
+  const [currentStep, setCurrentStep] = useState(startAtStep); 
+  const stripePromise = loadStripe(import.meta.env.VITE_APP_STRIPE_KEY);
+ 
 
   // Step Data for Service Provider
   const providerSteps = [
@@ -134,11 +133,10 @@ export default function SignUp() {
               {steps.map((el, i) => (
                 <div
                   key={i}
-                  className={`w-[90px] h-1 rounded-full transition-all duration-500 ${
-                    el.completed || el.active
-                      ? "bg-[linear-gradient(234.85deg,_#27A8E2_-20.45%,_#00034A_124.53%)]"
-                      : "bg-[#D9D9D9]"
-                  }`}
+                  className={`w-[90px] h-1 rounded-full transition-all duration-500 ${el.completed || el.active
+                    ? "bg-[linear-gradient(234.85deg,_#27A8E2_-20.45%,_#00034A_124.53%)]"
+                    : "bg-[#D9D9D9]"
+                    }`}
                 />
               ))}
             </div>

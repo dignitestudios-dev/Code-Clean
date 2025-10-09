@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
  
 export const baseUrl = "https://api.codecleanpros.com/api";
- 
+
 async function getDeviceFingerprint() {
   const fp = await FingerprintJS.load();
   const result = await fp.get();

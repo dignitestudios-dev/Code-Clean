@@ -342,11 +342,11 @@ const Wallet = () => {
             <p className="text-gray-600 text-sm mb-4">
               Your withdrawal request has been successfully processed.
             </p>
-            <p className="text-gray-600 text-sm">Amount Withdraw</p>
+            {/* <p className="text-gray-600 text-sm">Amount Withdraw</p>
             <p className="text-blue-600 font-bold text-2xl">
               USD ${widrawData?.amount}
-            </p>
-            <div className="text-left border-2 rounded-2xl p-0 mt-6">
+            </p> */}
+            {/* <div className="text-left border-2 rounded-2xl p-0 mt-6">
               <div className="border-b-2 p-3">
                 <p>Transaction ID:</p>
                 <p className="text-blue-600">{widrawData?.reference_id}</p>
@@ -363,7 +363,7 @@ const Wallet = () => {
                 <p>Transfer Time:</p>
                 <p className="text-blue-600"> {currentTime}</p>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       )}
